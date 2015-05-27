@@ -41,6 +41,7 @@ public class ReportGenerator
 {
     public static String generateReport(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors, String root, String extension)
     {
+        
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

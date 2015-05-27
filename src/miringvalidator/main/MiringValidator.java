@@ -38,7 +38,8 @@ public class MiringValidator
     public String validate()
     {
         //Tier 1
-        tier1ValidationErrors = SchemaValidator.validate(xml);
+        //tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
+        tier1ValidationErrors = SchemaValidator.validate(xml, "demo.xsd");
         
         //Tier 2
         //Skip it if we already know it is bad.  Maybe?  Do we want to schematron automatically?

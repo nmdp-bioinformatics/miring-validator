@@ -35,24 +35,6 @@ import javax.ws.rs.Produces;
 @Path("/ValidateMiring")
 public class MiringValidatorService
 {
-    /*static Logger logger = Logger.getLogger( MiringValidatorService.class );
-    private final static String PROPERTY_LOGLVL = "property://probatron.org/log-level";
-    private final static String DEFAULT_LOGLVL = "WARN";
-    
-    static
-    {
-        // set up log message format, etc.
-        String logLvl = System.getProperty( PROPERTY_LOGLVL ) == null ? DEFAULT_LOGLVL : System
-                .getProperty( PROPERTY_LOGLVL );
-        Properties p = new Properties();
-        p.setProperty( "log4j.rootCategory", logLvl + ",stderr" );
-        p.setProperty( "log4j.appender.stderr", "org.apache.log4j.ConsoleAppender" );
-        p.setProperty( "log4j.appender.stderr.layout", "org.apache.log4j.PatternLayout" );
-        p.setProperty( "log4j.appender.stderr.target", "System.err" );
-        p.setProperty( "log4j.appender.stderr.layout.ConversionPattern", "%p %m%n" );
-        PropertyConfigurator.configure( p );
-    }
-*/
     
     @POST
     @Produces("application/xml")
