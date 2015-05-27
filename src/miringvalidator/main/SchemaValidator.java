@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 public class SchemaValidator
 {
-    public static ValidationError[] validate(String xml) 
+    public static ValidationError[] validate(String xml, String schemaFileName) 
     {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
         Source xmlFile = null;
@@ -44,7 +44,7 @@ public class SchemaValidator
             //URL schemaFile = new URL("http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
             //How do I load an xsd more dynamically?  Put it in the web.xml probably.
             //I need to add a config file for this.  This won't work anywhere else.
-            File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/MiringTier1.xsd");
+            File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/" + schemaFileName);
             
             //xmlFile = new StreamSource(new File("/Users/bmatern/GitHub/MiringValidator/xmlresources/test/missing-hmlid.xml"));
             xmlFile = new StreamSource(new java.io.StringReader(xml));

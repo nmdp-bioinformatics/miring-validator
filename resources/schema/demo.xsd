@@ -53,7 +53,7 @@
       <xs:sequence>
         <xs:element name="property"          type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="hmlid"             type="hmlns:hmlid" minOccurs="1" maxOccurs="1" />
-        <xs:element ref="reporting-center"   minOccurs="1" maxOccurs="1" />
+        <xs:element ref="reporting-center"   minOccurs="0" maxOccurs="1" />
         <xs:element ref="sample"             minOccurs="1" maxOccurs="unbounded" />
         <xs:element name="typing-test-names" type="hmlns:typing-test-names" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
@@ -104,7 +104,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>      
-      <xs:attribute name="reporting-center-context" use="required" >
+      <xs:attribute name="reporting-center-context" use="optional" default="NMDP">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
             <xs:minLength value="1" />
@@ -330,7 +330,7 @@
     </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="property" type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element ref="hmlns:allele-assignment" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element ref="hmlns:allele-assignment" minOccurs="0" maxOccurs="unbounded" />
       <xs:element ref="hmlns:typing-method" minOccurs="1" maxOccurs="1" />
       <xs:element name="consensus-sequence" type="hmlns:consensus-sequence" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
@@ -384,14 +384,14 @@
         <xs:element ref="glstring"       minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
       <xs:attribute name="date"      type="xs:date" use="required" />
-      <xs:attribute name="allele-db" use="required">
+      <xs:attribute name="allele-db" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:minLength value="1" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="allele-version" use="required">
+      <xs:attribute name="allele-version" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:minLength value="1" />
@@ -678,14 +678,14 @@
       <xs:element name="property"       type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="locus"          type="xs:string" use="optional" />
-    <xs:attribute name="test-id"        use="required">
+    <xs:attribute name="test-id"        use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id-source" type="xs:string" use="required" />
+    <xs:attribute name="test-id-source" type="xs:string" use="optional" />
     <xs:attribute name="scores"         type="xs:string" use="required"/>
   </xs:complexType>
 
@@ -731,14 +731,14 @@
       <xs:element name="property"       type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="locus"          type="xs:string" use="optional" />
-    <xs:attribute name="test-id"        use="required">
+    <xs:attribute name="test-id"        use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id-source" type="xs:string" use="required" />
+    <xs:attribute name="test-id-source" type="xs:string" use="optional" />
     <xs:attribute name="scores"         type="xs:string" use="required" />
   </xs:complexType>
 
@@ -794,14 +794,14 @@
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id" use="required">
+    <xs:attribute name="test-id" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id-source" use="required">
+    <xs:attribute name="test-id-source" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
@@ -956,7 +956,7 @@
     </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="property"           type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="raw-reads"          type="hmlns:raw-reads" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element name="raw-reads"          type="hmlns:raw-reads" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="locus" use="optional">
       <xs:simpleType>
@@ -965,14 +965,14 @@
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id" use="required">
+    <xs:attribute name="test-id" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="test-id-source" use="required">
+    <xs:attribute name="test-id-source" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:minLength value="1" />
@@ -1169,8 +1169,8 @@
         <xs:element ref="hmlns:sequence-quality" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
       <xs:attribute name="reference-sequence-id" type="xs:IDREF" use="required" />
-      <xs:attribute name="start" type="hmlns:position-type" use="required" />
-      <xs:attribute name="end" type="hmlns:position-type" use="required" />
+      <xs:attribute name="start" type="hmlns:position-type" use="optional" />
+      <xs:attribute name="end" type="hmlns:position-type" use="optional" />
       <xs:attribute name="strand" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
@@ -1193,7 +1193,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="description" use="required">
+      <xs:attribute name="description" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
             <xs:minLength value="1" />
@@ -1359,7 +1359,7 @@
           </xs:documentation></xs:annotation>
           <xs:complexType>
             <xs:attribute name="id" type="xs:ID" use="required" />
-            <xs:attribute name="name" use="required">
+            <xs:attribute name="name" use="optional">
               <xs:simpleType>
                 <xs:restriction base="xs:string">
                   <xs:minLength value="1" />
@@ -1373,8 +1373,8 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="start" type="hmlns:position-type" use="required" />
-            <xs:attribute name="end" type="hmlns:position-type" use="required" />
+            <xs:attribute name="start" type="hmlns:position-type" use="optional" />
+            <xs:attribute name="end" type="hmlns:position-type" use="optional" />
             <xs:attribute name="accession" use="optional">
               <xs:simpleType>
                 <xs:restriction base="xs:string">
@@ -1431,7 +1431,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="curated" type="xs:boolean" use="required"/>
+      <xs:attribute name="curated" type="xs:boolean" use="optional" default="true" />
       <xs:attribute name="uri" type="xs:anyURI" use="optional" />
     </xs:complexType>
   </xs:element>
@@ -1467,7 +1467,7 @@
       <xs:sequence>
         <xs:element ref="variant-effect" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
-      <xs:attribute name="id" use="required">
+      <xs:attribute name="id" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string" >
             <xs:minLength value="1" />
@@ -1485,8 +1485,8 @@
       <xs:attribute name="end" type="hmlns:position-type" use="required" />
       <xs:attribute name="reference-bases" type="hmlns:simple-bases" use="required" />
       <xs:attribute name="alternate-bases" type="hmlns:simple-bases" use="required" />
-      <xs:attribute name="quality-score" type="hmlns:quality" use="required" />
-      <xs:attribute name="filter" use="required">
+      <xs:attribute name="quality-score" type="hmlns:quality" use="optional" />
+      <xs:attribute name="filter" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="PASS" />
@@ -1583,7 +1583,7 @@
     </xs:attribute>
     <xs:attribute name="paired" type="xs:boolean" use="required" />
     <xs:attribute name="pooled" type="xs:boolean" use="required" />
-    <xs:attribute name="availability" use="required">
+    <xs:attribute name="availability" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:enumeration value="public" />
