@@ -20,7 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package miringvalidator.main;
+package main.java.miringvalidator;
 
 public class MiringValidator
 {

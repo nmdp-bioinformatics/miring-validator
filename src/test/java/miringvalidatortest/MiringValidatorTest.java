@@ -20,17 +20,40 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package miringvalidator.test;
+package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
+import main.java.miringvalidator.MiringValidator;
 
 import org.junit.Test;
 
-public class ReportGeneratorTest
+public class MiringValidatorTest
 {
 
     @Test
-    public void test()
+    public void testMiringValidator()
+    {
+        MiringValidator myValidator = new MiringValidator("<xml></xml>");
+        assert(myValidator!=null);
+        myValidator.validate();
+        assert(myValidator!=null);
+        
+        String report = myValidator.getReport();
+        assert(report!=null);
+        assert(report!=null);
+        assert(report.length() > 0);
+        
+        
+    }
+
+    @Test
+    public void testValidate()
+    {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testGetStringFromDoc()
     {
         fail("Not yet implemented");
     }
