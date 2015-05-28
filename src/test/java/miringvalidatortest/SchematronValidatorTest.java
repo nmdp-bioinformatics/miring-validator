@@ -20,13 +20,13 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package miringvalidator.test;
+package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class SchemaValidatorTest
+public class SchematronValidatorTest
 {
 
     @Test

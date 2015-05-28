@@ -20,22 +20,32 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package miringvalidator.main;
+package main.java.miringvalidator;
 
 public class MiringValidator
 {
-	//Test?
     String xml;
     String report;
     ValidationError[] tier1ValidationErrors;
     ValidationError[] tier2ValidationErrors;
     
+    /**
+     * Constructor for a MiringValidator object
+     *
+     * @param xml a String containing the xml text
+     * @return a String containing MIRING Results Report
+     */
     public MiringValidator(String xml)
     {
         this.xml = xml;
         this.report = null;
     }
     
+    /**
+     * Validate the xml text against MIRING checklist
+     *
+     * @return a String containing MIRING Results Report
+     */
     public String validate()
     {
         //Tier 1
