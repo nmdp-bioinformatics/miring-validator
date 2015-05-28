@@ -29,6 +29,15 @@ public class ValidationError
     String miringElement;
     boolean fatal;
     
+    /**
+     * Constructor for a ValidationError object. A ValidationError has getters and setters and doesn't do much else.
+     *
+     * @param errorText Text containing a description of the error.
+     * @param solutionText Text containing suggestions of a solution   
+     * @param miringElement Text specifying the specific Miring Rule broken
+     * @param fatal is the error considered fatal?  Should we reject the Miring HML?
+     */
+
     public ValidationError(String errorText, String solutionText, String miringElement, boolean fatal)
     {
         this.errorText = errorText;

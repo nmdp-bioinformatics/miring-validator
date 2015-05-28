@@ -36,6 +36,12 @@ import javax.ws.rs.Produces;
 public class MiringValidatorService
 {
     
+    /**
+     * This method provides a RESTFUL service for validating a MIRING compliant HML file
+     *
+     * @param xml this method accepts a Form Parameter xml containing the xml text
+     * @return a String containing MIRING Results Report
+     */
     @POST
     @Produces("application/xml")
     public String validateMiring(@FormParam("xml") String xml)
