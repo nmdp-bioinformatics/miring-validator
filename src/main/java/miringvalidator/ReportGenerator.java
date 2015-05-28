@@ -20,7 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package miringvalidator.main;
+package main.java.miringvalidator;
 
 import java.io.StringWriter;
 
@@ -39,6 +39,15 @@ import org.w3c.dom.Element;
 
 public class ReportGenerator
 {
+    /**
+     * Generate a Miring Results Report
+     *
+     * @param tier1ValidationErrors an array of ValidationError objects
+     * @param tier2ValidationErrors an array of ValidationError objects
+     * @param root the root attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
+     * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
+     * @return a String containing MIRING Results Report
+     */
     public static String generateReport(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors, String root, String extension)
     {
         
@@ -114,6 +123,12 @@ public class ReportGenerator
         return null;
     }
     
+    /**
+     * Does this array contain any fatal errors?
+     *
+     * @param errors an array of ValidationError objects
+     * @return does this array contain any fatal errors?
+     */
     public static boolean containsFatalErrors(ValidationError[] errors)
     {
         //Does this list contain any fatal errors?
