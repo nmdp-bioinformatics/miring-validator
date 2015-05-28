@@ -145,7 +145,7 @@ public class ReportGenerator
     private static Element generateValidationErrorNode(Document doc, ValidationError validationError)
     {
         //Change a validation error into an XML Node to put in our report.
-        Element invMiringElement = doc.createElement("InvalidMiringresult");
+        Element invMiringElement = doc.createElement("InvalidMiringResult");
         
         //miringElementID
         Attr miringElementAttr = doc.createAttribute("miringElementID");
