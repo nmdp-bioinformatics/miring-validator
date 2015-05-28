@@ -40,6 +40,7 @@ public class MiringValidatorTest
         
         String report = myValidator.getReport();
         assert(report!=null);
+        assert(report!=null);
         assert(report.length() > 0);
         
         

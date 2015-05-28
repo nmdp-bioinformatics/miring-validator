@@ -24,6 +24,7 @@ package miringvalidator.main;
 
 public class MiringValidator
 {
+	//Test?
     String xml;
     String report;
     ValidationError[] tier1ValidationErrors;
