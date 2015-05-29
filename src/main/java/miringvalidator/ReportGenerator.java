@@ -33,12 +33,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class ReportGenerator
 {
+    private static final Logger logger = LogManager.getLogger(ReportGenerator.class);
+    
     /**
      * Generate a Miring Results Report
      *
@@ -111,15 +115,15 @@ public class ReportGenerator
         }
         catch (ParserConfigurationException pce) 
         {
-            pce.printStackTrace();
+            logger.error("Exception in Report Generator: " + pce);
         } 
         catch (Exception e) 
         {
-            e.printStackTrace();
+            logger.error("Exception in Report Generator: " + e);
         }
         
         //Oops, something went wrong.
-        System.out.println("Error during Miring Validation Report Generation.");
+        logger.error("Error during Miring Validation Report Generation.");
         return null;
     }
     
@@ -148,8 +152,8 @@ public class ReportGenerator
         Element invMiringElement = doc.createElement("InvalidMiringResult");
         
         //miringElementID
-        Attr miringElementAttr = doc.createAttribute("miringElementID");
-        miringElementAttr.setValue(validationError.getMiringElement());
+        Attr miringElementAttr = doc.createAttribute("miringRuleID");
+        miringElementAttr.setValue(validationError.getMiringRule());
         invMiringElement.setAttributeNode(miringElementAttr);
         
         //fatal
@@ -186,7 +190,7 @@ public class ReportGenerator
         }
         catch(Exception e)
         {
-            System.out.println("Error generating XML String");
+            logger.error("Error generating XML String" + e);
         }
         return xmlString;
     }

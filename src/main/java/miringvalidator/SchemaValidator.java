@@ -23,20 +23,28 @@
 package main.java.miringvalidator;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.*;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 public class SchemaValidator
 {
+    private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
+    
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
+        logger.debug("Starting a schema validation");
+        
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
         Source xmlFile = null;
         try 
@@ -47,7 +55,7 @@ public class SchemaValidator
             File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/" + schemaFileName);
             
             //xmlFile = new StreamSource(new File("/Users/bmatern/GitHub/MiringValidator/xmlresources/test/missing-hmlid.xml"));
-            xmlFile = new StreamSource(new java.io.StringReader(xml));
+            xmlFile = new StreamSource(new StringReader(xml));
             
             SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -55,7 +63,15 @@ public class SchemaValidator
             Validator validator = schema.newValidator();
             
             validator.validate(xmlFile);
-            //System.out.println(xmlFile.getSystemId() + " is valid");
+            //SAXResult SaxResult = new SAXResult();
+            //validator.validate(xmlFile, SaxResult);
+         
+            
+           // logger.debug("SaxResults" + SaxResult);
+            
+            
+            
+
         } 
         catch (SAXException e) 
         {
@@ -66,27 +82,32 @@ public class SchemaValidator
             
             //System.out.println(xmlFile.getSystemId() + " is NOT valid");
             //System.out.println("Reason: " + e.getLocalizedMessage());
+
+            logger.debug("Schema Validation Error detected: " + e.getLocalizedMessage());
             
-            validationErrors.add(new ValidationError(
+            ValidationError ve =  new ValidationError(
                     e.getLocalizedMessage()
-                    ,"Verify your HML has exactly one hmlid node."
-                    ,"Miring Element 1.1"
-                    ,true)
-            );
+                    ,true);
+            ve.setSolutionText("Verify your HML has exactly one hmlid node.");
+            ve.setMiringRule("1.1");
+            validationErrors.add(ve);
+            
         }
         catch (Exception e)
         {
-            System.out.println("Exception during schema validation: " + e.getLocalizedMessage());
+            logger.error("Exception during schema validation: " + e.getLocalizedMessage());
         }
         
         if(validationErrors.size() > 0)
         {
             //List -> Array
             ValidationError[] array = validationErrors.toArray(new ValidationError[validationErrors.size()]);
+            logger.debug(validationErrors.size() + " schema validation errors found");
             return array;
         }
         else
         {
+            logger.debug("ZERO schema validation errors found");
             //Empty.  Not null.  No problems found.
             return new ValidationError[0];
         }

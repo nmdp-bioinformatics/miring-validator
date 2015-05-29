@@ -22,8 +22,12 @@
 */
 package main.java.miringvalidator;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class MiringValidator
 {
+    private static final Logger logger = LogManager.getLogger(MiringValidator.class);
     String xml;
     String report;
     ValidationError[] tier1ValidationErrors;
@@ -50,6 +54,7 @@ public class MiringValidator
     {
         //Tier 1
         //tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
+        logger.debug("Attempting Tier 1 Validation");
         tier1ValidationErrors = SchemaValidator.validate(xml, "demo.xsd");
         
         //Tier 2
@@ -57,6 +62,7 @@ public class MiringValidator
         //Yeah actually don't skip it.  We want to give them the most information we can.
         //if(!ReportGenerator.containsFatalErrors(tier1ValidationErrors))
         {
+            logger.debug("Attempting Tier 2 validation");
             tier2ValidationErrors = SchematronValidator.validate(xml, "demo.sch");
             
             //Tier 3 is outside scope for now.  Okay.

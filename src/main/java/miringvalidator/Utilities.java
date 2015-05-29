@@ -37,6 +37,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -44,6 +46,8 @@ import org.xml.sax.SAXException;
 
 public class Utilities
 {
+    private static final Logger logger = LogManager.getLogger(Utilities.class);
+    
     public static boolean containsErrorNode(Element xmlDomObject, String errNodeDescription)
     {
         return false;
@@ -59,6 +63,7 @@ public class Utilities
         //I will load the classes as I need them.
         //I reckon that this method should be called in a "setup" method somewhere, rather than 
         //each time we validate a schematron.  Or maybe not.  Not sure the overhead of this.
+        logger.debug("Loading jar elements from " + jarFileLocation);
         try
         {
             JarFile jarFile = new JarFile(jarFileLocation);
@@ -99,7 +104,7 @@ public class Utilities
         }
         catch(Exception e)
         {
-            System.out.println("Error during schematron validation:" + e);
+            logger.error("Error during schematron validation:" + e);
         }
         return null;
     }
@@ -120,29 +125,30 @@ public class Utilities
         } 
         catch (SecurityException e) 
         {
-            System.out.println("Security exception while calling reflected method: " + e);
+            logger.error("Security exception while calling reflected method: " + e);
         } 
         catch (NoSuchMethodException e) 
         {
-            System.out.println("NoSuchMethod exception while calling reflected method: " + e);
+            logger.error("NoSuchMethod exception while calling reflected method: " + e);
         }
         catch (IllegalArgumentException e) 
         {
-            System.out.println("IllegalArgument exception while calling reflected method: " + e);
+            logger.error("IllegalArgument exception while calling reflected method: " + e);
         } 
         catch (IllegalAccessException e) 
         {
-            System.out.println("IllegalAccess exception while calling reflected method: " + e);
+            logger.error("IllegalAccess exception while calling reflected method: " + e);
         } 
         catch (InvocationTargetException e) 
         {
-            System.out.println("InvocationTarget exception while calling reflected method: " + e);
+            logger.error("InvocationTarget exception while calling reflected method: " + e);
         }
         catch (Exception e)
         {
-            System.out.println("Exception while calling reflected method: " + e);
+            logger.error("Exception while calling reflected method: " + e);
         }
 
+        logger.error("callReflectedMethod() returned a null reflected method object");
         return null;
     }
 
@@ -158,6 +164,7 @@ public class Utilities
 
     public static void removeTempXml(String path)
     {
+        logger.debug("Removing XML from " + path);
         try 
         {
             File myFile = new File(path);
@@ -165,13 +172,14 @@ public class Utilities
         } 
         catch (Exception e) 
         {
-            System.out.println("Exception when removing temp file " + path + " : " + e.toString());
+            logger.error("Exception when removing temp file " + path + " : " + e.toString());
         } 
         
     }
 
     public static void writeXml(String xmlText, String fileName)
     {
+        logger.debug("Writing XML to " + fileName);
         try
         {
             PrintWriter writer = new PrintWriter(fileName, "UTF-8");
@@ -180,7 +188,7 @@ public class Utilities
         }
         catch(Exception e)
         {
-            System.out.println("Error writing XML to file: " + e);
+            logger.error("Error writing XML to file: " + e);
         }
     }
 }

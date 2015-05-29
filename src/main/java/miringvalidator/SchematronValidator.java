@@ -46,6 +46,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -56,13 +58,13 @@ import org.xml.sax.SAXException;
 
 public class SchematronValidator
 {
+    private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
+    
     static ClassLoader loadedProbatronClasses;
     static String tempXmlLocation = "/Users/bmatern/GitHub/MiringValidator/temp/temp.xml";
     static String schemaPath = "/Users/bmatern/GitHub/MiringValidator/resources/schematron/";
     static String jarFileLocation = "/Users/bmatern/GitHub/MiringValidator/resources/jar/probatron.jar";
 
-    
-    
     
     //So here's the mystery.  validate() works but validate2() doesnt.
     //I'm trying to latch onto SchematronSchema to use it's methods.  
@@ -73,6 +75,7 @@ public class SchematronValidator
     //I think if i get logger to work, then schematron logs can be employed.
     public static ValidationError[] validate(String xml, String schemaFileName)
     {
+        logger.debug("Beginning a schematron validation");
         //This method sort of mimics the main method in the probatron jar.  
         //I really don't want to have the jar run on it's own, because then I need to spawn other threads etc        
         try
@@ -91,6 +94,7 @@ public class SchematronValidator
             
             //set the SchemaDoc for our Session.
             String schemaFileNameAndPath = "file:" + schemaPath + schemaFileName;
+            logger.debug("Schematrom Schema path = " + schemaFileNameAndPath);
             Utilities.callReflectedMethod(sessionObject, "setSchemaDoc", schemaFileNameAndPath, schemaFileNameAndPath.getClass());
 
             Object validationReportObject = Utilities.callReflectedMethod(sessionObject, "doValidation", "file:" + candidate, candidate.getClass());
@@ -104,17 +108,19 @@ public class SchematronValidator
             String resultString = myBaos.toString();
 
             ValidationError[] resultingErrors = getValidationErrorsFromSchematronReport(resultString);
+            logger.debug(resultingErrors.length + " schema validation errors found");
 
             return resultingErrors;
         }
         catch(Exception e )
         {
-            System.out.println("Error during schematron validation: " + e);
+            logger.error("Error during schematron validation: " + e);
             //logger.fatal( e );
         }
 
         //logger.info( "Done. Elapsed time (ms):" + ( System.currentTimeMillis() - t ) );        
         
+        logger.debug("no validation errors detected in schematron validator.");
         return new ValidationError[0];
     }
     
@@ -151,17 +157,19 @@ public class SchematronValidator
             String resultString = myBaos.toString();
 
             ValidationError[] resultingErrors = getValidationErrorsFromSchematronReport(resultString);
+            logger.debug(resultingErrors.length + " schema validation errors found");
 
             return resultingErrors;
         }
         catch(Exception e )
         {
-            System.out.println("Error during schematron validation: " + e);
+            logger.error("Error during schematron validation: " + e);
             //logger.fatal( e );
         }
 
         //logger.info( "Done. Elapsed time (ms):" + ( System.currentTimeMillis() - t ) );        
         
+        logger.debug("no validation errors detected in schematron validator.");
         return new ValidationError[0];
     }
     
@@ -204,7 +212,7 @@ public class SchematronValidator
         } 
         catch(Exception e)
         {
-            System.out.println("Exception in doValidation: " + e);
+            logger.error("Exception in doValidation: " + e);
         }
 
         /*if( physicalLocators )
@@ -243,16 +251,16 @@ public class SchematronValidator
                         
                         ValidationError ve = new ValidationError(
                                 errorMessage
-                                ,"Please verify the start and end attributes on your reference-sequence node."
-                                ,"Miring Element 4.2.3"
                                 ,true);
+                        ve.setMiringRule("Miring Element 4.2.3");
+                        ve.setSolutionText("Please verify the start and end attributes on your reference-sequence node.");
                         validationErrors.add(ve);
                 }
             }
         }
         catch(Exception e)
         {
-            System.out.println("Error forming DOM from schematron results: " + e);
+            logger.error("Error forming DOM from schematron results: " + e);
         }
 
         if(validationErrors.size() > 0)
@@ -268,14 +276,5 @@ public class SchematronValidator
         }
     }
 
-
-/*
-    static String fixArg( String arg )
-    {
-        // user concession, if no URL scheme assume these are files
-        return arg.indexOf( ":" ) == - 1 ? "file:" + arg : arg;
-    }
-*/
-                        
 
 }
