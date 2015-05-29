@@ -24,11 +24,14 @@ package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class ValidationErrorTest
 {
-
+    private static final Logger logger = LogManager.getLogger(ValidationErrorTest.class);
+    
     @Test
     public void test()
     {

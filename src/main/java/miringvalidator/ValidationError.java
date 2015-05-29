@@ -26,24 +26,22 @@ public class ValidationError
 {
     String errorText;
     String solutionText;
-    String miringElement;
+    String miringRule;
+    String xPath;
     boolean fatal;
     
     /**
      * Constructor for a ValidationError object. A ValidationError has getters and setters and doesn't do much else.
      *
      * @param errorText Text containing a description of the error.
-     * @param solutionText Text containing suggestions of a solution   
-     * @param miringElement Text specifying the specific Miring Rule broken
      * @param fatal is the error considered fatal?  Should we reject the Miring HML?
      */
-
-    public ValidationError(String errorText, String solutionText, String miringElement, boolean fatal)
+    public ValidationError(String errorText, boolean fatal)
     {
         this.errorText = errorText;
-        this.solutionText = solutionText;
-        this.miringElement = miringElement;
         this.fatal = fatal;
+        this.solutionText = null;
+        this.miringRule = null;
     }
     
     public String getErrorText()
@@ -56,9 +54,9 @@ public class ValidationError
         return solutionText;
     }
     
-    public String getMiringElement()
+    public String getMiringRule()
     {
-        return miringElement;
+        return miringRule;
     }
 
     public void setSolutionText(String solutionText)
@@ -69,5 +67,25 @@ public class ValidationError
     public boolean isFatal()
     {
         return fatal;
+    }
+    
+    public String getxPath()
+    {
+        return xPath;
+    }
+
+    public void setxPath(String xPath)
+    {
+        this.xPath = xPath;
+    }
+
+    public void setErrorText(String errorText)
+    {
+        this.errorText = errorText;
+    }
+
+    public void setMiringRule(String miringRule)
+    {
+        this.miringRule = miringRule;
     }
 }

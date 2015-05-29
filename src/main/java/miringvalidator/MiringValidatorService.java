@@ -48,10 +48,7 @@ public class MiringValidatorService
     @Produces("application/xml")
     public String validateMiring(@FormParam("xml") String xml)
     {
-        logger.debug( "Received web service call with xml :\n" + xml);
-        logger.error("ERROR!!!!!");
-        logger.trace("Traceing the log");
-        logger.info("INFO FOR LOG");
+        logger.debug( "Received web service call with xml length =" + xml.length());
         MiringValidator myValidator = new MiringValidator(xml);
         myValidator.validate();
 

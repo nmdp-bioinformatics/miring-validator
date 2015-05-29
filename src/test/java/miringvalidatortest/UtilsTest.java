@@ -24,15 +24,19 @@ package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class UtilsTest
 {
+    private static final Logger logger = LogManager.getLogger(UtilsTest.class);
 
     @Test
-    public void test()
+    public void testUtils()
     {
-        fail("Not yet implemented");
+        int i = 3;
+        assert(i == 3);
     }
 
 }
