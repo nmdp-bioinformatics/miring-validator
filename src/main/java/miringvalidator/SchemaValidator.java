@@ -26,72 +26,54 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.*;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class SchemaValidator
 {
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
+    public static List<ValidationError> validationErrors;
     
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
-        logger.debug("Starting a schema validation");
-        
-        List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-        Source xmlFile = null;
+        logger.debug("Starting a schema validation");        
+        validationErrors = new ArrayList<ValidationError>();
+
         try 
         {
             //URL schemaFile = new URL("http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
             //How do I load an xsd more dynamically?  Put it in the web.xml probably.
             //I need to add a config file for this.  This won't work anywhere else.
             File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/" + schemaFileName);
-            
-            //xmlFile = new StreamSource(new File("/Users/bmatern/GitHub/MiringValidator/xmlresources/test/missing-hmlid.xml"));
-            xmlFile = new StreamSource(new StringReader(xml));
-            
-            SchemaFactory schemaFactory = SchemaFactory
-                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(schemaFile);
-            Validator validator = schema.newValidator();
-            
-            validator.validate(xmlFile);
-            //SAXResult SaxResult = new SAXResult();
-            //validator.validate(xmlFile, SaxResult);
-         
-            
-           // logger.debug("SaxResults" + SaxResult);
-            
-            
-            
+            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
 
+            final SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setSchema(schema);
+            
+            final SAXParser parser = factory.newSAXParser();
+            final MiringValidationContentHandler handler = new MiringValidationContentHandler();
+
+            //parser.parse is what does the actual "validation."  It parses the sample xml referring to the schema.
+            //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
+            parser.parse(new InputSource(new StringReader(xml)), handler);
         } 
         catch (SAXException e) 
         {
-            //So here we are, doing validation by catching exceptions.  This is sloppy but works for the prototype.  
-            //I would very much like to be more specific with these errors.
-            //The reason should be more descriptive.  And should correspond to the rule.  
-            //How to do this?  Dan's Schema validator is a bit more robust than mine.  
-            
-            //System.out.println(xmlFile.getSystemId() + " is NOT valid");
-            //System.out.println("Reason: " + e.getLocalizedMessage());
-
-            logger.debug("Schema Validation Error detected: " + e.getLocalizedMessage());
-            
-            ValidationError ve =  new ValidationError(
-                    e.getLocalizedMessage()
-                    ,true);
-            ve.setSolutionText("Verify your HML has exactly one hmlid node.");
-            ve.setMiringRule("1.1");
-            validationErrors.add(ve);
-            
+            //We shouldn't get exceptions out here.  They should have been handled by the MiringValidationContentHandler
+            logger.error("SaxException Error: " + e.getLocalizedMessage());
         }
         catch (Exception e)
         {
@@ -113,4 +95,179 @@ public class SchemaValidator
         }
     }
 
+
+
+    private static class MiringValidationContentHandler extends DefaultHandler 
+    {    
+        //private static String parentElement;
+        
+        private static String parentURI = "";
+        private static String parentLocalName = "";
+        private static String parentQName = "";
+        private static Attributes parentAttributes;
+        
+        //triggered when parser starts the document.  Maybe this override can be deleted.
+        //Maybe we want to detect an HMLID here.
+        @Override
+        public void startDocument() 
+                throws SAXException 
+        {
+        }
+        
+        //startElement is a method that is triggered when the parser hits the start of an element
+        //I'm using it to record information about parent nodes of what node I'm validating
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
+        {
+            /*logger.debug("Analyzing a node.");
+            logger.debug("uri= " + uri);
+            logger.debug("localName= " + localName);
+            logger.debug("qName= " + qName);
+            logger.debug("attributes= " + attributes.toString());*/
+            parentURI = uri;
+            parentLocalName = localName;
+            parentQName = qName;
+            parentAttributes = attributes;
+            
+            /*if(localName != null && !localName.isEmpty())
+                parentElement = localName;
+            else
+                parentElement = qName;    */
+        }
+        
+        //warning(), error(), and fatalError() are overrides which are triggered by 
+        //parser warnings, errors and fatal errors.  
+        @Override
+        public void warning(SAXParseException exception) throws SAXException 
+        {
+            logger.debug("Sax Parser Warning: " + exception.getMessage());
+            handleParserException(exception);
+        }
+    
+        @Override
+        public void error(SAXParseException exception) throws SAXException 
+        {
+            logger.debug("Sax Parser NonFatal Error: " + exception.getMessage());
+            handleParserException(exception);
+        }
+    
+        @Override
+        public void fatalError(SAXParseException exception) throws SAXException 
+        {
+            logger.debug("Sax Parser Fatal Error: " + exception.getMessage());
+            handleParserException(exception);
+        }
+
+        private static void handleParserException(SAXException exception)
+        {
+            //Mine the exception data for useful information.  We want to present anything we can.
+            //Might be worthwhile to keep track of the place in the tree we are within the XML.
+
+            String errorMessage = "??????????";
+            String solutionMessage = "??????????";
+            String miringRuleID = "??????????";
+            
+            String[] exceptionTokens = tokenizeString(exception.getMessage());
+            
+            if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:"))
+            {
+                //This cvc-complex-type is called if there is a node missing
+                //cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
+                
+                //There might be more node names here, under tokens 13,14,etc.  Perhaps I should check those. 
+                //They would indicate there are more than one missing node under same parent (HMLID and Reporting-center, for instance)
+                // "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}'
+                String qualifiedNodeName = exceptionTokens[12];
+                int begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
+                int enDex = qualifiedNodeName.indexOf("}'");
+                
+                String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
+                
+                errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentLocalName + " node.";
+                solutionMessage = "Please add exactly one " + missingNodeName + " node underneath the " + parentLocalName + " node.";
+                
+                if(missingNodeName.equals("hmlid"))
+                {
+                    miringRuleID = "1.1.a";
+                }
+                else if(missingNodeName.equals("reporting-center"))
+                {
+                    miringRuleID = "1.2.a";
+                }
+                else
+                {
+                }
+            }
+            else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
+            {
+                //This cvc-complex-type is called if there is an attribute missing
+                //cvc-complex-type.4: Attribute 'quality-score' must appear on element 'variant'.
+                System.out.println("TYPE TWO:" + exception.getMessage());
+                
+                String missingAttributeName = exceptionTokens[2].replace("'", "");
+                String qualifiedNodeName = exceptionTokens[7];                
+                String nodeName = qualifiedNodeName.substring(1, qualifiedNodeName.indexOf("'."));
+                
+                errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
+                solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
+                
+                if(nodeName.equals("variant"))
+                {
+                    if(missingAttributeName.equals("id"))
+                    {
+                        miringRuleID = "5.3.a";
+                    }
+                    else if(missingAttributeName.equals("reference-bases"))
+                    {
+                        miringRuleID = "5.4.a";
+                    }
+                    else if(missingAttributeName.equals("alternate-bases"))
+                    {
+                        miringRuleID = "5.5.a";
+                    }
+                    else if(missingAttributeName.equals("quality-score"))
+                    {
+                        miringRuleID = "5.6.a";
+                    }
+                    else if(missingAttributeName.equals("filter"))
+                    {
+                        miringRuleID = "5.7.a";
+                    }
+                }
+                else
+                {
+                    
+                }
+            }
+            else
+            {
+                //There are more types of errors probably. 
+                //What if I have too many of a thing?
+                System.out.println("NOTYPE:" + exception.getMessage());
+            }
+            
+            //Here we make a simple ValidationError object with the information we collected, and store it away.
+            ValidationError ve =  new ValidationError(
+                errorMessage
+                ,true);
+            
+            ve.setSolutionText(solutionMessage);
+            ve.setMiringRule(miringRuleID);
+            
+            validationErrors.add(ve);
+        }
+
+        private static String[] tokenizeString(String exceptionMessage)
+        {
+            StringTokenizer st = new StringTokenizer(exceptionMessage);
+            String[] messageTokens = new String[st.countTokens()];
+            int counter = 0;
+            while (st.hasMoreTokens()) 
+            {
+                messageTokens[counter] = st.nextToken();
+                counter++;
+            }
+            return messageTokens;
+        }
+    }
 }
