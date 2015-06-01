@@ -9,11 +9,14 @@
      
      
      
-  <!-- <hmlid root="1234" extension="abcd" /> -->
+  <!-- <hmlid root="1234" extension="abcd" />
   
   
   
-  <reporting-center reporting-center-id="789" reporting-center-context="NMDP" /> 
+  <reporting-center reporting-center-id="789" reporting-center-context="NMDP" />-->
+  
+  
+  
   <sample center-code="321" id="123456789">
     <collection-method>buccal swab</collection-method>
     <typing gene-family="HLA" date="2013-12-31">
