@@ -41,6 +41,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -48,10 +50,13 @@ public class Utilities
 {
     private static final Logger logger = LogManager.getLogger(Utilities.class);
     
-    public static boolean containsErrorNode(Element xmlDomObject, String errNodeDescription)
+    /*public static boolean containsErrorNode(Element xmlDomObject, String errNodeDescription)
     {
+        //I planned to use this for unit testing.  A quick way to check if i found an error report.  
+         * It's not implemented yet but probably easy.
+         * See what im doing to pull out hmlid
         return false;
-    }
+    }*/
     
     public static URLClassLoader loadJarElements(String jarFileLocation)
     {
@@ -153,13 +158,64 @@ public class Utilities
     }
 
     public static Element xmlToDomObject(String xml)
-            throws ParserConfigurationException, SAXException, IOException
     {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new InputSource(new StringReader(xml)));
-        Element rootElement = document.getDocumentElement();
-        return rootElement;
+        try
+        {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(xml)));
+            Element rootElement = document.getDocumentElement();
+            return rootElement;
+        }
+        catch(Exception e)
+        {
+            //If i was clever I'd handle these exceptions specifically
+            //throws ParserConfigurationException, SAXException, IOException
+            logger.error("Exception in Utilities.xmlToDomObject()" + e.toString());
+            return null;
+        }
+    }
+    
+    public static String getHMLIDRoot(String xml)
+    {
+        try
+        {
+            return getHMLIDNode(xml).getAttributes().getNamedItem("root").getNodeValue();
+        }
+        catch(Exception e)
+        {
+            //Probably should be specific.  I'm catching NullPointerException when the getHMLIDNode() can't getAttributes()
+            logger.debug("Unable to find an HMLID Root: " + e.toString());
+            return null;
+        }
+    }
+    
+    public static String getHMLIDExtension(String xml)
+    {
+        try
+        {
+            return getHMLIDNode(xml).getAttributes().getNamedItem("extension").getNodeValue();
+        }
+        catch(Exception e)
+        {
+            logger.debug("Unable to find an HMLID Extension: " + e.toString());
+            return null;
+        }
+    }
+    
+    private static Node getHMLIDNode(String xml)
+    {
+        //hmlid should be a child nodes of the root xml element.
+        NodeList childrenNodes = xmlToDomObject(xml).getChildNodes();
+        for(int i = 0; i < childrenNodes.getLength(); i++)
+        {
+            String childsName = childrenNodes.item(i).getNodeName();
+            if(childsName != null && childsName.equals("hmlid"))
+            {
+                return childrenNodes.item(i);
+            }
+        }
+        return null;
     }
 
     public static void removeTempXml(String path)

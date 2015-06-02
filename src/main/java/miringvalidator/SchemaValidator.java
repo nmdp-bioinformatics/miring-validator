@@ -162,6 +162,10 @@ public class SchemaValidator
         {
             //Mine the exception data for useful information.  We want to present anything we can.
             //Might be worthwhile to keep track of the place in the tree we are within the XML.
+            //I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
+            //when the parser finds a problem.
+            
+            //We take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
             String errorMessage = "??????????";
             String solutionMessage = "??????????";
@@ -171,11 +175,12 @@ public class SchemaValidator
             
             if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:"))
             {
-                //This cvc-complex-type is called if there is a node missing
-                //cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
+                //This cvc-complex-type is called if there is a node missing.  getMessage() looks like this:
+                // cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
                 
                 //There might be more node names here, under tokens 13,14,etc.  Perhaps I should check those. 
                 //They would indicate there are more than one missing node under same parent (HMLID and Reporting-center, for instance)
+                //exceptionTokens[12] looks like this:
                 // "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}'
                 String qualifiedNodeName = exceptionTokens[12];
                 int begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
@@ -200,9 +205,9 @@ public class SchemaValidator
             }
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
             {
-                //This cvc-complex-type is called if there is an attribute missing
-                //cvc-complex-type.4: Attribute 'quality-score' must appear on element 'variant'.
-                System.out.println("TYPE TWO:" + exception.getMessage());
+                //This cvc-complex-type is called if there is an attribute missing from a node
+                //It looks like this:
+                // cvc-complex-type.4: Attribute 'quality-score' must appear on element 'variant'.
                 
                 String missingAttributeName = exceptionTokens[2].replace("'", "");
                 String qualifiedNodeName = exceptionTokens[7];                
@@ -236,7 +241,8 @@ public class SchemaValidator
                 }
                 else
                 {
-                    
+                    //more stuff to check in here.
+                    logger.error("Missing node name : " + nodeName);
                 }
             }
             else

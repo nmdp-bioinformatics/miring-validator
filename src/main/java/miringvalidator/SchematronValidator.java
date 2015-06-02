@@ -64,7 +64,6 @@ public class SchematronValidator
     static String tempXmlLocation = "/Users/bmatern/GitHub/MiringValidator/temp/temp.xml";
     static String schemaPath = "/Users/bmatern/GitHub/MiringValidator/resources/schematron/";
     static String jarFileLocation = "/Users/bmatern/GitHub/MiringValidator/resources/jar/probatron.jar";
-
     
     //So here's the mystery.  validate() works but validate2() doesnt.
     //I'm trying to latch onto SchematronSchema to use it's methods.  

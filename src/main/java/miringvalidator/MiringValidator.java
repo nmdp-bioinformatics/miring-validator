@@ -73,7 +73,10 @@ public class MiringValidator
             }*/
         }
 
-        report = ReportGenerator.generateReport(tier1ValidationErrors, tier2ValidationErrors, "1234","abcd");
+        //Make a report.
+        String hmlIdRoot = Utilities.getHMLIDRoot(xml);
+        String hmlIdExt = Utilities.getHMLIDExtension(xml);        
+        report = ReportGenerator.generateReport(tier1ValidationErrors, tier2ValidationErrors, hmlIdRoot, hmlIdExt);
         return report;
     }
 
