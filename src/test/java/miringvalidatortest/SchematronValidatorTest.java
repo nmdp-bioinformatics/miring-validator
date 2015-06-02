@@ -35,6 +35,9 @@ public class SchematronValidatorTest
     @Test
     public void test()
     {
+        logger.debug("Starting a schematronValidatorTest");
+        
+        
         fail("Not yet implemented");
     }
 

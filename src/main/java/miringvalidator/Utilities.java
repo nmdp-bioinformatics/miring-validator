@@ -24,6 +24,7 @@ package main.java.miringvalidator;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +32,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -102,8 +104,8 @@ public class Utilities
                     System.out.println(className + " loading...");
                     Class c = cl.loadClass(className);
                 }
-            }
-            */
+            }*/
+            
             jarFile.close();
             return cl;
         }
@@ -147,6 +149,10 @@ public class Utilities
         catch (InvocationTargetException e) 
         {
             logger.error("InvocationTarget exception while calling reflected method: " + e);
+        }
+        catch (RuntimeException e)
+        {
+            logger.error("Runtime exception while calling reflected method: " + e);
         }
         catch (Exception e)
         {

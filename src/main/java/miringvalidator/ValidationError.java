@@ -44,6 +44,12 @@ public class ValidationError
         this.miringRule = null;
     }
     
+    //I should implement the equals and comparison operators.  They should be able to sort by HMLID Rules
+    
+    
+    
+    
+    
     public String getErrorText()
     {
         return errorText;
