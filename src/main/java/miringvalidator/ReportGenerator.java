@@ -95,20 +95,21 @@ public class ReportGenerator
             rootElement.appendChild(qualityElement);
             
             //INVALIDMIRINGRESULT ELEMENTS
-            if(tier1ValidationErrors != null)
+            ValidationError[] combinedValidationErrors = Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors);
+            if(combinedValidationErrors != null)
             {
-                for(int i = 0; i < tier1ValidationErrors.length; i++)
+                for(int i = 0; i < combinedValidationErrors.length; i++)
                 {
-                    rootElement.appendChild(generateValidationErrorNode(doc, tier1ValidationErrors[i]));
+                    rootElement.appendChild(generateValidationErrorNode(doc, combinedValidationErrors[i]));
                 }
             }
-            if(tier2ValidationErrors != null)
+            /*if(tier2ValidationErrors != null)
             {
                 for(int i = 0; i < tier2ValidationErrors.length; i++)
                 {
                     rootElement.appendChild(generateValidationErrorNode(doc, tier2ValidationErrors[i]));
                 }
-            }
+            }*/
             //Tier 3
             
             return(getStringFromDoc(doc));
@@ -162,14 +163,30 @@ public class ReportGenerator
         invMiringElement.setAttributeNode(fatalAttr);
         
         //description
-        Element invDescriptor = doc.createElement("description");
-        invDescriptor.appendChild(doc.createTextNode(validationError.getErrorText()));
-        invMiringElement.appendChild(invDescriptor);
+        Element descriptionElement = doc.createElement("description");
+        descriptionElement.appendChild(doc.createTextNode(validationError.getErrorText()));
+        invMiringElement.appendChild(descriptionElement);
         
         //solution
-        Element invSolution = doc.createElement("solution");
-        invSolution.appendChild(doc.createTextNode(validationError.getSolutionText()));
-        invMiringElement.appendChild(invSolution);
+        Element solutionElement = doc.createElement("solution");
+        solutionElement.appendChild(doc.createTextNode(validationError.getSolutionText()));
+        invMiringElement.appendChild(solutionElement);
+        
+        //xPath
+        if(validationError.getxPath() != null && validationError.getxPath().length() > 0)
+        {
+            Element xPathElement = doc.createElement("xpath");
+            xPathElement.appendChild(doc.createTextNode(validationError.getxPath()));
+            invMiringElement.appendChild(xPathElement);
+        }
+        
+        //moreInformation
+        if(validationError.getMoreInformation()!= null && validationError.getMoreInformation().length() > 0)
+        {
+            Element moreInfoElement = doc.createElement("more.information");
+            moreInfoElement.appendChild(doc.createTextNode(validationError.getMoreInformation()));
+            moreInfoElement.appendChild(moreInfoElement);
+        }
 
         return invMiringElement;
     }
@@ -186,7 +203,7 @@ public class ReportGenerator
             StreamResult result = new StreamResult(new StringWriter());
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
-            xmlString = result.getWriter().toString();            
+            xmlString = result.getWriter().toString();
         }
         catch(Exception e)
         {

@@ -22,12 +22,14 @@
 */
 package main.java.miringvalidator;
 
-public class ValidationError
+public class ValidationError implements Comparable
 {
     String errorText;
     String solutionText;
     String miringRule;
     String xPath;
+    String moreInformation;
+
     boolean fatal;
     
     /**
@@ -40,8 +42,49 @@ public class ValidationError
     {
         this.errorText = errorText;
         this.fatal = fatal;
-        this.solutionText = null;
-        this.miringRule = null;
+        this.solutionText = "";
+        this.xPath = "";
+        this.miringRule = "";
+    }
+    
+    @Override
+    public boolean equals(Object otherObject) 
+    {
+        ValidationError otherError = (ValidationError) otherObject;
+        if(
+            this.errorText.equals(otherError.errorText)
+            && this.fatal == otherError.fatal
+            && this.solutionText.equals(otherError.solutionText)
+            && this.xPath.equals(otherError.xPath)
+            && this.miringRule.equals(otherError.miringRule)
+        )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    @Override
+    public int compareTo(Object o)
+    {
+        //When we compare object, we'll just compare their miringRules.
+        //So we can sort the errors by miringRule.
+        return this.getMiringRule().compareTo(((ValidationError)(o)).getMiringRule());
+    }
+     
+    public void addMoreInformation(String moreInformation)
+    {
+        if(this.moreInformation ==null)
+        {
+            this.moreInformation = moreInformation;
+        }
+        else
+        {
+            this.moreInformation = this.moreInformation + " " + moreInformation;
+        }
     }
     
     public String getErrorText()
@@ -87,5 +130,10 @@ public class ValidationError
     public void setMiringRule(String miringRule)
     {
         this.miringRule = miringRule;
+    }
+    
+    public String getMoreInformation()
+    {
+        return moreInformation;
     }
 }
