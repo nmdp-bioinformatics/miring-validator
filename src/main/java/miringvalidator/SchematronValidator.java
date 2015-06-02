@@ -37,19 +37,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 
-
-
 public class SchematronValidator
 {
     private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
-    //static String tempXmlLocation = "/Users/bmatern/GitHub/MiringValidator/temp/temp.xml";
     static String schemaPath = "/Users/bmatern/GitHub/MiringValidator/resources/schematron/";
     static String jarFileLocation = "/Users/bmatern/GitHub/MiringValidator/resources/jar/probatron.jar";
 
     public static ValidationError[] validate(String xml, String schemaFileName)
     {
+        logger.debug("Starting a schematron validation with schema " + schemaFileName + " and xml length " + xml.length());
         try
         {
             //Open up the jar file and get the probatron classes we need.
@@ -138,9 +136,10 @@ public class SchematronValidator
                         ValidationError ve = new ValidationError(
                                 errorMessage
                                 ,true);
-                        ve.setMiringRule("Miring Element 4.2.3");
+                        ve.setMiringRule("4.2.3.a");
                         ve.setSolutionText("Please verify the start and end attributes on your reference-sequence node.");
-                        validationErrors.add(ve);
+                        
+                        Utilities.addValidationError(validationErrors, ve);
                 }
             }
         }
@@ -161,6 +160,4 @@ public class SchematronValidator
             return new ValidationError[0];
         }
     }
-
-
 }

@@ -31,7 +31,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -252,5 +254,35 @@ public class Utilities
         {
             logger.error("Error writing XML to file: " + e);
         }
+    }
+
+    public static void addValidationError(List<ValidationError> validationErrors, ValidationError ve)
+    {
+        if(!validationErrors.contains(ve))
+        {
+            validationErrors.add(ve);
+        }
+        else
+        {
+            logger.debug("This validation error is a duplicate, not adding it to the list.");
+        }
+    }
+
+    
+    public static ValidationError[] combineArrays(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors)
+    {
+        ValidationError[] combinedErrors = new ValidationError[tier1ValidationErrors.length + tier2ValidationErrors.length];
+        
+        for(int i = 0; i < tier1ValidationErrors.length; i++)
+        {
+            combinedErrors[i] = tier1ValidationErrors[i];
+        }
+        for(int j = 0; j < tier2ValidationErrors.length; j++)
+        {
+            combinedErrors[j + tier1ValidationErrors.length] = tier2ValidationErrors[j];
+        }
+        
+        Arrays.sort(combinedErrors);
+        return combinedErrors;
     }
 }

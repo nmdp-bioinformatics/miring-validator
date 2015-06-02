@@ -260,7 +260,8 @@ public class SchemaValidator
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
             
-            validationErrors.add(ve);
+            Utilities.addValidationError(validationErrors, ve);
+            //validationErrors.add(ve);
         }
 
         private static String[] tokenizeString(String exceptionMessage)
