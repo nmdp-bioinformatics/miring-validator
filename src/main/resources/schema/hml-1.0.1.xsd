@@ -52,8 +52,8 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="property"          type="hmlns:property" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="hmlid"             type="hmlns:hmlid" minOccurs="1" maxOccurs="1" />
-        <xs:element ref="reporting-center"   minOccurs="1" maxOccurs="1" />
+        <xs:element name="hmlid"             type="hmlns:hmlid" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="reporting-center"   minOccurs="0" maxOccurs="1" />
         <xs:element ref="sample"             minOccurs="1" maxOccurs="unbounded" />
         <xs:element name="typing-test-names" type="hmlns:typing-test-names" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>

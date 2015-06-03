@@ -2,6 +2,7 @@
 <schema xmlns="http://purl.oclc.org/dsdl/schematron">
     <ns prefix="hml" uri="http://schemas.nmdp.org/spec/hml/1.0.1" />
     
+    
     <pattern name="Reference Sequence Start and End">    
         <rule context="hml:reference-sequence">
         
@@ -15,5 +16,6 @@
 
         </rule>        
     </pattern>
+        
         
 </schema>
