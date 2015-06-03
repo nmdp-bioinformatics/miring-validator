@@ -99,26 +99,18 @@ public class SchematronValidator
         
         try 
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            URL schemaFileURL = new URL("file:" + schemaLocation);
-            InputStream xmlInputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
-=======
-=======
->>>>>>> origin/master
             URL schemaFileURL = SchematronValidator.class.getResource(schemaLocation);
             InputStream xmlInputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));            
->>>>>>> schematron
            
             //A org.probatron.SchematronSchema object needs to have a Session object when it calls validateCandidate(), or else Null Pointers.
-            //So I create a session object here to please it.  As you can see, not much goes into a session.
+            //So I create a session object here to please it.
             Class sessionClass= loadedProbatronClasses.loadClass("org.probatron.Session");
             Object currentSession = sessionClass.newInstance();
             
             //Create a SchematronSchema object, using constructor that takes a Session and a schema URL
             Class schematronSchemaClass= loadedProbatronClasses.loadClass("org.probatron.SchematronSchema");
             Constructor ctor = schematronSchemaClass.getDeclaredConstructor(sessionClass, URL.class);
-            //ctor is already public, lets not mess with accessibility
+            //Already public, lets not mess with accessibility
             //ctor.setAccessible(true);
             theSchema = ctor.newInstance(currentSession, schemaFileURL);
             
@@ -132,6 +124,7 @@ public class SchematronValidator
         logger.debug ("Validation Report = " + vr);
         return vr;
     }
+
     
     private static ValidationError[] getValidationErrorsFromSchematronReport(String xml)
     {
