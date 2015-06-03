@@ -45,34 +45,41 @@ public class SchematronValidator
     static String schemaPath = "/Users/bmatern/GitHub/MiringValidator/resources/schematron/";
     static String jarFileLocation = "/Users/bmatern/GitHub/MiringValidator/resources/jar/probatron.jar";
 
-    public static ValidationError[] validate(String xml, String schemaFileName)
+    public static ValidationError[] validate(String xml, String[] schemaFileNames)
     {
-        logger.debug("Starting a schematron validation with schema " + schemaFileName + " and xml length " + xml.length());
+        ValidationError[] results = new ValidationError[0];
         try
         {
             //Open up the jar file and get the probatron classes we need.
             loadedProbatronClasses = Utilities.loadJarElements(jarFileLocation);
+            
+            for(int i = 0; i < schemaFileNames.length; i++)
+            {
+                String schemaFileName = schemaFileNames[i];
+                
+                logger.debug("Starting a schematron validation with schema " + schemaFileName + " and xml length " + xml.length());
 
-            //Create an org.probatron.ValidationReport object
-            Object validationReportObject = doValidation(xml, schemaPath + schemaFileName);
+                //Create an org.probatron.ValidationReport object
+                Object validationReportObject = doValidation(xml, schemaPath + schemaFileName);
 
-            //Stream out the schematron report to a String
-            ByteArrayOutputStream myBaos = new ByteArrayOutputStream();
-            Utilities.callReflectedMethod(validationReportObject, "streamOut", myBaos, Class.forName("java.io.OutputStream"));
-            String resultString = myBaos.toString();
+                //Stream out the schematron report to a String
+                ByteArrayOutputStream myBaos = new ByteArrayOutputStream();
+                Utilities.callReflectedMethod(validationReportObject, "streamOut", myBaos, Class.forName("java.io.OutputStream"));
+                String resultString = myBaos.toString();
 
-            //Create MIRING specific validation errors
-            ValidationError[] resultingErrors = getValidationErrorsFromSchematronReport(resultString);
-            logger.debug(resultingErrors.length + " schema validation errors found");
+                //Create MIRING specific validation errors
+                ValidationError[] currentResultErrors = getValidationErrorsFromSchematronReport(resultString);
+                logger.debug(currentResultErrors.length + " schema validation errors found");
 
-            return resultingErrors;
+                //Add any errors to the tier2 results.
+                results = Utilities.combineArrays(results, currentResultErrors);
+            }
         }
         catch(Exception e )
         {
             logger.error("Error during schematron validation: " + e);
         }
-
-        logger.debug("no validation errors detected in schematron validator.");
+        logger.debug(results.length + " validation errors detected in schematron validator.");
         return new ValidationError[0];
     }
     

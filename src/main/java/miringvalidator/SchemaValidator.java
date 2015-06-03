@@ -45,6 +45,7 @@ public class SchemaValidator
 {
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
     public static List<ValidationError> validationErrors;
+    public static String schemaLocation = "/Users/bmatern/GitHub/MiringValidator/resources/schema/";
     
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
@@ -56,7 +57,7 @@ public class SchemaValidator
             //URL schemaFile = new URL("http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
             //How do I load an xsd more dynamically?  Put it in the web.xml probably.
             //I need to add a config file for this.  This won't work anywhere else.
-            File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/" + schemaFileName);
+            File schemaFile = new File(schemaLocation + schemaFileName);
             Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
 
             final SAXParserFactory factory = SAXParserFactory.newInstance();
