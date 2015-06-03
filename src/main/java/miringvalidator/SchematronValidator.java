@@ -24,8 +24,10 @@ package main.java.miringvalidator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -42,25 +44,27 @@ public class SchematronValidator
     private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
-    static String schemaPath = "/Users/bmatern/GitHub/MiringValidator/resources/schematron/";
-    static String jarFileLocation = "/Users/bmatern/GitHub/MiringValidator/resources/jar/probatron.jar";
+    static String schemaPath = "/schematron/";
+    static String jarFileName = "/jar/probatron.jar";
 
     public static ValidationError[] validate(String xml, String[] schemaFileNames)
     {
         ValidationError[] results = new ValidationError[0];
         try
         {
-            //Open up the jar file and get the probatron classes we need.
-            loadedProbatronClasses = Utilities.loadJarElements(jarFileLocation);
+            logger.debug("Opening jar file: " + jarFileName);
+            URL jarURL = SchematronValidator.class.getResource(jarFileName);
+            URI jarURI = jarURL.toURI();
+            loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
             
             for(int i = 0; i < schemaFileNames.length; i++)
             {
-                String schemaFileName = schemaFileNames[i];
+                String schemaFileName = schemaPath + schemaFileNames[i];
                 
                 logger.debug("Starting a schematron validation with schema " + schemaFileName + " and xml length " + xml.length());
 
                 //Create an org.probatron.ValidationReport object
-                Object validationReportObject = doValidation(xml, schemaPath + schemaFileName);
+                Object validationReportObject = doValidation(xml, schemaFileName);
 
                 //Stream out the schematron report to a String
                 ByteArrayOutputStream myBaos = new ByteArrayOutputStream();
@@ -80,7 +84,7 @@ public class SchematronValidator
             logger.error("Error during schematron validation: " + e);
         }
         logger.debug(results.length + " validation errors detected in schematron validator.");
-        return new ValidationError[0];
+        return results;
     }
     
     //This method mimics Probatron's Session.doValidation.
@@ -95,7 +99,7 @@ public class SchematronValidator
         
         try 
         {
-            URL schemaFileURL = new URL("file:" + schemaLocation);
+            URL schemaFileURL = SchematronValidator.class.getResource(schemaLocation);
             InputStream xmlInputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));            
            
             //A org.probatron.SchematronSchema object needs to have a Session object when it calls validateCandidate(), or else Null Pointers.
@@ -117,6 +121,7 @@ public class SchematronValidator
         {
             logger.error("Exception in doValidation: " + e);
         }
+        logger.debug ("Validation Report = " + vr);
         return vr;
     }
 

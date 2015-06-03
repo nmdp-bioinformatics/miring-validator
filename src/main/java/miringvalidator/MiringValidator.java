@@ -53,9 +53,7 @@ public class MiringValidator
     public String validate()
     {
         //Tier 1
-        //tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
         logger.debug("Attempting Tier 1 Validation");
-        //tier1ValidationErrors = SchemaValidator.validate(xml, "demo.xsd");
         tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
         
         //Tier 2
