@@ -54,7 +54,6 @@ public class ReportGenerator
      */
     public static String generateReport(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors, String root, String extension)
     {
-        
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -103,15 +102,7 @@ public class ReportGenerator
                     rootElement.appendChild(generateValidationErrorNode(doc, combinedValidationErrors[i]));
                 }
             }
-            /*if(tier2ValidationErrors != null)
-            {
-                for(int i = 0; i < tier2ValidationErrors.length; i++)
-                {
-                    rootElement.appendChild(generateValidationErrorNode(doc, tier2ValidationErrors[i]));
-                }
-            }*/
-            //Tier 3
-            
+
             return(getStringFromDoc(doc));
         }
         catch (ParserConfigurationException pce) 
