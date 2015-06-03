@@ -24,6 +24,7 @@ package main.java.miringvalidator;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -53,10 +54,9 @@ public class SchemaValidator
 
         try 
         {
-            //URL schemaFile = new URL("http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
-            //How do I load an xsd more dynamically?  Put it in the web.xml probably.
-            //I need to add a config file for this.  This won't work anywhere else.
-            File schemaFile = new File("/Users/bmatern/GitHub/MiringValidator/resources/schema/" + schemaFileName);
+            URL schemaURL = SchemaValidator.class.getResource("/schema/" + schemaFileName);
+            logger.debug("Schema URL Resource Location = " + schemaURL);
+            File schemaFile = new File(schemaURL.toURI());
             Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
 
             final SAXParserFactory factory = SAXParserFactory.newInstance();

@@ -62,7 +62,7 @@ public class Utilities
         return false;
     }*/
     
-    public static URLClassLoader loadJarElements(String jarFileLocation)
+    public static URLClassLoader loadJarElements(File jarFileLocation)
     {
         //This method will crack open the probatron jar.
         //I store them in a static ClassLoader object loadedProbatronClasses.  
@@ -72,7 +72,7 @@ public class Utilities
         //I will load the classes as I need them.
         //I reckon that this method should be called in a "setup" method somewhere, rather than 
         //each time we validate a schematron.  Or maybe not.  Not sure the overhead of this.
-        logger.debug("Loading jar elements from " + jarFileLocation);
+        logger.debug("Loading jar elements from " + jarFileLocation.toString());
         try
         {
             JarFile jarFile = new JarFile(jarFileLocation);
@@ -258,6 +258,7 @@ public class Utilities
 
     public static void addValidationError(List<ValidationError> validationErrors, ValidationError ve)
     {
+        //Don't add duplicate errors, they don't help.
         if(!validationErrors.contains(ve))
         {
             validationErrors.add(ve);
@@ -282,7 +283,9 @@ public class Utilities
             combinedErrors[j + tier1ValidationErrors.length] = tier2ValidationErrors[j];
         }
         
+        //ValidationError objects are sorted by their Miring Rule IDs
         Arrays.sort(combinedErrors);
+
         return combinedErrors;
     }
 }

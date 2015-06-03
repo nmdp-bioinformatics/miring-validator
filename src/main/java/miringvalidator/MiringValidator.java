@@ -53,9 +53,7 @@ public class MiringValidator
     public String validate()
     {
         //Tier 1
-        //tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
         logger.debug("Attempting Tier 1 Validation");
-        //tier1ValidationErrors = SchemaValidator.validate(xml, "demo.xsd");
         tier1ValidationErrors = SchemaValidator.validate(xml, "MiringTier1.xsd");
         
         //Tier 2
@@ -64,7 +62,11 @@ public class MiringValidator
         //if(!ReportGenerator.containsFatalErrors(tier1ValidationErrors))
         {
             logger.debug("Attempting Tier 2 validation");
-            tier2ValidationErrors = SchematronValidator.validate(xml, "demo.sch");
+            //tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"demo.sch"});
+            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] 
+                    {"MiringElement1.sch", "MiringElement2.sch", "MiringElement3.sch", "MiringElement4.sch"
+                    , "MiringElement5.sch", "MiringElement6.sch", "MiringElement7.sch", "MiringElement8.sch"}
+            );
             
             //Tier 3 is outside scope for now.  Okay.
             /*if(!containsFatalErrors(tier2ValidationErrors))
