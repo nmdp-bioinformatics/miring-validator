@@ -24,8 +24,17 @@ package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import main.java.miringvalidator.SchematronValidator;
+import main.java.miringvalidator.Utilities;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class UtilsTest
@@ -33,10 +42,34 @@ public class UtilsTest
     private static final Logger logger = LogManager.getLogger(UtilsTest.class);
 
     @Test
-    public void testUtils()
+    public void testLoadJarElements()
     {
-        int i = 3;
-        assert(i == 3);
+        try
+        {
+            URL jarURL = SchematronValidator.class.getResource("/jar/probatron.jar");
+            Assert.assertNotNull(jarURL);
+            URI jarURI = jarURL.toURI();
+            URLClassLoader loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
+            Assert.assertNotNull(loadedProbatronClasses);
+            
+            //If it finds this class then we opened the jar successfully.
+            Class sessionClass= loadedProbatronClasses.loadClass("org.probatron.Session");
+            Assert.assertTrue(sessionClass != null);
+        }
+        catch(Exception e)
+        {
+            fail("Exception: " + e);
+        }        
     }
-
+    
+    @Test
+    public void testContainsErrorNode()
+    {
+        String xml = "<MiringReport><hmlid extension=\"abcd\" root=\"1234\"/><QualityScore>3</QualityScore>" +
+            "<InvalidMiringResult fatal=\"true\" miringRuleID=\"5.7.a\"><description>" +
+            "The node variant is missing a filter attribute.</description></InvalidMiringResult></MiringReport>";
+        
+        Assert.assertTrue(Utilities.containsErrorNode(xml, "ode variant is missing a filter attribu"));        
+        Assert.assertFalse(Utilities.containsErrorNode(xml, "This text is not in the report.  Wooo."));
+    }
 }
