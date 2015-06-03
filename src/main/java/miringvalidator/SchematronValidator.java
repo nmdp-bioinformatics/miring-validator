@@ -100,9 +100,12 @@ public class SchematronValidator
         try 
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
             URL schemaFileURL = new URL("file:" + schemaLocation);
             InputStream xmlInputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
 =======
+=======
+>>>>>>> origin/master
             URL schemaFileURL = SchematronValidator.class.getResource(schemaLocation);
             InputStream xmlInputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));            
 >>>>>>> schematron
