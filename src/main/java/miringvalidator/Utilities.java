@@ -22,7 +22,10 @@
 */
 package main.java.miringvalidator;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -31,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -63,19 +67,15 @@ public class Utilities
      */
     public static boolean containsErrorNode(String validationErrorReport, String errNodeDescription)
     {
-        //I planned to use this for unit testing.  A quick way to check if i found an error report.  
-        //  It's not implemented yet but probably easy.
-        //  See what im doing to pull out hmlid        
-        NodeList childrenNodes = xmlToDomObject(validationErrorReport).getChildNodes();
+        //check all nodes with name "description"
+        NodeList childrenNodes = xmlToDomObject(validationErrorReport).getElementsByTagName("description");
         for(int i = 0; i < childrenNodes.getLength(); i++)
         {
-            String childsName = childrenNodes.item(i).getNodeName();
-            if(childsName != null && childsName.equals("InvalidMiringResult"))
+            Node invMirResult = childrenNodes.item(i);
+            String descriptionText = invMirResult.getTextContent();
+            if(descriptionText!= null && descriptionText.contains(errNodeDescription))
             {
-                System.out.println("COOL WE FOUND IT:" + childsName);
-                Node invMirResult = childrenNodes.item(i);
-                //String description = invMirResult.getAttributes().getNamedItem("description");
-                ///check stuff
+                return true;
             }
         }
         return false;
@@ -317,6 +317,40 @@ public class Utilities
         return combinedErrors;
     }
 
+    /**
+     * Read an xml file from the Resources directory.  Returns a String containing the XML.
+     *
+     * @param xmlResourceName A String containing the name of the XML resource
+     * @return a String containing the read XML
+     */
+    public static String readXmlResource(String xmlResourceName)
+    {
+        try
+        {
+            File schemaFileURL = new File(SchematronValidator.class.getResource(xmlResourceName).getFile());
+            BufferedReader xmlReader = new BufferedReader(new FileReader(schemaFileURL));
+            
+            StringBuilder xmlBuffer = new StringBuilder();
+            String line = xmlReader.readLine();
+    
+            while (line != null) 
+            {
+                xmlBuffer.append(line);
+                xmlBuffer.append(System.lineSeparator());
+                line = xmlReader.readLine();
+            }
+            xmlReader.close();
+            
+            String xmlText = xmlBuffer.toString();
+            return xmlText;
+        }
+        catch(Exception e)
+        {
+            logger.error("Unable to open XML Resource:" + e);
+            return null;
+        }
+    }
+    
     //I shouldn't need to write and delete XML files from the hard drive.
     //By default, probatron reads xml files from the hard drive, so I needed 
     //to write to hard drive in order to use it.  Calling probatron reflectively allows us to 

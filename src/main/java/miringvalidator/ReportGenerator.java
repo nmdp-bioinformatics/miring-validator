@@ -164,10 +164,10 @@ public class ReportGenerator
         invMiringElement.appendChild(solutionElement);
         
         //xPath
-        if(validationError.getxPath() != null && validationError.getxPath().length() > 0)
+        if(validationError.getXPath() != null && validationError.getXPath().length() > 0)
         {
             Element xPathElement = doc.createElement("xpath");
-            xPathElement.appendChild(doc.createTextNode(validationError.getxPath()));
+            xPathElement.appendChild(doc.createTextNode(validationError.getXPath()));
             invMiringElement.appendChild(xPathElement);
         }
         

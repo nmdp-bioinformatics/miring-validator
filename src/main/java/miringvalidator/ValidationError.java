@@ -57,6 +57,7 @@ public class ValidationError implements Comparable
             && this.solutionText.equals(otherError.solutionText)
             && this.xPath.equals(otherError.xPath)
             && this.miringRule.equals(otherError.miringRule)
+            && this.moreInformation.equals(otherError.moreInformation)
         )
         {
             return true;
@@ -112,12 +113,12 @@ public class ValidationError implements Comparable
         return fatal;
     }
     
-    public String getxPath()
+    public String getXPath()
     {
         return xPath;
     }
 
-    public void setxPath(String xPath)
+    public void setXPath(String xPath)
     {
         this.xPath = xPath;
     }

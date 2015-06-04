@@ -23,6 +23,7 @@
 package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
+import main.java.miringvalidator.ValidationError;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,9 +34,44 @@ public class ValidationErrorTest
     private static final Logger logger = LogManager.getLogger(ValidationErrorTest.class);
     
     @Test
-    public void test()
+    public void testValidationErrors()
     {
-        fail("Not yet implemented");
+        logger.debug("starting testValidationErrors");
+        
+        ValidationError firstError= new ValidationError("There is a problem with the HML",true);
+        firstError.setMiringRule("1.3.4.d");
+        firstError.setSolutionText("Fix the data please.  It's obnoxious and obtrusive.");
+        firstError.setXPath("Xpath of the ValidationError");
+        firstError.addMoreInformation("The parent node has an ID of six.  Six!  ");
+        firstError.addMoreInformation("And don't even get me started on it's sibling nodes.  ");
+        
+        ValidationError secondError = new ValidationError("There is a problem with the HML",true);
+        secondError.setMiringRule("1.3.4.d");
+        secondError.setSolutionText("Fix the data please.  It's obnoxious and obtrusive.");
+        secondError.setXPath("Xpath of the ValidationError");
+        secondError.addMoreInformation("The parent node has an ID of six.  Six!  ");
+        secondError.addMoreInformation("And don't even get me started on it's sibling nodes.  ");
+        
+        ValidationError thirdError = new ValidationError("A third, improved error description",true);
+        thirdError.setMiringRule("1.3.4.e");
+        
+        assertTrue(firstError.getMiringRule().equals("1.3.4.d"));
+        
+        //equals compares the description, solution, miring rule, fatal, xpath, and moreinformation
+        //compareTo compares only the MiringRule.  
+        //This has implications when sorting and comparing ValidationErrors with eachother.
+        assertTrue(firstError.equals(secondError));
+        assertFalse(firstError.equals(thirdError));
+        
+        assertTrue("1.3.4.d".compareTo("1.3.4.d") == 0);
+        assertTrue("1.3.4.e".compareTo("1.3.4.d") > 0);
+        assertTrue("1.3.4.d".compareTo("1.3.4.e") < 0);
+        
+        assertTrue(firstError.compareTo(secondError) == 0);
+        assertTrue( firstError.getMiringRule().compareTo(thirdError.getMiringRule())  < 0);
+        assertTrue(firstError.compareTo(thirdError) < 0);
+        
+        assertFalse(thirdError.compareTo(firstError) < 0);
     }
 
 }
