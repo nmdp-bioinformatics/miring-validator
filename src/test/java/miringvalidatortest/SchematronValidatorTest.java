@@ -52,9 +52,7 @@ public class SchematronValidatorTest
         
         //Schematron should find 2 errors in the demo files.  
         assertTrue(badDemoErrors.length == 2);
-        
-        //It doesn't really make sense to combine these two error sets like this in a report (should be schema errors + schematron errors), but lets do it anyways.
-        String errorReport = ReportGenerator.generateReport(goodDemoErrors, badDemoErrors, "sampleRoot", "sampleExtension");
+        String errorReport = ReportGenerator.generateReport(badDemoErrors, Utilities.getHMLIDRoot(demoGoodXML), Utilities.getHMLIDExtension(demoGoodXML));
         
         assertTrue(Utilities.containsErrorNode( errorReport , "start attribute on reference-sequence nodes should be 0."));
         assertTrue(Utilities.containsErrorNode( errorReport , "end attribute should be greater than or equal to the start attribute."));

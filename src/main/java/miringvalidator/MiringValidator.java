@@ -78,7 +78,7 @@ public class MiringValidator
         //Make a report.
         String hmlIdRoot = Utilities.getHMLIDRoot(xml);
         String hmlIdExt = Utilities.getHMLIDExtension(xml);        
-        report = ReportGenerator.generateReport(tier1ValidationErrors, tier2ValidationErrors, hmlIdRoot, hmlIdExt);
+        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt);
         return report;
     }
 

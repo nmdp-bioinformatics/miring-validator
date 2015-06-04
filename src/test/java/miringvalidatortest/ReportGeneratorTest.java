@@ -55,7 +55,7 @@ public class ReportGeneratorTest
             ValidationError[] tier1Errors = {error1, error2};
             ValidationError[] tier2Errors = {error3, error4, error5};
             
-            String reportResults = ReportGenerator.generateReport(tier1Errors, tier2Errors, "testRoot", "1.2.3.4");
+            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4");
             
             assertTrue(reportResults != null);
             assertTrue(reportResults.length() > 4);
@@ -73,6 +73,29 @@ public class ReportGeneratorTest
             String hmlIDExtension = Utilities.getHMLIDExtension(reportResults);            
             assertTrue(hmlIDRoot.equals("testRoot"));
             assertTrue(hmlIDExtension.equals("1.2.3.4"));
+            
+            //Test the qualityscore of a report.              
+            ValidationError fatalError = new ValidationError("A fatal error", true);
+            ValidationError nonFatalError = new ValidationError("A nonFatal error", false);
+            
+            //1 = Perfectly conforms to MIRING, no errors
+            //2 = Some nonfatal warnings
+            //3 = Rejected.
+            String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4");
+            String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4");
+            String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4");
+            
+            NodeList score1QualityScoreNodes = Utilities.xmlToDomObject(score1Report).getElementsByTagName("QualityScore");
+            NodeList score2QualityScoreNodes = Utilities.xmlToDomObject(score2Report).getElementsByTagName("QualityScore");
+            NodeList score3QualityScoreNodes = Utilities.xmlToDomObject(score3Report).getElementsByTagName("QualityScore");
+            
+            assertEquals(score1QualityScoreNodes.getLength() ,1);
+            assertEquals(score2QualityScoreNodes.getLength() ,1);
+            assertEquals(score3QualityScoreNodes.getLength() ,1);
+             
+            assertEquals(score1QualityScoreNodes.item(0).getTextContent() ,"1");
+            assertEquals(score2QualityScoreNodes.item(0).getTextContent() ,"2");
+            assertEquals(score3QualityScoreNodes.item(0).getTextContent() ,"3");
         }
         catch(Exception e)
         {

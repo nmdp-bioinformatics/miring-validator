@@ -46,13 +46,12 @@ public class ReportGenerator
     /**
      * Generate a Miring Results Report
      *
-     * @param tier1ValidationErrors an array of ValidationError objects
-     * @param tier2ValidationErrors an array of ValidationError objects
+     * @param validationErrors an array of ValidationError objects
      * @param root the root attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors, String root, String extension)
+    public static String generateReport(ValidationError[] validationErrors, String root, String extension)
     {
         try 
         {
@@ -85,8 +84,8 @@ public class ReportGenerator
             //No errors = 1. 
             //No fatal errors = 2.
             //Some fatal errors = 3.            
-            String quality = (tier1ValidationErrors.length==0 && tier2ValidationErrors.length==0)?"1"
-                    :(!containsFatalErrors(tier1ValidationErrors) && !containsFatalErrors(tier2ValidationErrors))?"2"
+            String quality = (validationErrors.length==0)?"1"
+                    :(!containsFatalErrors(validationErrors))?"2"
                     :"3";
             
             Element qualityElement = doc.createElement("QualityScore");
@@ -94,12 +93,11 @@ public class ReportGenerator
             rootElement.appendChild(qualityElement);
             
             //INVALIDMIRINGRESULT ELEMENTS
-            ValidationError[] combinedValidationErrors = Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors);
-            if(combinedValidationErrors != null)
+            if(validationErrors != null)
             {
-                for(int i = 0; i < combinedValidationErrors.length; i++)
+                for(int i = 0; i < validationErrors.length; i++)
                 {
-                    rootElement.appendChild(generateValidationErrorNode(doc, combinedValidationErrors[i]));
+                    rootElement.appendChild(generateValidationErrorNode(doc, validationErrors[i]));
                 }
             }
 
