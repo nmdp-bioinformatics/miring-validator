@@ -25,6 +25,7 @@ package test.java.miringvalidatortest;
 import static org.junit.Assert.*;
 import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.SchemaValidator;
+import main.java.miringvalidator.Utilities;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,18 +38,24 @@ public class MiringValidatorTest
     @Test
     public void testMiringValidator()
     {
-        logger.debug("testMiringValidator");
-        /*MiringValidator myValidator = new MiringValidator("<xml></xml>");
-        assert(myValidator!=null);
-        //myValidator.validate();
-        assert(myValidator!=null);
+        logger.debug("starting testMiringValidator");
         
-        String report = myValidator.getReport();
-        assert(report!=null);
-        assert(report!=null);
-        assert(report.length() > 0);*/
+        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoBadXML = Utilities.readXmlResource("/hml/demobad.xml");
         
+        MiringValidator goodValidator = new MiringValidator(demoGoodXML);
+        MiringValidator badValidator = new MiringValidator(demoBadXML);
+        
+        String goodValidatorResults = goodValidator.validate();
+        String badValidatorResults = badValidator.validate();
+        
+        assertFalse(Utilities.containsErrorNode(goodValidatorResults, "There is a missing hmlid node underneath the hml node."));
+        assertTrue(Utilities.containsErrorNode(badValidatorResults, "There is a missing hmlid node underneath the hml node."));
+        
+        assertFalse(Utilities.containsErrorNode(goodValidatorResults, "start attribute on reference-sequence nodes should be 0."));
+        assertTrue(Utilities.containsErrorNode(badValidatorResults, "start attribute on reference-sequence nodes should be 0."));
+        
+        assertFalse(Utilities.containsErrorNode(goodValidatorResults, "The node variant is missing a quality-score attribute."));
+        assertTrue(Utilities.containsErrorNode(badValidatorResults, "The node variant is missing a quality-score attribute."));
     }
-
-
 }

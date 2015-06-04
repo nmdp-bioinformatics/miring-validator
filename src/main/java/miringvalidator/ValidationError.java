@@ -57,6 +57,7 @@ public class ValidationError implements Comparable
             && this.solutionText.equals(otherError.solutionText)
             && this.xPath.equals(otherError.xPath)
             && this.miringRule.equals(otherError.miringRule)
+            && this.moreInformation.equals(otherError.moreInformation)
         )
         {
             return true;
@@ -72,7 +73,18 @@ public class ValidationError implements Comparable
     {
         //When we compare object, we'll just compare their miringRules.
         //So we can sort the errors by miringRule.
-        return this.getMiringRule().compareTo(((ValidationError)(o)).getMiringRule());
+        //If they have the same rule(or no rule) sort by description.
+        int miringRuleIDCompare = this.getMiringRule().compareTo(
+                ((ValidationError)(o)).getMiringRule() );
+        
+        if(miringRuleIDCompare == 0)
+        {
+            return this.getErrorText().compareTo(((ValidationError)(o)).getErrorText());
+        }
+        else
+        {
+            return miringRuleIDCompare;
+        }
     }
      
     public void addMoreInformation(String moreInformation)
@@ -112,12 +124,12 @@ public class ValidationError implements Comparable
         return fatal;
     }
     
-    public String getxPath()
+    public String getXPath()
     {
         return xPath;
     }
 
-    public void setxPath(String xPath)
+    public void setXPath(String xPath)
     {
         this.xPath = xPath;
     }
