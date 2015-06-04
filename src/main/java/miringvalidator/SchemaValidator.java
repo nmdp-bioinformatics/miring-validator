@@ -47,6 +47,13 @@ public class SchemaValidator
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
     public static List<ValidationError> validationErrors;
     
+    /**
+     * Validate xml against a schema
+     *
+     * @param xml a String containing the XML to validate
+     * @param schemaFileName the file name of the schema to compare against
+     * @return an array of ValidationError objects found during validation
+     */
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
         logger.debug("Starting a schema validation");        
@@ -54,7 +61,7 @@ public class SchemaValidator
 
         try 
         {
-            URL schemaURL = SchemaValidator.class.getResource("/schema/" + schemaFileName);
+            URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
             logger.debug("Schema URL Resource Location = " + schemaURL);
             File schemaFile = new File(schemaURL.toURI());
             Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
@@ -94,8 +101,6 @@ public class SchemaValidator
             return new ValidationError[0];
         }
     }
-
-
 
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
@@ -137,6 +142,7 @@ public class SchemaValidator
         
         //warning(), error(), and fatalError() are overrides which are triggered by 
         //parser warnings, errors and fatal errors.  
+        //Here we provide simple handlers.
         @Override
         public void warning(SAXParseException exception) throws SAXException 
         {
@@ -163,7 +169,7 @@ public class SchemaValidator
             //Mine the exception data for useful information.  We want to present anything we can.
             //Might be worthwhile to keep track of the place in the tree we are within the XML.
             //I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
-            //when the parser finds a problem.
+            //when the parser finds a problem with the xml
             
             //We take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
@@ -175,14 +181,34 @@ public class SchemaValidator
             
             if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:"))
             {
-                //This cvc-complex-type is called if there is a node missing.  getMessage() looks like this:
+                // This cvc-complex-type is called if there is a node missing.  here's a few examples of what the exception.getMessage() can look like
                 // cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
+                // cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":reporting-center}' is expected.
+                // cvc-complex-type.2.4.a: Invalid content was found starting with element 'reporting-center'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
+
+                // "hmlid" and "reporting-center" will be the last word between the '{' and '}'. 
+                // Find their indices.
+                int minInd = -1, maxInd = -1;
+                for(int x = 0; x < exceptionTokens.length; x++)
+                {
+                    String token = exceptionTokens[x];
+                    if(token.contains("{"))
+                    {
+                        minInd = x;
+                    }
+                    if(token.contains("}"))
+                    {
+                        maxInd = x;
+                    }
+                }
                 
-                //There might be more node names here, under tokens 13,14,etc.  Perhaps I should check those. 
-                //They would indicate there are more than one missing node under same parent (HMLID and Reporting-center, for instance)
-                //exceptionTokens[12] looks like this:
+                if(minInd == -1 || maxInd == -1)
+                {
+                    logger.error("parsing a cvc-complex-type.2.4.a schema .  No Indices Found.");
+                }
+                // qualifiedNodeName should look like this:
                 // "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}'
-                String qualifiedNodeName = exceptionTokens[12];
+                String qualifiedNodeName = exceptionTokens[maxInd];
                 int begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
                 int enDex = qualifiedNodeName.indexOf("}'");
                 
@@ -200,7 +226,8 @@ public class SchemaValidator
                     miringRuleID = "1.2.a";
                 }
                 else
-                {
+                {                
+                    logger.error("MissingNodeName Not Handled: " + missingNodeName);
                 }
             }
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
@@ -238,18 +265,22 @@ public class SchemaValidator
                     {
                         miringRuleID = "5.7.a";
                     }
+                    else
+                    {
+                        logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                    }
                 }
                 else
                 {
                     //more stuff to check in here.
-                    logger.error("Missing node name : " + nodeName);
+                    logger.error("Node Name Not Handled! : " + nodeName);
                 }
             }
             else
             {
                 //There are more types of errors probably. 
                 //What if I have too many of a thing?
-                System.out.println("NOTYPE:" + exception.getMessage());
+                logger.error("This Sax Parser Exception isn't handled :" + exception.getMessage());
             }
             
             //Here we make a simple ValidationError object with the information we collected, and store it away.

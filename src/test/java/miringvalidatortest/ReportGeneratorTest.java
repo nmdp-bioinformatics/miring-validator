@@ -42,6 +42,8 @@ public class ReportGeneratorTest
     @Test
     public void testReportGenerator()
     {
+        logger.debug("starting testReportGenerator");
+
         try
         {
             ValidationError error1 = new ValidationError("This is a big problem 1.", true);
@@ -53,35 +55,52 @@ public class ReportGeneratorTest
             ValidationError[] tier1Errors = {error1, error2};
             ValidationError[] tier2Errors = {error3, error4, error5};
             
-            String reportResults = ReportGenerator.generateReport(tier1Errors, tier2Errors, "testRoot", "1.2.3.4");
+            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4");
             
-            assert(reportResults != null);
-            assert(reportResults.length() > 4);
+            assertTrue(reportResults != null);
+            assertTrue(reportResults.length() > 4);
 
-            Element rootElement = Utilities.xmlToDomObject(reportResults);  
-            
+            Element rootElement = Utilities.xmlToDomObject(reportResults);              
             NodeList list = rootElement.getElementsByTagName("InvalidMiringResult");
-            logger.debug("Report Generator Test");
-            logger.debug("listCount = " + list.getLength());
-
-
-            if (list != null && list.getLength() > 0) 
-            {
-                for(int i = 1; i < list.getLength(); i++)
-                {
-                    logger.debug("Local name:" + list.item(i).getLocalName());
-                    //logger.debug(list.toString());
-                }
-                //I want to test that there is a node for a couple of those errors i made up.  
-
-            }
+            assertTrue(list.getLength() == 5);
+            
+            assertTrue(Utilities.containsErrorNode(reportResults, "This is a big problem 1."));
+            assertTrue(Utilities.containsErrorNode(reportResults, "This is a big problem 3."));
+            assertTrue(Utilities.containsErrorNode(reportResults, "This is a big problem 5."));
+            assertFalse(Utilities.containsErrorNode(reportResults, "This error text is not in the report."));
+            
+            String hmlIDRoot = Utilities.getHMLIDRoot(reportResults);
+            String hmlIDExtension = Utilities.getHMLIDExtension(reportResults);            
+            assertTrue(hmlIDRoot.equals("testRoot"));
+            assertTrue(hmlIDExtension.equals("1.2.3.4"));
+            
+            //Test the qualityscore of a report.              
+            ValidationError fatalError = new ValidationError("A fatal error", true);
+            ValidationError nonFatalError = new ValidationError("A nonFatal error", false);
+            
+            //1 = Perfectly conforms to MIRING, no errors
+            //2 = Some nonfatal warnings
+            //3 = Rejected.
+            String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4");
+            String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4");
+            String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4");
+            
+            NodeList score1QualityScoreNodes = Utilities.xmlToDomObject(score1Report).getElementsByTagName("QualityScore");
+            NodeList score2QualityScoreNodes = Utilities.xmlToDomObject(score2Report).getElementsByTagName("QualityScore");
+            NodeList score3QualityScoreNodes = Utilities.xmlToDomObject(score3Report).getElementsByTagName("QualityScore");
+            
+            assertEquals(score1QualityScoreNodes.getLength() ,1);
+            assertEquals(score2QualityScoreNodes.getLength() ,1);
+            assertEquals(score3QualityScoreNodes.getLength() ,1);
+             
+            assertEquals(score1QualityScoreNodes.item(0).getTextContent() ,"1");
+            assertEquals(score2QualityScoreNodes.item(0).getTextContent() ,"2");
+            assertEquals(score3QualityScoreNodes.item(0).getTextContent() ,"3");
         }
         catch(Exception e)
         {
             logger.error("Exception in testReportGenerator(): " + e);
             fail("Error testing Report Generator" + e);
         }
-        
     }
-
 }

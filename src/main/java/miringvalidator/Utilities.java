@@ -22,7 +22,10 @@
 */
 package main.java.miringvalidator;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -31,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -54,36 +58,49 @@ public class Utilities
 {
     private static final Logger logger = LogManager.getLogger(Utilities.class);
     
-    /*public static boolean containsErrorNode(Element xmlDomObject, String errNodeDescription)
+    /**
+     * Does XML contain an error node with errNodeDescription in the text?
+     *
+     * @param validationErrorReport A String containing an XML Validation Error Report
+     * @param errNodeDescription The text to search for
+     * @return True if the Validation Error Report contains at least one InvalidMiringResult with an errorText containing errNodeDescription
+     */
+    public static boolean containsErrorNode(String validationErrorReport, String errNodeDescription)
     {
-        //I planned to use this for unit testing.  A quick way to check if i found an error report.  
-         * It's not implemented yet but probably easy.
-         * See what im doing to pull out hmlid
+        //check all nodes with name "description"
+        NodeList childrenNodes = xmlToDomObject(validationErrorReport).getElementsByTagName("description");
+        for(int i = 0; i < childrenNodes.getLength(); i++)
+        {
+            Node invMirResult = childrenNodes.item(i);
+            String descriptionText = invMirResult.getTextContent();
+            if(descriptionText!= null && descriptionText.contains(errNodeDescription))
+            {
+                return true;
+            }
+        }
         return false;
-    }*/
+    }
     
+    /**
+     * Load Probatron Classes
+     *
+     * @param jarFileLocation The relative location of the jar file resource
+     * @return a URLClassLoader object, which you can use to call probatron methods reflectively.
+     */
     public static URLClassLoader loadJarElements(File jarFileLocation)
     {
-        //This method will crack open the probatron jar.
-        //I store them in a static ClassLoader object loadedProbatronClasses.  
-        //I think they're only available from this object
-        //not from the general JVM.
-        //I don't need to load any classes right now.  They are available in loadedProbatronClasses.
-        //I will load the classes as I need them.
-        //I reckon that this method should be called in a "setup" method somewhere, rather than 
-        //each time we validate a schematron.  Or maybe not.  Not sure the overhead of this.
         logger.debug("Loading jar elements from " + jarFileLocation.toString());
         try
         {
             JarFile jarFile = new JarFile(jarFileLocation);
             Enumeration e = jarFile.entries();
-    
+
             URL[] urls = { new URL("jar:file:" + jarFileLocation +"!/") };
             URLClassLoader cl = URLClassLoader.newInstance(urls);
-
-    
-/*
             
+            /*
+            //I don't need to load any classes right now.  They are available in loadedProbatronClasses.
+            //I will load the classes as I need them.
             while (e.hasMoreElements()) 
             {
                 JarEntry je = (JarEntry) e.nextElement();
@@ -96,7 +113,8 @@ public class Utilities
                 className = className.replace('/', '.');
 
                 if(className.contains("org.apache.log4j"))
-                {//Having problems with log4j classes.  I think it's being loaded twice, so it's getting an exception here.  
+                {
+                    //Having problems with log4j classes.  I think it's being loaded twice, so it's getting an exception here.  
                     //Not really sure, but log4j is being loaded already so here we are.
                     //Could be that I only need to load the org.probatron.* classes
                     System.out.println(className + " will not be loaded.");
@@ -118,16 +136,20 @@ public class Utilities
         return null;
     }
 
+    /**
+     * Call a reflected method within a class.  This method must have a single parameter
+     *
+     * @param callingObject The object which calls the method
+     * @param methodName a String with the name of the reflected method
+     * @param singleParameter The object parameter to pass into the reflected method.
+     * @param parameterClass The class of the object expected by the reflected method.  It must be the correct class, and not an inherited class.
+     * @return an Object which is the result of the reflected method.
+     */
     public static Object callReflectedMethod(Object callingObject, String methodName, Object singleParameter, Class parameterClass)
     {
-        //Only works for methods that take a single parameter.
-        //We must pass in the Class of the parameter,
-        //because "getMethod" is very specific about the class of the parameter.  
-        //Using inherited classes (ByteArrayOutputStream vs. OutputStream) will break getMethod().
         Method method = null;
         try 
         {
-            //method = callingObject.getClass().getMethod(methodName, parameterClass);
             method = callingObject.getClass().getDeclaredMethod(methodName, parameterClass);
             method.setAccessible(true);
             return method.invoke(callingObject, singleParameter);
@@ -165,6 +187,12 @@ public class Utilities
         return null;
     }
 
+    /**
+     * Convert XML in string form to a DOM Object.  They are more useful for parsing the XML.
+     *
+     * @param xml A String containing xml
+     * @return an org.w3c.Dom.Element which is the root of the xml document.
+     */
     public static Element xmlToDomObject(String xml)
     {
         try
@@ -184,6 +212,12 @@ public class Utilities
         }
     }
     
+    /**
+     * Get the HMLID Root from an XML String
+     *
+     * @param xml A String containing xml
+     * @return A String containing the HMLID root
+     */
     public static String getHMLIDRoot(String xml)
     {
         try
@@ -198,6 +232,12 @@ public class Utilities
         }
     }
     
+    /**
+     * Get the HMLID Extension from an XML String
+     *
+     * @param xml A String containing xml
+     * @return A String containing the HMLID extension
+     */
     public static String getHMLIDExtension(String xml)
     {
         try
@@ -211,6 +251,12 @@ public class Utilities
         }
     }
     
+    /**
+     * Get the HMLID Node from an XML String
+     *
+     * @param xml A String containing HML
+     * @return the HML document's HMLID node
+     */
     private static Node getHMLIDNode(String xml)
     {
         //hmlid should be a child nodes of the root xml element.
@@ -225,8 +271,92 @@ public class Utilities
         }
         return null;
     }
+    
+    /**
+     * Add a ValidationError to a list of ValidationError objects.  This method disallows duplicates.
+     *
+     * @param validationErrors A list of ValidationError objects that you would like to add to.
+     * @param ve a ValidationError to add to the list.
+     */
+    public static void addValidationError(List<ValidationError> validationErrors, ValidationError ve)
+    {
+        //Don't add duplicate errors, they don't help.
+        if(!validationErrors.contains(ve))
+        {
+            validationErrors.add(ve);
+        }
+        else
+        {
+            logger.debug("This validation error is a duplicate, not adding it to the list.");
+        }
+    }
 
-    public static void removeTempXml(String path)
+    /**
+     * Concatenate and sort two arrays of Validation Error objects
+     *
+     * @param tier1ValidationErrors An Array of ValidationError objects
+     * @param tier2ValidationErrors An Array of ValidationError objects
+     * @return A combined and sorted Array of ValidationError objects
+     */
+    public static ValidationError[] combineArrays(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors)
+    {
+        ValidationError[] combinedErrors = new ValidationError[tier1ValidationErrors.length + tier2ValidationErrors.length];
+        
+        for(int i = 0; i < tier1ValidationErrors.length; i++)
+        {
+            combinedErrors[i] = tier1ValidationErrors[i];
+        }
+        for(int j = 0; j < tier2ValidationErrors.length; j++)
+        {
+            combinedErrors[j + tier1ValidationErrors.length] = tier2ValidationErrors[j];
+        }
+        
+        //ValidationError objects are sorted by their Miring Rule IDs
+        Arrays.sort(combinedErrors);
+
+        return combinedErrors;
+    }
+
+    /**
+     * Read an xml file from the Resources directory.  Returns a String containing the XML.
+     *
+     * @param xmlResourceName A String containing the name of the XML resource
+     * @return a String containing the read XML
+     */
+    public static String readXmlResource(String xmlResourceName)
+    {
+        try
+        {
+            File schemaFileURL = new File(SchematronValidator.class.getResource(xmlResourceName).getFile());
+            BufferedReader xmlReader = new BufferedReader(new FileReader(schemaFileURL));
+            
+            StringBuilder xmlBuffer = new StringBuilder();
+            String line = xmlReader.readLine();
+    
+            while (line != null) 
+            {
+                xmlBuffer.append(line);
+                xmlBuffer.append(System.lineSeparator());
+                line = xmlReader.readLine();
+            }
+            xmlReader.close();
+            
+            String xmlText = xmlBuffer.toString();
+            return xmlText;
+        }
+        catch(Exception e)
+        {
+            logger.error("Unable to open XML Resource:" + e);
+            return null;
+        }
+    }
+    
+    //I shouldn't need to write and delete XML files from the hard drive.
+    //By default, probatron reads xml files from the hard drive, so I needed 
+    //to write to hard drive in order to use it.  Calling probatron reflectively allows us to 
+    //use streams instead of writing to file.
+    //Code is kept here for convenience.    
+    /*public static void removeTempXml(String path)
     {
         logger.debug("Removing XML from " + path);
         try 
@@ -254,38 +384,5 @@ public class Utilities
         {
             logger.error("Error writing XML to file: " + e);
         }
-    }
-
-    public static void addValidationError(List<ValidationError> validationErrors, ValidationError ve)
-    {
-        //Don't add duplicate errors, they don't help.
-        if(!validationErrors.contains(ve))
-        {
-            validationErrors.add(ve);
-        }
-        else
-        {
-            logger.debug("This validation error is a duplicate, not adding it to the list.");
-        }
-    }
-
-    
-    public static ValidationError[] combineArrays(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors)
-    {
-        ValidationError[] combinedErrors = new ValidationError[tier1ValidationErrors.length + tier2ValidationErrors.length];
-        
-        for(int i = 0; i < tier1ValidationErrors.length; i++)
-        {
-            combinedErrors[i] = tier1ValidationErrors[i];
-        }
-        for(int j = 0; j < tier2ValidationErrors.length; j++)
-        {
-            combinedErrors[j + tier1ValidationErrors.length] = tier2ValidationErrors[j];
-        }
-        
-        //ValidationError objects are sorted by their Miring Rule IDs
-        Arrays.sort(combinedErrors);
-
-        return combinedErrors;
-    }
+    }*/
 }

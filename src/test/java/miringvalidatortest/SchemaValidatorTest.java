@@ -23,6 +23,11 @@
 package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
+import main.java.miringvalidator.MiringValidator;
+import main.java.miringvalidator.ReportGenerator;
+import main.java.miringvalidator.SchemaValidator;
+import main.java.miringvalidator.Utilities;
+import main.java.miringvalidator.ValidationError;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,9 +38,26 @@ public class SchemaValidatorTest
     private static final Logger logger = LogManager.getLogger(SchemaValidatorTest.class);
 
     @Test
-    public void test()
+    public void schemaValidatorTest()
     {
-        fail("Not yet implemented");
-    }
+        logger.debug("Starting a schemaValidatorTest");
+        
+        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoBadXML = Utilities.readXmlResource("/hml/demobad.xml");
 
+        ValidationError[] goodDemoErrors = SchemaValidator.validate(demoGoodXML,"/schema/demo.xsd");
+        ValidationError[] badDemoErrors = SchemaValidator.validate(demoBadXML,"/schema/demo.xsd");
+        
+        assertTrue(goodDemoErrors.length == 0);
+        
+        //There are actually 2 errors in demobad.xml: missing hmlid and Missing reporting-center
+        //I think there should be 2 errors in this, but the SAX xml parser stops parsing the current node when it encounters the first error. 
+        //Not awful because once the missing hmlid is replaced, the validator will flag the missing reporting-center
+        //Just demonstrating a weakness of the schema parser.   Fix in the future if it makes sense to.
+        assertTrue(badDemoErrors.length == 1);
+        
+        String errorReport = ReportGenerator.generateReport(badDemoErrors, "sampleRoot", "sampleExtension");
+        assertTrue(Utilities.containsErrorNode( errorReport , "There is a missing hmlid node underneath the hml node." ));
+        assertFalse(Utilities.containsErrorNode( errorReport , "There is a missing reporting-center node underneath the hml node." ));
+    }
 }
