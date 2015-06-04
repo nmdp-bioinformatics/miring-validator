@@ -44,7 +44,7 @@ public class SchematronValidator
     private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
-    static String schemaPath = "/schematron/";
+    //static String schemaPath = "";
     static String jarFileName = "/jar/probatron.jar";
 
     public static ValidationError[] validate(String xml, String[] schemaFileNames)
@@ -59,7 +59,7 @@ public class SchematronValidator
             
             for(int i = 0; i < schemaFileNames.length; i++)
             {
-                String schemaFileName = schemaPath + schemaFileNames[i];
+                String schemaFileName = schemaFileNames[i];
                 
                 logger.debug("Starting a schematron validation with schema " + schemaFileName + " and xml length " + xml.length());
 

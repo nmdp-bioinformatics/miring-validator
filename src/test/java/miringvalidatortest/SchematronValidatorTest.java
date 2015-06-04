@@ -23,6 +23,11 @@
 package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
+import main.java.miringvalidator.ReportGenerator;
+import main.java.miringvalidator.SchemaValidator;
+import main.java.miringvalidator.SchematronValidator;
+import main.java.miringvalidator.Utilities;
+import main.java.miringvalidator.ValidationError;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,12 +38,26 @@ public class SchematronValidatorTest
     private static final Logger logger = LogManager.getLogger(SchematronValidatorTest.class);
 
     @Test
-    public void test()
+    public void schematronValidatorTest()
     {
         logger.debug("Starting a schematronValidatorTest");
         
-        
-        fail("Not yet implemented");
-    }
+        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoBadXML = Utilities.readXmlResource("/hml/demobad.xml");
 
+        ValidationError[] goodDemoErrors = SchematronValidator.validate(demoGoodXML,new String[]{"/schematron/demo.sch"});
+        ValidationError[] badDemoErrors = SchematronValidator.validate(demoBadXML,new String[]{"/schematron/demo.sch"});
+        
+        assertTrue(goodDemoErrors.length == 0);
+        
+        //Schematron should find 2 errors in the demo files.  
+        assertTrue(badDemoErrors.length == 2);
+        
+        //It doesn't really make sense to combine these two error sets like this in a report (should be schema errors + schematron errors), but lets do it anyways.
+        String errorReport = ReportGenerator.generateReport(goodDemoErrors, badDemoErrors, "sampleRoot", "sampleExtension");
+        
+        assertTrue(Utilities.containsErrorNode( errorReport , "start attribute on reference-sequence nodes should be 0."));
+        assertTrue(Utilities.containsErrorNode( errorReport , "end attribute should be greater than or equal to the start attribute."));
+        assertFalse(Utilities.containsErrorNode( errorReport , "Definitely doesn't have this error text"));
+    }
 }
