@@ -46,6 +46,7 @@ public class SchematronValidator
     
     static ClassLoader loadedProbatronClasses;
     static String jarFileName = "/jar/probatron.jar";
+    static String namespaceText = "{http://schemas.nmdp.org/spec/hml/1.0.1}";
 
     /**
      * Perform a schematron validation for an xml string against an array of schemaFileName strings.
@@ -270,8 +271,7 @@ public class SchematronValidator
         
         if(locationText != null)
         {
-            //Maybe should strip out the namespaces here.  They clutter things.
-            ve.setXPath(locationText);
+            ve.setXPath(stripNamespace(locationText));
         }
         if(testText != null)
         {
@@ -297,5 +297,10 @@ public class SchematronValidator
         }
         
         return ve;
+    }
+
+    private static String stripNamespace(String locationText)
+    {
+        return locationText.replace(namespaceText, "");
     }
 }

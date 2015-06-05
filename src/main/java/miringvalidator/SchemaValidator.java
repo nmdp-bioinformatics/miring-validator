@@ -104,12 +104,10 @@ public class SchemaValidator
 
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
-        //private static String parentElement;
-        
-        private static String parentURI = "";
         private static String parentLocalName = "";
-        private static String parentQName = "";
         private static Attributes parentAttributes;
+        private static String currentLocalName = "";
+        private static Attributes currentAttributes;
         
         //triggered when parser starts the document.  Maybe this override can be deleted.
         //Maybe we want to detect an HMLID here.
@@ -124,20 +122,18 @@ public class SchemaValidator
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
-            /*logger.debug("Analyzing a node.");
-            logger.debug("uri= " + uri);
-            logger.debug("localName= " + localName);
-            logger.debug("qName= " + qName);
-            logger.debug("attributes= " + attributes.toString());*/
-            parentURI = uri;
-            parentLocalName = localName;
-            parentQName = qName;
-            parentAttributes = attributes;
+            //This isn't working Like i thought it would.  Missing node errors are thrown when the Following node is analyzed,
+            //so for instance, when an HMLID node is missing, the current localName will be the following "sample" node
+            //I'll have to think through this one.
+            /*logger.debug("START ELEMENT");
+            logger.debug("LOCALNAME= " + localName);
+            logger.debug("parentLocalName= " + parentLocalName);*/
             
-            /*if(localName != null && !localName.isEmpty())
-                parentElement = localName;
-            else
-                parentElement = qName;    */
+            parentLocalName = currentLocalName;
+            parentAttributes = currentAttributes;
+            
+            currentLocalName = localName;
+            currentAttributes = attributes;
         }
         
         //warning(), error(), and fatalError() are overrides which are triggered by 
@@ -173,9 +169,7 @@ public class SchemaValidator
             
             //We take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
-            String errorMessage = "Error Message Not Implemented";
-            String solutionMessage = "Solution Message Not Implemented";
-            String miringRuleID = "Miring Rule ID Not Implemented";
+            ValidationError ve = null;
             
             String[] exceptionTokens = tokenizeString(exception.getMessage());
             
@@ -216,21 +210,13 @@ public class SchemaValidator
                 
                 String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
                 
-                errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentLocalName + " node.";
-                solutionMessage = "Please add exactly one " + missingNodeName + " node underneath the " + parentLocalName + " node.";
-                
-                if(missingNodeName.equals("hmlid"))
-                {
-                    miringRuleID = "1.1.a";
-                }
-                else if(missingNodeName.equals("reporting-center"))
-                {
-                    miringRuleID = "1.2.a";
-                }
-                else
-                {                
-                    logger.error("MissingNodeName Not Handled: " + missingNodeName);
-                }
+                ve = handleMissingNode(missingNodeName);
+            }
+            else if(exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
+            {
+                logger.error("Handle this type of error!!!!!!!");
+                //cvc-complex-type.2.4.b: The content of element 'sbt-ngs' is not complete. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":raw-reads}' is expected.
+            
             }
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
             {
@@ -239,44 +225,10 @@ public class SchemaValidator
                 // cvc-complex-type.4: Attribute 'quality-score' must appear on element 'variant'.
                 
                 String missingAttributeName = exceptionTokens[2].replace("'", "");
-                String qualifiedNodeName = exceptionTokens[7];                
-                String nodeName = qualifiedNodeName.substring(1, qualifiedNodeName.indexOf("'."));
+                String untrimmedNodeName = exceptionTokens[7];                
+                String nodeName = untrimmedNodeName.substring(1, untrimmedNodeName.indexOf("'."));
                 
-                errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
-                solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
-                
-                if(nodeName.equals("variant"))
-                {
-                    if(missingAttributeName.equals("id"))
-                    {
-                        miringRuleID = "5.3.a";
-                    }
-                    else if(missingAttributeName.equals("reference-bases"))
-                    {
-                        miringRuleID = "5.4.a";
-                    }
-                    else if(missingAttributeName.equals("alternate-bases"))
-                    {
-                        miringRuleID = "5.5.a";
-                    }
-                    else if(missingAttributeName.equals("quality-score"))
-                    {
-                        miringRuleID = "5.6.a";
-                    }
-                    else if(missingAttributeName.equals("filter"))
-                    {
-                        miringRuleID = "5.7.a";
-                    }
-                    else
-                    {
-                        logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                    }
-                }
-                else
-                {
-                    //more stuff to check in here.
-                    logger.error("Node Name Not Handled! : " + nodeName);
-                }
+                ve = handleMissingAttribute(missingAttributeName, nodeName);
             }
             else
             {
@@ -285,16 +237,123 @@ public class SchemaValidator
                 logger.error("This Sax Parser Exception isn't handled :" + exception.getMessage());
             }
             
-            //Here we make a simple ValidationError object with the information we collected, and store it away.
-            ValidationError ve =  new ValidationError(
-                errorMessage
-                ,true);
-            
-            ve.setSolutionText(solutionMessage);
-            ve.setMiringRule(miringRuleID);
-            
+
             Utilities.addValidationError(validationErrors, ve);
-            //validationErrors.add(ve);
+        }
+
+        private static ValidationError handleMissingAttribute(String missingAttributeName, String nodeName)
+        {
+            ValidationError ve;
+            String miringRuleID = "Unhandled Miring Rule ID for Missing Attribute";
+            String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
+            String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
+            
+            if(nodeName.equals("variant"))
+            {
+                if(missingAttributeName.equals("id"))
+                {
+                    miringRuleID = "5.3.a";
+                }
+                else if(missingAttributeName.equals("reference-bases"))
+                {
+                    miringRuleID = "5.4.a";
+                }
+                else if(missingAttributeName.equals("alternate-bases"))
+                {
+                    miringRuleID = "5.5.a";
+                }
+                else if(missingAttributeName.equals("quality-score"))
+                {
+                    miringRuleID = "5.6.a";
+                }
+                else if(missingAttributeName.equals("filter"))
+                {
+                    miringRuleID = "5.7.a";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                }
+            }
+            else if(nodeName.equals("allele-assignment"))
+            {
+                if(missingAttributeName.equals("allele-db"))
+                {
+                    miringRuleID = "2.1.b";
+                }
+                else if(missingAttributeName.equals("allele-version"))
+                {
+                    miringRuleID = "2.1.c";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                }
+            }
+            else
+            {
+                //more stuff to check in here.
+                logger.error("Node Name Not Handled! : " + nodeName);
+            }
+            
+            ve =  new ValidationError(
+                    errorMessage
+                    ,true);
+                
+                ve.setSolutionText(solutionMessage);
+                ve.setMiringRule(miringRuleID);
+                //ve.addMoreInformation(moreInformation);
+            return ve;
+        }
+
+        private static ValidationError handleMissingNode(String missingNodeName)
+        {
+            String errorMessage;
+            String solutionMessage;
+            String miringRuleID = "Unhandled Miring Rule ID";
+            
+            ValidationError ve;
+            errorMessage = "There is a missing " + missingNodeName + " node underneath the " + currentLocalName + " node.";
+            solutionMessage = "Please add exactly one " + missingNodeName + " node underneath the " + currentLocalName + " node.";
+            
+            if(missingNodeName.equals("hmlid"))
+            {
+                miringRuleID = "1.1.a";
+            }
+            else if(missingNodeName.equals("reporting-center"))
+            {
+                miringRuleID = "1.2.a";
+            }
+            else
+            {                
+                logger.error("MissingNodeName Not Handled: " + missingNodeName);
+            }
+            
+            //I'd like for this to work but unfortunately I'm not getting the parent node info properly.  
+            //I think in the startElement method I could come up with a tree with more information.                
+            /*if(currentAttributes != null && currentAttributes.getLength() > 0)
+            {
+                moreInformation = moreInformation + "Parent node " + parentLocalName + " has these attributes: ";
+                for(int i = 0; i < currentAttributes.getLength(); i++)
+                {
+                    String value = currentAttributes.getValue(i);
+                    String name = currentAttributes.getLocalName(i);
+                    moreInformation = moreInformation + "{" + name + ":" + value + "}";
+                    
+                    if (i < currentAttributes.getLength() -1 )
+                    {
+                        moreInformation = moreInformation + ",";
+                    }
+                }
+            }*/
+            ve =  new ValidationError(
+                    errorMessage
+                    ,true);
+                
+                ve.setSolutionText(solutionMessage);
+                ve.setMiringRule(miringRuleID);
+                //ve.addMoreInformation(moreInformation);
+            return ve;
         }
 
         private static String[] tokenizeString(String exceptionMessage)
