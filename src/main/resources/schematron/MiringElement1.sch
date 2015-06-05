@@ -2,54 +2,38 @@
 <schema xmlns="http://purl.oclc.org/dsdl/schematron">
     <ns prefix="hml" uri="http://schemas.nmdp.org/spec/hml/1.0.1" />
 
-    <pattern name="Check the HMLID">
-        <rule context="hml:hmlid">
-            <assert test="@root">An hmlid node must have a root attribute.</assert>
-            <assert test="@root = '1234'">The root attribute for an HMLID should be 1234.</assert>
-
-
-            
-            <!-- Those assertions are kinda bogus.  I'm not sure what to check for HMLID.  Need to finalize this.  
-            Need to check somehow if it's an OID or UUID
-            OID is strictly digits and dots.
-            UUID de305d54-75b4-431b-adb2-eb6b9e546014
-            Rules 1.1.c and 1.1.d-->
-            
-            
-        </rule>
-    </pattern>
+    
+    
     
     <pattern name="Check the HMLID format">
         <rule context="hml:hmlid">
-            <assert test="@root">An hmlid node must have a root attribute.</assert>
-            <assert test="@root = '1234'">The root attribute for an HMLID should be 1234.</assert>
+        
+        <!--
+            UUID roots look like this: de305d54-75b4-431b-adb2-eb6b9e546014
+            8 alpha numerics, dash, 3 groups of 4 alphanumerics with dash, 12 alphanumerics
+            HML allows only OID, so I dont think I can check for this.  
+            Future versions of HML may allow GUID.  Double check the regex here,
+            I definitely wrote it on the fly and it's untested.
+        -->
+        <let name="regExpUUID" value=" '.{8}\-[.{4}\-]{3}.{12}' " />
+        
+        <!--
+            OID roots have just dots and digits: 11.222.3.44444.5
+            They start and end with a digit.
+        -->
+        <let name="regExpOID" value=" '[\d+\.]+\d+' " />
 
+        <assert test="matches( @root, $regExpOID )">The hmlid root is not formatted like an OID.</assert>
+        <report test="matches( @root, $regExpOID )">The hmlid root is formatted like an OID.</report>
+        
+        <!-- 
+        <assert test="matches( @root, $regExpOID )">The hmlid root is not formatted like a UUID. </assert>
+        <report test="matches( @root, $regExpOID )">The hmlid root is formatted like a UUID. </report>
+        -->
 
-            
-            <!-- Those assertions are kinda bogus.  I'm not sure what to check for HMLID.  Need to finalize this.  
-            Need to check somehow if it's an OID or UUID
-            OID is strictly digits and dots.
-            UUID de305d54-75b4-431b-adb2-eb6b9e546014
-            Rules 1.1.c and 1.1.d-->
-            
-            
         </rule>
     </pattern>
-    
-    <!--
-    
-       <rule context="x">
-     <let name="grammar" value=" 'a b( c)*' " />
-     <let name="contents"
-        value="string-join(for $e in * return  local-name ( $e ), ' ') " />
-     <assert test="matches( $contents, $grammar )"
-     >The contents [<value-of select="$contents"/>] 
-     should match grammar [<value-of select="$grammar"/>] </assert>
-   </rule>
-   
-   -->
-    
-    
+  
     
     
     

@@ -47,14 +47,17 @@ public class MiringRulesTest
         ValidationError[] errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
         String goodXmlErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
         
-        xml = Utilities.readXmlResource("/hml/Element1.bad.1.xml");
+        xml = Utilities.readXmlResource("/hml/Element1.hmlid.OID.xml");
         errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
-        String badXmlErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        String oidHmlidErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        System.out.println(oidHmlidErrorReport);
         
-        assertFalse(Utilities.containsErrorNode(goodXmlErrorReport, "The root attribute for an HMLID should be 1234."));
-        assertTrue(Utilities.containsErrorNode(badXmlErrorReport, "The root attribute for an HMLID should be 1234."));
+        //assertFalse(Utilities.containsErrorNode(goodXmlErrorReport, "The hmlid root is formatted like an OID."));
+        //assertTrue(Utilities.containsErrorNode(goodXmlErrorReport, "The hmlid root is not formatted like an OID."));
+        assertFalse(Utilities.containsErrorNode(oidHmlidErrorReport, "The hmlid root is not formatted like an OID."));
+        assertTrue(Utilities.containsErrorNode(oidHmlidErrorReport, "The hmlid root is formatted like an OID."));
         
-        fail("this is not complete.");
+        
     }
     
     @Test
@@ -73,3 +76,4 @@ public class MiringRulesTest
 
 
 }
+

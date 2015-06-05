@@ -124,6 +124,11 @@ public class ValidationError implements Comparable
         return fatal;
     }
     
+    public void setFatal(boolean isFatal)
+    {
+        this.fatal = isFatal;
+    }
+    
     public String getXPath()
     {
         return xPath;
