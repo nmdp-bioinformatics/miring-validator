@@ -173,11 +173,13 @@ public class SchemaValidator
             
             //We take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
-            String errorMessage = "??????????";
-            String solutionMessage = "??????????";
-            String miringRuleID = "??????????";
+            String errorMessage = "Error Message Not Implemented";
+            String solutionMessage = "Solution Message Not Implemented";
+            String miringRuleID = "Miring Rule ID Not Implemented";
             
             String[] exceptionTokens = tokenizeString(exception.getMessage());
+            
+            //TODO: handle the "content in prolog" error.
             
             if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:"))
             {
