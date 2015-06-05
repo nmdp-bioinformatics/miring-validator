@@ -170,11 +170,11 @@ public class ReportGenerator
         }
         
         //moreInformation
-        if(validationError.getMoreInformation()!= null && validationError.getMoreInformation().length() > 0)
+        if(validationError.getMoreInformation() != null && validationError.getMoreInformation().length() > 0)
         {
-            Element moreInfoElement = doc.createElement("more.information");
+            Element moreInfoElement = doc.createElement("more-information");
             moreInfoElement.appendChild(doc.createTextNode(validationError.getMoreInformation()));
-            moreInfoElement.appendChild(moreInfoElement);
+            invMiringElement.appendChild(moreInfoElement);
         }
 
         return invMiringElement;

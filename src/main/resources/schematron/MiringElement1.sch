@@ -2,22 +2,41 @@
 <schema xmlns="http://purl.oclc.org/dsdl/schematron">
     <ns prefix="hml" uri="http://schemas.nmdp.org/spec/hml/1.0.1" />
 
-    <pattern name="Check the HMLID">
+    <pattern name="Check the HMLID format">
         <rule context="hml:hmlid">
-            <assert test="@root">An hmlid node must have a root attribute.</assert>
-            <assert test="@root = '1234'">The root attribute for an HMLID should be 1234.</assert>
-            
-            <!-- Those assertions are kinda bogus.  I'm not sure what to check for HMLID.  Need to finalize this.  
-            Need to check somehow if it's an OID or UUID
-            OID is strictly digits and dots.
-            UUID de305d54-75b4-431b-adb2-eb6b9e546014
-            Rules 1.1.c and 1.1.d-->
-            
-            
+        
+        <!--
+            UUID roots look like this: de305d54-75b4-431b-adb2-eb6b9e546014
+            8 alpha numerics, dash, 3 groups of 4 alphanumerics with dash, 12 alphanumerics
+            HML 1.0.1 allows only OID, so I dont think I can check for this.  
+            Future versions of HML may allow GUID.  Double check the regex here,
+            I definitely wrote it on the fly and it's untested.
+        -->
+        <let name="regExpUUID" value=" '.{8}\-[.{4}\-]{3}.{12}' " />
+        
+        <!--
+            OID roots have just dots and digits: 11.222.3.44444.5
+            They start and end with a digit.
+            It must have an extension, but I'm not comparing the extension to a regex yet
+        -->
+        <let name="regExpOID" value=" '[\d+\.]+\d+' " />
+
+        <assert test="matches( @root, $regExpOID ) and @extension">The hmlid root is not formatted like an OID.</assert>
+        <report test="matches( @root, $regExpOID ) and @extension">The hmlid root is formatted like an OID.</report>
+        
+        <!-- 
+        <assert test="matches( @root, $regExpOID )">The hmlid root is not formatted like a UUID. </assert>
+        <report test="matches( @root, $regExpOID )">The hmlid root is formatted like a UUID. </report>
+        -->
+
         </rule>
     </pattern>
+  
     
-    <pattern name="Check the HMLID">
+    
+    
+    
+    <pattern name="Check the HMLID2">
         <rule context="hml:sbt-ngs">
 
             <!-- Rules 1.3.b
@@ -28,7 +47,7 @@
         </rule>
     </pattern>
     
-        <pattern name="Check the HMLID">
+        <pattern name="Check the HMLI3D">
         <rule context="hml:raw-reads">
 
             <!-- Rule 1.6.1

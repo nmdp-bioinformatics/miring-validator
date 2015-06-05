@@ -213,7 +213,7 @@ public class Utilities
     }
     
     /**
-     * Get the HMLID Root from an XML String
+     * Get the HMLID Root from an XML String.  
      *
      * @param xml A String containing xml
      * @return A String containing the HMLID root
@@ -252,7 +252,9 @@ public class Utilities
     }
     
     /**
-     * Get the HMLID Node from an XML String
+     * Get the HMLID Node from an XML String. The hmlid node is a child of the root node on
+     * both an HML document, and a Validation Results report, so use this method on both
+     * types of xml.
      *
      * @param xml A String containing HML
      * @return the HML document's HMLID node
@@ -292,7 +294,7 @@ public class Utilities
     }
 
     /**
-     * Concatenate and sort two arrays of Validation Error objects
+     * Concatenate and sort two arrays of Validation Error objects.  
      *
      * @param tier1ValidationErrors An Array of ValidationError objects
      * @param tier2ValidationErrors An Array of ValidationError objects

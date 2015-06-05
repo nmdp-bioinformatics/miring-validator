@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
@@ -44,9 +45,16 @@ public class SchematronValidator
     private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
-    //static String schemaPath = "";
     static String jarFileName = "/jar/probatron.jar";
+    static String namespaceText = "{http://schemas.nmdp.org/spec/hml/1.0.1}";
 
+    /**
+     * Perform a schematron validation for an xml string against an array of schemaFileName strings.
+     *
+     * @param xml a String containing the xml to validate
+     * @param schemaFileNames an array of Strings containing the names of the schema file resources to validate against
+     * @return an array of ValidationError objects found during validation
+     */
     public static ValidationError[] validate(String xml, String[] schemaFileNames)
     {
         ValidationError[] results = new ValidationError[0];
@@ -86,15 +94,20 @@ public class SchematronValidator
         logger.debug(results.length + " validation errors detected in schematron validator.");
         return results;
     }
-    
-    //This method mimics Probatron's Session.doValidation.
-    //Except we're loading the classes via reflection, because everything is in a jar
-    //It returns a org.probatron.ValidationReport object.
+
+    /**
+     * Perform a schematron validation for an xml string against an single schematron schema.
+     * This method mimics Probatron's Session.doValidation.
+     *
+     * @param xml a String containing the xml to validate
+     * @param schemaLocation an String containing the name of the schema file resource to validate against
+     * @return an object which is an org.probatron.ValidationReport objects.
+     */
     private static Object doValidation(String xml, String schemaLocation) 
     {
-        //org.probatron.ValidationReport.
+        //vr is an org.probatron.ValidationReport
         Object vr = null;
-        //org.probatron.SchematronSchema theSchema;
+        //theSchema is an org.probatron.SchematronSchema
         Object theSchema = null;
         
         try 
@@ -114,7 +127,7 @@ public class SchematronValidator
             //ctor.setAccessible(true);
             theSchema = ctor.newInstance(currentSession, schemaFileURL);
             
-            //Validate against a schematron schema.
+            //Validate against a schematron schema, using probatron's validateCandidate method
             vr = Utilities.callReflectedMethod(theSchema,"validateCandidate", xmlInputStream, Class.forName("java.io.InputStream"));
         } 
         catch(Exception e)
@@ -125,7 +138,12 @@ public class SchematronValidator
         return vr;
     }
 
-    
+    /**
+     * Convert a org.probatron.ValidationReport into an array of ValidationError objects
+     *
+     * @param xml a String containing a probatron ValidationReport 
+     * @return an array of ValidationError objects generated from the probatron ValidationReport report.
+     */
     private static ValidationError[] getValidationErrorsFromSchematronReport(String xml)
     {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
@@ -133,25 +151,75 @@ public class SchematronValidator
         try
         {
             Element rootElement = Utilities.xmlToDomObject(xml);  
-            NodeList list = rootElement.getElementsByTagName("svrl:text");
 
-            if (list != null && list.getLength() > 0) 
+            //I guess I'm handling successful-reports and failed-asserts in the same way
+            NodeList successfulReportList = rootElement.getElementsByTagName("svrl:successful-report");
+            NodeList failedAssertList = rootElement.getElementsByTagName("svrl:failed-assert");
+            Node[] combinedList = combineNodeLists(successfulReportList, failedAssertList);
+            
+            if (combinedList != null) 
             {
-                for(int i = 0; i < list.getLength(); i++)
+                /*
+                These nodes look like this:
+                <svrl:successful-report 
+                    test="matches( @root, $regExpOID )"
+                    location="/{http://schemas.nmdp.org/spec/hml/1.0.1}hml[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}hmlid[1]">
+                    
+                    <svrl:text>
+                        The hmlid root is formatted like an OID. 
+                    </svrl:text>
+                    
+                </svrl:successful-report>
+                
+                OR
+                
+                <svrl:failed-assert 
+                    test="number(@start) = '0'"
+                    location="/{http://schemas.nmdp.org/spec/hml/1.0.1}hml[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}sample[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}typing[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}consensus-sequence[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}reference-database[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}reference-sequence[1]">
+     
+                    <svrl:text>
+                        start attribute on reference-sequence nodes should be 0.
+                    </svrl:text>
+                </svrl:failed-assert>
+                
+                 */
+                for(int i = 0; i < combinedList.length; i++)
                 {
-                    Node n = list.item(i);
+                    String testText = null;
+                    String locationText = null;
+                    String errorText = null;
+                    
+                    Node currentSuccessfulReportNode = combinedList[i];
+                    NamedNodeMap succRepNodeAttributes = currentSuccessfulReportNode.getAttributes();
+                    
+                    //testText contains the actual test that schematron ran to get this report. 
+                    //Not sure if we'll use that information at all
+                    testText = succRepNodeAttributes.getNamedItem("test").getNodeValue();
+                    
+                    //locationText contains information about exactly where in the HML file we found the problem
+                    //I believe it is or contains an xpath.  We're gonna put that on the report.
+                    //Probably need to skim out the namespaces, because they clutter things badly.
+                    locationText = succRepNodeAttributes.getNamedItem("location").getNodeValue();
+                    
+                    //Dig into the "svrl:successful-report" node to get the error text.
+                    NodeList childrenNodes = currentSuccessfulReportNode.getChildNodes();
+                    if(childrenNodes != null)
+                    {
+                        for(int j = 0; j < childrenNodes.getLength(); j++)
+                        {
+                            //one of the children of the svrl:successful-report node should be a "svrl:text" node
+                            //in my experience it's at j=1, but I don't understand why.
+                            Node currentChildNode= childrenNodes.item(j);
+                            if(currentChildNode.getNodeName().equals("svrl:text"))
+                            {
+                                errorText = currentChildNode.getTextContent();
+                                break;
+                            }
+                        }
+                    }
 
-                        Node childNode = n.getFirstChild();
-
-                        String errorMessage = childNode.getNodeValue();
-                        
-                        ValidationError ve = new ValidationError(
-                                errorMessage
-                                ,true);
-                        ve.setMiringRule("4.2.3.a");
-                        ve.setSolutionText("Please verify the start and end attributes on your reference-sequence node.");
-                        
-                        Utilities.addValidationError(validationErrors, ve);
+                    ValidationError validationError = generateValidationError(errorText, locationText, testText);
+                    Utilities.addValidationError(validationErrors, validationError);
                 }
             }
         }
@@ -171,5 +239,68 @@ public class SchematronValidator
             //Empty.  Not null.  No problems found.
             return new ValidationError[0];
         }
+    }
+
+    private static Node[] combineNodeLists(NodeList successfulReportList, NodeList failedAssertList)
+    {
+        Node[] newList = new Node[successfulReportList.getLength() + failedAssertList.getLength()];
+        
+        for(int i = 0; i < successfulReportList.getLength(); i++)
+        {
+            newList[i] = successfulReportList.item(i);
+        }
+        for(int i = 0; i < failedAssertList.getLength(); i++)
+        {
+            newList[i + successfulReportList.getLength()] = failedAssertList.item(i);
+        }
+        return newList;
+    }
+
+    /**
+     * Generate a single ValidationError object
+     * Lots of Miring logic happens here.
+     *
+     * @param errorMessage an error message generated by probatron
+     * @param locationText an Xpath containing the location of the error in the HML document
+     * @param testText text containing the actual test that probatron ran to generate this error
+     * @return a ValidationError object describing the miring validation problem
+     */
+    private static ValidationError generateValidationError(String errorMessage, String locationText, String testText)
+    {
+        ValidationError ve = new ValidationError(errorMessage,true);
+        
+        if(locationText != null)
+        {
+            ve.setXPath(stripNamespace(locationText));
+        }
+        if(testText != null)
+        {
+            ve.addMoreInformation("While performing test: " + testText);
+        }
+        
+        if(errorMessage.equals("The hmlid root is formatted like an OID."))
+        {
+            ve.setMiringRule("1.1.c");
+            ve.setSolutionText("No solution needed.  This is a good thing.");
+            ve.setFatal(false);
+        }
+        else if(errorMessage.equals("The hmlid root is not formatted like an OID."))
+        {
+            ve.setMiringRule("1.1.c");
+            ve.setSolutionText("Please format the hmlid node's root attribute like an OID:  11.234.55555.65");
+            ve.setFatal(false);
+        }
+        else
+        {
+            ve.setMiringRule("Unhandled Miring Rule");
+            ve.setSolutionText("Unhandled Solution Text");
+        }
+        
+        return ve;
+    }
+
+    private static String stripNamespace(String locationText)
+    {
+        return locationText.replace(namespaceText, "");
     }
 }

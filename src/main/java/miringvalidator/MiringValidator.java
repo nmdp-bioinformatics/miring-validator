@@ -37,7 +37,6 @@ public class MiringValidator
      * Constructor for a MiringValidator object
      *
      * @param xml a String containing the xml text
-     * @return a String containing MIRING Results Report
      */
     public MiringValidator(String xml)
     {
@@ -61,6 +60,8 @@ public class MiringValidator
         //Yeah actually don't skip it.  We want to give them the most information we can.
         //if(!ReportGenerator.containsFatalErrors(tier1ValidationErrors))
         {
+            //It's probably a big resource overhead to do a schematron for each schema file.  
+            //If time is a problem, we should proably combine all the schematron schema into one file.
             logger.debug("Attempting Tier 2 validation");
             //tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"demo.sch"});
             tier2ValidationErrors = SchematronValidator.validate(xml, new String[] 
