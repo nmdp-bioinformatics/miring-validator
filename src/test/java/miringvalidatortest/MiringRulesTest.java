@@ -39,23 +39,56 @@ public class MiringRulesTest
     private static final Logger logger = LogManager.getLogger(MiringRulesTest.class);
 
     @Test
-    public void testSchemaMiringElements()
+    public void testTemp()
     {
-        //String xml = Utilities.readXmlResource("/hml/demogood.xml");
-        //String xml = Utilities.readXmlResource("/hml/Element1.hmlid.OID.xml");
-        String xml = Utilities.readXmlResource("/hml/Element1.rawreads.URI.xml");
-        //String xml = Utilities.readXmlResource("/hml/demobad.xml");
-        MiringValidator validator = new MiringValidator(xml);
-        String results = validator.validate();
-        System.out.println(results);
-        
-        
+
     }
     
     @Test
-    public void testSchematronMiringElement1()
+    public void testMiringElement1Tier1()
     {
-        logger.debug("starting testSchematronMiringElement1");
+        logger.debug("starting testMiringElement1Tier1");
+        //1.1.a
+        String xml = Utilities.readXmlResource("/hml/Element1.no.hmlid.xml");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing hmlid node underneath the hml node."));
+        
+        //1.2.a
+        xml = Utilities.readXmlResource("/hml/Element1.no.reportingcenter.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing reporting-center node underneath the hml node."));
+        
+        //1.3.a
+        xml = Utilities.readXmlResource("/hml/Element1.sbtngs.missing.testid.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id-source attribute."));
+        
+        //1.5.a
+        xml = Utilities.readXmlResource("/hml/Element1.missing.rawreads.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing raw-reads node underneath the sbt-ngs node."));
+        
+        //1.5.b
+        xml = Utilities.readXmlResource("/hml/Element1.rawreads.no.availability.xml");
+        validator = new MiringValidator(xml);
+        String noAvailResults = validator.validate();
+        assertTrue(Utilities.containsErrorNode(noAvailResults, "The node raw-reads is missing a availability attribute."));
+        
+        xml = Utilities.readXmlResource("/hml/Element1.rawreads.availability.xml");
+        validator = new MiringValidator(xml);
+        String availResults = validator.validate();
+        assertFalse(Utilities.containsErrorNode(availResults, "The node raw-reads is missing a availability attribute."));
+    }
+    
+    @Test
+    public void testMiringElement1Tier2()
+    {
+        logger.debug("starting testMiringElement1Tier2");
 
         String xml;
         ValidationError[] errors; 
@@ -76,24 +109,41 @@ public class MiringRulesTest
         assertTrue(Utilities.containsErrorNode(notOidHmlidErrorReport, "The hmlid root is not formatted like an OID."));
         assertFalse(Utilities.containsErrorNode(notOidHmlidErrorReport, "The hmlid root is formatted like an OID."));
 
+        //1.3.b
+        xml = Utilities.readXmlResource("/hml/Element1.valid.testidsource.xml");
+        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
+        String validTestIDErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
         
+        xml = Utilities.readXmlResource("/hml/Element1.invalid.testidsource.xml");
+        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
+        String invalidTestIDErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+
+        assertFalse(Utilities.containsErrorNode(validTestIDErrorReport, "On a sbt-ngs node, test-id is not formatted like a GTR test ID."));
+        assertFalse(Utilities.containsErrorNode(validTestIDErrorReport, "On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."));
         
+        assertTrue(Utilities.containsErrorNode(invalidTestIDErrorReport, "On a sbt-ngs node, test-id is not formatted like a GTR test ID."));
+        assertTrue(Utilities.containsErrorNode(invalidTestIDErrorReport, "On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."));
     }
     
     @Test
-    public void testSchematronMiringElement2()
+    public void testMiringElement2Tier1()
     {
         logger.debug("starting testSchematronMiringElement2");
         fail("not yet implemented");
     }
     
     @Test
-    public void testSchematronMiringElement3()
+    public void testMiringElement2Tier2()
     {
         logger.debug("starting testSchematronMiringElement3");
         fail("not yet implemented");
     }
 
-
+    @Test
+    public void testInvalidProlog()
+    {
+        //I keep getting an invalid prolog error, meaning that my XML has text before the XML starts.  I'm testing that I can handle that problem
+        fail("not yet implemented");
+    }
 }
 
