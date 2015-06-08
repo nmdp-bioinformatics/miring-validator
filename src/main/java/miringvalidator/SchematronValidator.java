@@ -290,6 +290,16 @@ public class SchematronValidator
             ve.setSolutionText("Please format the hmlid node's root attribute like an OID:  11.234.55555.65");
             ve.setFatal(false);
         }
+        else if(errorMessage.equals("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
+        {
+            ve.setMiringRule("1.3.b");
+            ve.setSolutionText("Please verify that the test-id attribute looks like a GTR test ID: GTR000000000.0");
+        }
+        else if(errorMessage.equals("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
+        {
+            ve.setMiringRule("1.3.b");
+            ve.setSolutionText("Please verify that the test-id-source attribute is 'NCBI-GTR'");
+        }
         else
         {
             ve.setMiringRule("Unhandled Miring Rule");

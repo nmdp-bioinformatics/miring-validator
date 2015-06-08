@@ -37,7 +37,9 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -51,6 +53,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -296,21 +299,21 @@ public class Utilities
     /**
      * Concatenate and sort two arrays of Validation Error objects.  
      *
-     * @param tier1ValidationErrors An Array of ValidationError objects
-     * @param tier2ValidationErrors An Array of ValidationError objects
+     * @param firstErrorArray An Array of ValidationError objects
+     * @param secondErrorArray An Array of ValidationError objects
      * @return A combined and sorted Array of ValidationError objects
      */
-    public static ValidationError[] combineArrays(ValidationError[] tier1ValidationErrors, ValidationError[] tier2ValidationErrors)
+    public static ValidationError[] combineArrays(ValidationError[] firstErrorArray, ValidationError[] secondErrorArray)
     {
-        ValidationError[] combinedErrors = new ValidationError[tier1ValidationErrors.length + tier2ValidationErrors.length];
+        ValidationError[] combinedErrors = new ValidationError[firstErrorArray.length + secondErrorArray.length];
         
-        for(int i = 0; i < tier1ValidationErrors.length; i++)
+        for(int i = 0; i < firstErrorArray.length; i++)
         {
-            combinedErrors[i] = tier1ValidationErrors[i];
+            combinedErrors[i] = firstErrorArray[i];
         }
-        for(int j = 0; j < tier2ValidationErrors.length; j++)
+        for(int j = 0; j < secondErrorArray.length; j++)
         {
-            combinedErrors[j + tier1ValidationErrors.length] = tier2ValidationErrors[j];
+            combinedErrors[j + firstErrorArray.length] = secondErrorArray[j];
         }
         
         //ValidationError objects are sorted by their Miring Rule IDs
@@ -352,39 +355,24 @@ public class Utilities
             return null;
         }
     }
-    
-    //I shouldn't need to write and delete XML files from the hard drive.
-    //By default, probatron reads xml files from the hard drive, so I needed 
-    //to write to hard drive in order to use it.  Calling probatron reflectively allows us to 
-    //use streams instead of writing to file.
-    //Code is kept here for convenience.    
-    /*public static void removeTempXml(String path)
-    {
-        logger.debug("Removing XML from " + path);
-        try 
-        {
-            File myFile = new File(path);
-            myFile.delete();
-        } 
-        catch (Exception e) 
-        {
-            logger.error("Exception when removing temp file " + path + " : " + e.toString());
-        } 
-        
-    }
 
-    public static void writeXml(String xmlText, String fileName)
+    /**
+     * Convert an Attributes object into a String, for descriptive use in ValidationError objects.  The String will look like this:
+     * {name1:value1}, {name2:value2}, ... {nameX:valueX}
+     *
+     * @param attributes XML attributes for a node
+     * @return a String containing the attributes concatenated together.
+     */
+    public static String getAttributes(Attributes attributes)
     {
-        logger.debug("Writing XML to " + fileName);
-        try
+        String attributeString = "";
+        if(attributes != null && attributes.getLength() > 0)
         {
-            PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-            writer.println(xmlText);
-            writer.close();
+            for(int i = 0; i < attributes.getLength(); i++)
+            {
+                attributeString = attributeString  + "{" + attributes.getLocalName(i) + ":" + attributes.getValue(i) + "}, ";
+            }
         }
-        catch(Exception e)
-        {
-            logger.error("Error writing XML to file: " + e);
-        }
-    }*/
+        return attributeString;
+    }
 }

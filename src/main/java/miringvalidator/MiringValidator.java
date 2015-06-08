@@ -62,6 +62,9 @@ public class MiringValidator
         {
             //It's probably a big resource overhead to do a schematron for each schema file.  
             //If time is a problem, we should proably combine all the schematron schema into one file.
+            //For each schematron validation, several XSLT transforms are required, and it's kinda time consuming.
+            //Consider combining all the schema.
+            //It might be possible to have one schema load several other ones, I'll have to look into that.
             logger.debug("Attempting Tier 2 validation");
             //tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"demo.sch"});
             tier2ValidationErrors = SchematronValidator.validate(xml, new String[] 
