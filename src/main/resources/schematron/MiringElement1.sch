@@ -31,31 +31,22 @@
 
         </rule>
     </pattern>
-  
-    
-    
-    
-    
-    <pattern name="Check the HMLID2">
+
+    <pattern name="Check the sbt-ngs:test-id and test-id-source">
         <rule context="hml:sbt-ngs">
+        <!-- Rules 1.3.b
+        test-id and test-id-source should look like an NCBI-GTR format.
+        "GTR000000000.0"
+        -->
+        <let name="regExpGTR" value=" '[GTR][\d]{9}[\.][\d]' " />
 
-            <!-- Rules 1.3.b
-            test-id and test-id-source should look like an NCBI-GTR format.
-            -->
-            
-            
+        <assert test="matches( @test-id, $regExpGTR )">On a sbt-ngs node, test-id is not formatted like a GTR test ID.</assert>
+        <assert test="matches( @test-id-source, 'NCBI-GTR')">On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'.</assert>
+
+
         </rule>
     </pattern>
     
-        <pattern name="Check the HMLI3D">
-        <rule context="hml:raw-reads">
 
-            <!-- Rule 1.6.1
-            if raw-reads has availability="true", it must have a URI attribute.
-            -->
-            
-            
-        </rule>
-    </pattern>
 
 </schema>

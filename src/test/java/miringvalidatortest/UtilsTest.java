@@ -43,6 +43,12 @@ public class UtilsTest
     private static final Logger logger = LogManager.getLogger(UtilsTest.class);
 
     @Test
+    public void testGetAttributes()
+    {
+        fail("Don't know how to copy attributes yet.");
+    }
+    
+    @Test
     public void testLoadJarElements()
     {
         logger.debug("starting testLoadJarElements");

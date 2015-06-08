@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hml xmlns="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1 http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+     project-name="LAB" 
+     version="1.0.1">
+    <hmlid root="1234.33.222222.68.55" extension="Exten5ionHasAny4mat" />
+    <reporting-center reporting-center-id="789" reporting-center-context="NMDP" />  
+    <sample id="123456789">
+    <collection-method>buccal swab</collection-method>
+    <typing gene-family="HLA" date="2013-12-31">
+      <allele-assignment date="2014-01-01">
+        <glstring uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" />
+        <glstring>
+          HLA-A*02:01:01:01
+        </glstring>
+      </allele-assignment>
+      <typing-method>
+      
+      <sbt-ngs locus="HLA-A" test-id="GTR000000000.0" test-id-source="NCBI-GTR">
+        <raw-reads uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" format="madeUpFormat" 
+           paired="true" pooled="true" adapter-trimmed="true" quality-trimmed="true" />
+      </sbt-ngs>
+      </typing-method>
+    </typing>
+    </sample>
+</hml>
