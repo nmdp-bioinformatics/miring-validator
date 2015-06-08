@@ -139,14 +139,11 @@ public class MiringRulesTest
         fail("not yet implemented");
     }
 
-
     @Test
     public void testInvalidProlog()
     {
         //I keep getting an invalid prolog error, meaning that my XML has text before the XML starts.  I'm testing that I can handle that problem
         fail("not yet implemented");
-
     }
-    
 }
 
