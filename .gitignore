@@ -2,3 +2,7 @@
 /doc/
 .project
 .classpath
+
+*.log
+*.class
+
