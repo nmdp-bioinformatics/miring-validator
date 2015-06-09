@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.helpers.AttributesImpl;
 
 public class UtilsTest
 {
@@ -45,7 +46,29 @@ public class UtilsTest
     @Test
     public void testGetAttributes()
     {
-        fail("Don't know how to copy attributes yet.");
+        logger.debug("starting testGetAttributes");
+
+        //AttributesImpl is the default implementer of Attributes interface
+        AttributesImpl attributesImplementationObject = new AttributesImpl(); 
+        attributesImplementationObject.addAttribute(
+                  "uri is NOT in the results"
+                , "localName IS in the results"
+                , "qName is NOT in the results"
+                , "type is NOT in the results"
+                , "value IS in the results");
+        
+        attributesImplementationObject.addAttribute("","Customer Name","","","Fred Stevens");
+        
+        String results = Utilities.getAttributes(attributesImplementationObject);
+        
+        assertTrue(results.contains("localName IS in the results"));
+        assertTrue(results.contains("value IS in the results"));
+        
+        assertFalse(results.contains("uri"));
+        assertFalse(results.contains("qname"));
+        assertFalse(results.contains("type")); 
+        
+        assertTrue(results.contains("{Customer Name:Fred Stevens}"));
     }
     
     @Test

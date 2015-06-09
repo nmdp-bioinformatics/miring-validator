@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+In this file there is some invalid content before the xml tag.  This text isn't allowed here.
+
+ <?xml version="1.0" encoding="utf-8"?>
 <hml xmlns="http://schemas.nmdp.org/spec/hml/1.0.1" 
      xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -20,20 +22,6 @@
       </allele-assignment>
       <typing-method>
       </typing-method>
-      <consensus-sequence date="2014-10-22">
-          <reference-database availability="public">
-              <reference-sequence id="ref1" />
-        </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1">
-          <sequence>
-            GCTCTCAC
-          </sequence>
-          <variant id="0" reference-bases="T" alternate-bases="C" start="29942937" end="29943001" quality-score="90" filter="pass">
-              <variant-effect term="missense_variant" />
-          </variant>
-          <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
-        </consensus-sequence-block>
-      </consensus-sequence>
     </typing>
     </sample>
 </hml>
