@@ -22,6 +22,8 @@
 */
 package main.java.miringvalidator;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -299,6 +301,11 @@ public class SchematronValidator
         {
             ve.setMiringRule("1.3.b");
             ve.setSolutionText("Please verify that the test-id-source attribute is 'NCBI-GTR'");
+        }
+        else if(errorMessage.equals("On a reference sequence node, end attribute should be greater than or equal to the start attribute."))
+        {
+            ve.setMiringRule("2.2.c");
+            ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
         }
         else
         {

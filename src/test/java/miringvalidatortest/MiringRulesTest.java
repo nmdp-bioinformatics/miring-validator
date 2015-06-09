@@ -41,7 +41,7 @@ public class MiringRulesTest
     @Test
     public void testTemp()
     {
-
+        //Start with 2.2.1.b and c
     }
     
     @Test
@@ -128,22 +128,52 @@ public class MiringRulesTest
     @Test
     public void testMiringElement2Tier1()
     {
-        logger.debug("starting testSchematronMiringElement2");
-        fail("not yet implemented");
+        logger.debug("starting testMiringElement2Tier1");
+        
+        //2.1.a
+        String xml = Utilities.readXmlResource("/hml/Element2.no.alleleassignment.xml");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing allele-assignment node underneath the typing node."));
+        
+        //2.1.b and 2.1.c
+        xml = Utilities.readXmlResource("/hml/Element2.no.alleleassignment.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-db attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-version attribute."));
+        
+        //2.2.b
+        xml = Utilities.readXmlResource("/hml/Element2.referencesequence.missing.attributes.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a name attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a start attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a end attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a accession attribute."));
+        
+        //2.3.b
+        xml = Utilities.readXmlResource("/hml/Element2.referencesequence.missing.attributes.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-database is missing a curated attribute."));
     }
     
     @Test
     public void testMiringElement2Tier2()
     {
-        logger.debug("starting testSchematronMiringElement3");
-        fail("not yet implemented");
-    }
+        logger.debug("starting testMiringElement2Tier2");
+        
+        //2.2.c
+        String xml = Utilities.readXmlResource("/hml/Element2.referencesequence.good.startend.xml");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertFalse(Utilities.containsErrorNode(results, "On a reference sequence node, end attribute should be greater than or equal to the start attribute."));
+        
+        xml = Utilities.readXmlResource("/hml/Element2.referencesequence.bad.startend.xml");
+        validator = new MiringValidator(xml);
+        results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "On a reference sequence node, end attribute should be greater than or equal to the start attribute."));
 
-    @Test
-    public void testInvalidProlog()
-    {
-        //I keep getting an invalid prolog error, meaning that my XML has text before the XML starts.  I'm testing that I can handle that problem
-        fail("not yet implemented");
     }
 }
-

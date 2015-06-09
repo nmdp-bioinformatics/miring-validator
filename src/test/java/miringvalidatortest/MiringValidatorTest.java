@@ -52,9 +52,6 @@ public class MiringValidatorTest
         assertFalse(Utilities.containsErrorNode(goodValidatorResults, "There is a missing hmlid node underneath the hml node."));
         assertTrue(Utilities.containsErrorNode(badValidatorResults, "There is a missing hmlid node underneath the hml node."));
         
-        assertFalse(Utilities.containsErrorNode(goodValidatorResults, "start attribute on reference-sequence nodes should be 0."));
-        assertTrue(Utilities.containsErrorNode(badValidatorResults, "start attribute on reference-sequence nodes should be 0."));
-        
         assertFalse(Utilities.containsErrorNode(goodValidatorResults, "The node variant is missing a quality-score attribute."));
         assertTrue(Utilities.containsErrorNode(badValidatorResults, "The node variant is missing a quality-score attribute."));
     }
