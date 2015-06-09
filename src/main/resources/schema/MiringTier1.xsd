@@ -1375,7 +1375,7 @@
             </xs:attribute>
             <xs:attribute name="start" type="hmlns:position-type" use="required" />
             <xs:attribute name="end" type="hmlns:position-type" use="required" />
-            <xs:attribute name="accession" use="optional">
+            <xs:attribute name="accession" use="required">
               <xs:simpleType>
                 <xs:restriction base="xs:string">
                   <xs:minLength value="1" />

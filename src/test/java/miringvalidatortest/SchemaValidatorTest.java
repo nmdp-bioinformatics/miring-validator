@@ -60,4 +60,15 @@ public class SchemaValidatorTest
         assertTrue(Utilities.containsErrorNode( errorReport , "There is a missing hmlid node underneath the hml node." ));
         assertFalse(Utilities.containsErrorNode( errorReport , "There is a missing reporting-center node underneath the hml node." ));
     }
+    
+    @Test
+    public void testInvalidProlog()
+    {
+        logger.debug("Starting a testInvalidProlog");
+        
+        String xml = Utilities.readXmlResource("/hml/invalid.prolog.xml.txt");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
+    }
 }

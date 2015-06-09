@@ -104,36 +104,38 @@ public class SchemaValidator
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
         //pseudoXPath and attributesLinkedList are used to keep track of where the parser is in the document.
-        //pseudoXPath probably could have [1] indicators for more informmation.  Look into this later.
+        //pseudoXPath probably could  have indexes of the nodes for more information.  Look into this later.
         //attributesLinkedList is ordered, and the elements correspond to the pseudoXpath.
         //We will add and remove elements from these as the parser parses.
         private static String pseudoXPath = "";
-        //public static List<Attributes> attributesLinkedList = new ArrayList<Attributes>();
         public static List<String> attributesLinkedList = new ArrayList<String>();
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
-            //startElement is a method that is triggered when the parser hits the start of an element
-            //I'm using it to record information about parent nodes of what node I'm validating
-            //logger.debug("START ELEMENT: " + localName);
-            pseudoXPath = pseudoXPath + "/" + localName; 
-            //logger.debug("adding attributes with length " + attributes.getLength());
-            //logger.debug("attribute 0 = " + attributes.getValue(0));
-            attributesLinkedList.add(Utilities.getAttributes(attributes));
-            
-            //logger.debug(pseudoXPath);
-            //logger.debug("list count = " + attributesLinkedList.size());
+            try
+            {
+                pseudoXPath = pseudoXPath + "/" + localName; 
+                attributesLinkedList.add(Utilities.getAttributes(attributes));
+            }
+            catch(Exception e)
+            {
+                logger.error("Exception in startElement: " + e);
+            }
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException 
         {
-            //logger.debug("END ELEMENT: " + localName);
-            pseudoXPath = pseudoXPath.substring( 0, pseudoXPath.lastIndexOf("/") );
-            attributesLinkedList.remove(attributesLinkedList.size()-1);
-            //logger.debug(pseudoXPath);
-            //logger.debug("list count = " + attributesLinkedList.size());
+            try
+            {
+                pseudoXPath = pseudoXPath.substring( 0, pseudoXPath.lastIndexOf("/") );
+                attributesLinkedList.remove(attributesLinkedList.size()-1);
+            }
+            catch(Exception e)
+            {
+                logger.error("Exception in endElement: " + e);
+            }
         }
         
         //warning(), error(), and fatalError() are overrides which are triggered by 
@@ -162,20 +164,21 @@ public class SchemaValidator
 
         private static void handleParserException(SAXException exception)
         {
-            //Mine the exception data for useful information.  We want to present anything we can.
-            //Might be worthwhile to keep track of the place in the tree we are within the XML.
             //I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
-            //when the parser finds a problem with the xml
-            
-            //We take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
+            //When the parser finds a problem with the xml            
+            //Take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
             ValidationError ve = null;
             
-            String[] exceptionTokens = tokenizeString(exception.getMessage());
+            String errorMessage = exception.getMessage();
+            String[] exceptionTokens = tokenizeString(errorMessage);
             
-            //TODO: handle the "content in prolog" error.
-            
-            if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
+            if(errorMessage.equals("Content is not allowed in prolog."))
+            {
+                ve = new ValidationError("Content is not allowed in prolog.",true);
+                ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
+            }            
+            else if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
             {
                 // This cvc-complex-type is called if there is a node missing.  here's a few examples of what the exception.getMessage() can look like
                 // cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
@@ -184,7 +187,7 @@ public class SchemaValidator
                 // cvc-complex-type.2.4.b: The content of element 'sbt-ngs' is not complete. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":raw-reads}' is expected.
                 // for 2.4.b, it's interesting that it says the content of element 'sbt-ngs'.  That's the real parent of the node where it's missing.  Perhaps I can use that info, maybe it's useless.
 
-                // "hmlid" and "reporting-center" will be the last word between the '{' and '}'. 
+                // The missing node name ("hmlid", "reporting-center", etc.) will be the last word between the '{' and '}'. 
                 // Find their indices.
                 int minInd = -1, maxInd = -1;
                 for(int x = 0; x < exceptionTokens.length; x++)
@@ -241,14 +244,17 @@ public class SchemaValidator
         private static ValidationError handleMissingAttribute(String missingAttributeName, String nodeName)
         {
             ValidationError ve;
-            String miringRuleID = "Unhandled Miring Rule ID for Missing Attribute";
+            String miringRuleID = "Unhandled Miring Rule ID";
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             String moreInformation = "";
             
+            //Specific logic for various MIRING rules
             //I think I have access to lots more information than what I'm putting here.
             //Look into the parent node, we can probably get it's attributes to be useful here.
             //moreInformation = moreInformation + (any useful information we can find)
+            //I could make a getMiringRuleID Method.  Yeah that would be smart.  Use Case Statements.
+            //TODO: Make that getMiringRuleID method.
             if(nodeName.equals("variant"))
             {
                 if(missingAttributeName.equals("id"))
@@ -314,20 +320,46 @@ public class SchemaValidator
                 {
                     logger.error("Missing attribute name not handled! : " + missingAttributeName);
                 }
+            }            
+            else if(nodeName.equals("reference-database"))
+            {
+                if(missingAttributeName.equals("curated"))
+                {
+                    miringRuleID = "2.3.b";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                }
+            }
+            else if(nodeName.equals("consensus-sequence-block"))
+            {
+                logger.error("consensus-sequence-block not handled! : " + missingAttributeName);
+            }
+            else if(nodeName.equals("reference-sequence"))
+            {
+                if(missingAttributeName.equals("id")
+                    || missingAttributeName.equals("name")
+                    || missingAttributeName.equals("start")
+                    || missingAttributeName.equals("end")
+                    || missingAttributeName.equals("accession"))
+                {
+                    miringRuleID = "2.2.b";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                }
             }
             else
             {
-                //more stuff to check in here.
                 logger.error("Node Name Not Handled! : " + nodeName);
             }
             
-            ve =  new ValidationError(
-                    errorMessage
-                    ,true);
-                
-                ve.setSolutionText(solutionMessage);
-                ve.setMiringRule(miringRuleID);
-                ve.addMoreInformation(moreInformation);
+            ve =  new ValidationError(errorMessage,true);
+            ve.setSolutionText(solutionMessage);
+            ve.setMiringRule(miringRuleID);
+            ve.addMoreInformation(moreInformation);
             return ve;
         }
 
@@ -366,6 +398,7 @@ public class SchemaValidator
             errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
             solutionMessage = "Please add exactly one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
             
+            //Specific logic for various MIRING errors
             if(missingNodeName.equals("hmlid"))
             {
                 miringRuleID = "1.1.a";
@@ -378,7 +411,11 @@ public class SchemaValidator
             {
                 miringRuleID = "1.5.a";
                 solutionMessage = "Every sbt-ngs node must have at least one child raw-reads node.";
-                
+            }
+            else if(missingNodeName.equals("allele-assignment"))
+            {
+                miringRuleID = "2.1.a";
+                solutionMessage = "Every typing node must have at least one child allele-assignment node.";
             }
             else
             {                
@@ -397,15 +434,23 @@ public class SchemaValidator
 
         private static String[] tokenizeString(String exceptionMessage)
         {
-            StringTokenizer st = new StringTokenizer(exceptionMessage);
-            String[] messageTokens = new String[st.countTokens()];
-            int counter = 0;
-            while (st.hasMoreTokens()) 
+            try
             {
-                messageTokens[counter] = st.nextToken();
-                counter++;
+                StringTokenizer st = new StringTokenizer(exceptionMessage);
+                String[] messageTokens = new String[st.countTokens()];
+                int counter = 0;
+                while (st.hasMoreTokens()) 
+                {
+                    messageTokens[counter] = st.nextToken();
+                    counter++;
+                }
+                return messageTokens;
             }
-            return messageTokens;
+            catch(Exception e)
+            {
+                logger.error("Exception in tokenizeString(): " + e);
+                return null;
+            }
         }
     }
 }

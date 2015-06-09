@@ -96,39 +96,10 @@ public class Utilities
         try
         {
             JarFile jarFile = new JarFile(jarFileLocation);
-            Enumeration e = jarFile.entries();
 
             URL[] urls = { new URL("jar:file:" + jarFileLocation +"!/") };
             URLClassLoader cl = URLClassLoader.newInstance(urls);
-            
-            /*
-            //I don't need to load any classes right now.  They are available in loadedProbatronClasses.
-            //I will load the classes as I need them.
-            while (e.hasMoreElements()) 
-            {
-                JarEntry je = (JarEntry) e.nextElement();
-                if(je.isDirectory() || !je.getName().endsWith(".class"))
-                {
-                    continue;
-                }
-                // -6 because of .class
-                String className = je.getName().substring(0,je.getName().length()-6);
-                className = className.replace('/', '.');
 
-                if(className.contains("org.apache.log4j"))
-                {
-                    //Having problems with log4j classes.  I think it's being loaded twice, so it's getting an exception here.  
-                    //Not really sure, but log4j is being loaded already so here we are.
-                    //Could be that I only need to load the org.probatron.* classes
-                    System.out.println(className + " will not be loaded.");
-                }
-                else
-                {
-                    System.out.println(className + " loading...");
-                    Class c = cl.loadClass(className);
-                }
-            }*/
-            
             jarFile.close();
             return cl;
         }
@@ -305,6 +276,16 @@ public class Utilities
      */
     public static ValidationError[] combineArrays(ValidationError[] firstErrorArray, ValidationError[] secondErrorArray)
     {
+        //Super clever way of handling nulls.
+        if(firstErrorArray == null)
+        {
+            return secondErrorArray;
+        }
+        if(secondErrorArray == null)
+        {
+            return firstErrorArray;
+        }
+
         ValidationError[] combinedErrors = new ValidationError[firstErrorArray.length + secondErrorArray.length];
         
         for(int i = 0; i < firstErrorArray.length; i++)
@@ -372,6 +353,11 @@ public class Utilities
             {
                 attributeString = attributeString  + "{" + attributes.getLocalName(i) + ":" + attributes.getValue(i) + "}, ";
             }
+        }
+        // Trim the trailing comma and space        
+        if(attributeString.contains(", "))
+        {
+            attributeString = attributeString.substring(0,attributeString.length()-2);
         }
         return attributeString;
     }
