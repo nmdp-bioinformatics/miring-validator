@@ -44,8 +44,25 @@ public class MiringRulesTest
         //4.2.a and 4.2.3.a and 4.2.4.a and 4.2.5.a and 4.2.7.a
         String xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.attributes.xml");
         MiringValidator validator = new MiringValidator(xml);
-        String results = validator.validate();
-        assertTrue(Utilities.containsErrorNode(results, "Fix this im bored time to go."));
+        String badResults = validator.validate();
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a description attribute."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a start attribute."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a end attribute."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a phase-set attribute."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a expected-copy-number attribute."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a continuity attribute."));
+        
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.good.attributes.xml");
+        validator = new MiringValidator(xml);
+        String goodResults = validator.validate();
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a description attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a start attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a end attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a phase-set attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a expected-copy-number attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a continuity attribute."));
+        
+        
     }
     
     @Test
