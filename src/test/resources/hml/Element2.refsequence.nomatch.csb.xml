@@ -12,7 +12,7 @@
     <sample id="123456789">
     <collection-method>buccal swab</collection-method>
     <typing gene-family="HLA" date="2013-12-31">
-      <allele-assignment date="2014-01-01" allele-db="db" allele-version="3">
+      <allele-assignment date="2014-01-01" allele-db="a" allele-version="3">
         <glstring uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" />
         <glstring>
           HLA-A*02:01:01:01
@@ -21,9 +21,15 @@
       <typing-method>
       </typing-method>
       <consensus-sequence date="2014-10-22">
-          <reference-database availability="public" curated="true">
-              <reference-sequence id="ref1"  start="0" end="3" name="a" accession="public"/>
+      
+        <reference-database availability="public" curated="true">
+              <reference-sequence id="ref1" start="0" end="3" name="a" accession="public"/>
         </reference-database>
+        
+        <reference-database availability="public" curated="true">
+              <reference-sequence id="ref2" start="0" end="3" name="a" accession="public"/>
+        </reference-database>
+        
         <consensus-sequence-block reference-sequence-id="ref1" start="0" end="3" description="friendly">
           <sequence>
             GCTCTCAC
@@ -33,6 +39,7 @@
           </variant>
           <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
         </consensus-sequence-block>
+        
       </consensus-sequence>
     </typing>
     </sample>
