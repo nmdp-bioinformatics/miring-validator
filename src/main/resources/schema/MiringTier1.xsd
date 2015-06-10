@@ -1183,10 +1183,10 @@
       </xs:attribute>
 
       <xs:attribute name="phasing-group" type="xs:string" use="optional" /><!-- DEPRECATED: Use phase-set -->
-      <xs:attribute name="phase-set" type="xs:string" use="optional" />
+      <xs:attribute name="phase-set" type="xs:string" use="required" />
 
-      <xs:attribute name="continuity" type="xs:boolean" use="optional" />
-      <xs:attribute name="expected-copy-number" use="optional">
+      <xs:attribute name="continuity" type="xs:boolean" use="required" />
+      <xs:attribute name="expected-copy-number" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:int" >
             <xs:minInclusive value="0" />

@@ -61,6 +61,7 @@ public class MiringValidator
         //if(!ReportGenerator.containsFatalErrors(tier1ValidationErrors))
         
         //We're just gonna skip tier 2 if there are fatal schema validation errors.
+        //I mean fatal as in it's a bad XML file, not a bad MIRING file.
         //Schematron can't get errors if it can't parse the XML validly.
         //For now I only know about the "Content is not allowed in prolog." error
         String tier1Report = ReportGenerator.generateReport(tier1ValidationErrors, null, null);
@@ -83,7 +84,7 @@ public class MiringValidator
             //Tier 3 is outside scope for now.  Okay.
             /*if(!containsFatalErrors(tier2ValidationErrors))
             {
-                
+            //tier3();
             }*/
         }
 

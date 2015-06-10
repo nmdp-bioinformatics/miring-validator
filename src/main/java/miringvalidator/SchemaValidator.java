@@ -231,12 +231,17 @@ public class SchemaValidator
             }
             else
             {
+                //This is default behavior.  Kind of a last ditch effort.
+                //I at least want the parser error to show up on the report.
+                
                 //There are more types of errors probably. 
                 //What if I have too many of a thing?
-                logger.error("This Sax Parser Exception isn't handled :" + exception.getMessage());
+                logger.error("This Sax Parser Exception isn't handled gracefully :" + exception.getMessage());
+                ve = new ValidationError("Unhandled Sax Parser Error: " + exception.getMessage(), true);
+                ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
+                ve.setMiringRule("?");
             }
-            
-           
+                       
             ve.xPath = pseudoXPath;
             Utilities.addValidationError(validationErrors, ve);
         }
@@ -248,6 +253,7 @@ public class SchemaValidator
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             String moreInformation = "";
+            boolean isFatal = true;
             
             //Specific logic for various MIRING rules
             //I think I have access to lots more information than what I'm putting here.
@@ -334,7 +340,36 @@ public class SchemaValidator
             }
             else if(nodeName.equals("consensus-sequence-block"))
             {
-                logger.error("consensus-sequence-block not handled! : " + missingAttributeName);
+                if(missingAttributeName.equals("description"))
+                {
+                    miringRuleID = "4.2.a";
+                }
+                else if(missingAttributeName.equals("reference-sequence-id"))
+                {
+                    miringRuleID = "4.2.2.a";
+                }
+                else if(missingAttributeName.equals("start")
+                    || missingAttributeName.equals("end"))
+                {
+                    miringRuleID = "4.2.3.a";
+                }
+                else if(missingAttributeName.equals("phase-set"))
+                {
+                    miringRuleID = "4.2.4.a";
+                    isFatal = false;
+                }
+                else if(missingAttributeName.equals("expected-copy-number"))
+                {
+                    miringRuleID = "4.2.5.a";
+                }
+                else if(missingAttributeName.equals("continuity"))
+                {
+                    miringRuleID = "4.2.7.a";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                }
             }
             else if(nodeName.equals("reference-sequence"))
             {
@@ -356,7 +391,7 @@ public class SchemaValidator
                 logger.error("Node Name Not Handled! : " + nodeName);
             }
             
-            ve =  new ValidationError(errorMessage,true);
+            ve =  new ValidationError(errorMessage,isFatal);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
             ve.addMoreInformation(moreInformation);

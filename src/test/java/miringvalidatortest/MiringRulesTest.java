@@ -41,7 +41,11 @@ public class MiringRulesTest
     @Test
     public void testTemp()
     {
-        //Start with 2.2.1.b and c
+        //4.2.a and 4.2.3.a and 4.2.4.a and 4.2.5.a and 4.2.7.a
+        String xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.attributes.xml");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "Fix this im bored time to go."));
     }
     
     @Test
@@ -174,6 +178,67 @@ public class MiringRulesTest
         validator = new MiringValidator(xml);
         results = validator.validate();
         assertTrue(Utilities.containsErrorNode(results, "On a reference sequence node, end attribute should be greater than or equal to the start attribute."));
+        
+        //2.2.1.c
+        xml = Utilities.readXmlResource("/hml/Element2.refsequence.nomatch.csb.xml");
+        String badResults = new MiringValidator(xml).validate();
 
+        xml = Utilities.readXmlResource("/hml/Element2.refsequence.match.csb.xml");
+        String goodResults = new MiringValidator(xml).validate();
+
+        assertTrue(Utilities.containsErrorNode(badResults, "A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."));
+
+    }
+
+    @Test
+    public void testMiringElement3Tier1()
+    {
+        logger.debug("starting testMiringElement3Tier1");
+        logger.debug("Nothing tested in Element 3 yet.");
+    }
+    
+    @Test
+    public void testMiringElement3Tier2()
+    {
+        logger.debug("starting testMiringElement3Tier2");
+        logger.debug("Nothing tested in Element 3 yet.");
+    }
+    
+    @Test
+    public void testMiringElement4Tier1()
+    {
+        logger.debug("starting testMiringElement4Tier1");
+        
+        //4.2.a
+        
+       
+        //4.2.3.a
+        
+        //4.2.4.a
+        
+        //4.2.5.a
+        
+        //4.2.7.a
+    }
+    
+    @Test
+    public void testMiringElement4Tier2()
+    {
+        logger.debug("starting testMiringElement4Tier2");
+        
+        //4.2.b
+        
+        //4.2.1.a
+        
+        //4.2.2.b
+        
+        //4.2.3.b
+        
+        //4.2.3.d
+        
+        //4.2.4.b
+        
+        //4.2.7.b
     }
 }

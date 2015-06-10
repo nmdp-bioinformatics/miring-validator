@@ -191,20 +191,20 @@ public class SchematronValidator
                     String locationText = null;
                     String errorText = null;
                     
-                    Node currentSuccessfulReportNode = combinedList[i];
-                    NamedNodeMap succRepNodeAttributes = currentSuccessfulReportNode.getAttributes();
+                    Node currentSchematronNode = combinedList[i];
+                    NamedNodeMap currAttributes = currentSchematronNode.getAttributes();
                     
                     //testText contains the actual test that schematron ran to get this report. 
                     //Not sure if we'll use that information at all
-                    testText = succRepNodeAttributes.getNamedItem("test").getNodeValue();
+                    testText = currAttributes.getNamedItem("test").getNodeValue();
                     
                     //locationText contains information about exactly where in the HML file we found the problem
                     //I believe it is or contains an xpath.  We're gonna put that on the report.
-                    //Probably need to skim out the namespaces, because they clutter things badly.
-                    locationText = succRepNodeAttributes.getNamedItem("location").getNodeValue();
+                    //Probably need to skim out the namespaces, because they clutter things badly, and because who cares?
+                    locationText = currAttributes.getNamedItem("location").getNodeValue();
                     
                     //Dig into the "svrl:successful-report" node to get the error text.
-                    NodeList childrenNodes = currentSuccessfulReportNode.getChildNodes();
+                    NodeList childrenNodes = currentSchematronNode.getChildNodes();
                     if(childrenNodes != null)
                     {
                         for(int j = 0; j < childrenNodes.getLength(); j++)
@@ -228,6 +228,10 @@ public class SchematronValidator
         catch(Exception e)
         {
             logger.error("Error forming DOM from schematron results: " + e);
+            validationErrors.add(new ValidationError(
+                "Unhandled Schematron validation exception: " + e, true
+            ));
+            
         }
 
         if(validationErrors.size() > 0)
@@ -306,6 +310,12 @@ public class SchematronValidator
         {
             ve.setMiringRule("2.2.c");
             ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
+        }
+        else if(errorMessage.equals("A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."))
+        {
+            ve.setMiringRule("2.2.1.c");
+            ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
+            ve.setFatal(false);
         }
         else
         {
