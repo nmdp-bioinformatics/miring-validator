@@ -22,12 +22,11 @@
       </typing-method>
       <consensus-sequence date="2014-10-22">
           <reference-database availability="public" curated="true">
-              <reference-sequence id="ref1"  start="0" end="3" name="a" accession="public"/>
+              <reference-sequence id="ref1"  start="0" end="10" name="a" accession="public"/>
         </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1">
-          <sequence>
-            GCTCTCAC
-          </sequence>
+        <consensus-sequence-block reference-sequence-id="ref1" start="1" end="6" description="friendly">
+        <!-- There are only 2 nucleotides in this sequence.-->
+          <sequence>GC</sequence>
           <variant id="0" reference-bases="T" alternate-bases="C" start="29942937" end="29943001" quality-score="90" filter="pass">
               <variant-effect term="missense_variant" />
           </variant>
