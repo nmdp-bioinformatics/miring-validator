@@ -317,6 +317,12 @@ public class SchematronValidator
             ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
             ve.setFatal(false);
         }
+        else if(errorMessage.contains("The start attribute on a consensus sequence node should be greater than or equal to the start attribute")
+             || errorMessage.contains("The end attribute on a consensus sequence node should be less than or equal to the end attribute"))
+        {
+            ve.setMiringRule("4.2.3.d");
+            ve.setSolutionText("Verify that the start and end attributes on the consensus-sequence-block are >= and <= to the start and end attributes on the corresponding reference sequence.");
+        }
         else
         {
             ve.setMiringRule("Unhandled Miring Rule");

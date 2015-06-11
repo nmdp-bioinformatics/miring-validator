@@ -10,7 +10,7 @@
             <assert test="number(@end) >= number(@start)">On a reference sequence node, end attribute should be greater than or equal to the start attribute.</assert>
         </rule>
     </pattern>
-    
+
     <!--
     Rule 2.2.1.c
     Get every id belonging to a reference-sequence.
@@ -19,6 +19,7 @@
     <pattern name="Reference Sequence ID">    
         <rule context="hml:reference-sequence">            
             <let name="refSeqId" value="attribute(id)" />
+            
             <assert test="//hml:consensus-sequence-block[@reference-sequence-id=$refSeqId]">A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</assert>
         </rule>
     </pattern>

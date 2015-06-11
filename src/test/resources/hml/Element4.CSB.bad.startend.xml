@@ -24,7 +24,8 @@
           <reference-database availability="public" curated="true">
               <reference-sequence id="ref1"  start="0" end="3" name="a" accession="public"/>
         </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1">
+        
+        <consensus-sequence-block reference-sequence-id="ref1" start="5" end="3" description="friendly">
           <sequence>
             GCTCTCAC
           </sequence>
@@ -33,6 +34,8 @@
           </variant>
           <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
         </consensus-sequence-block>
+        
+
       </consensus-sequence>
     </typing>
     </sample>

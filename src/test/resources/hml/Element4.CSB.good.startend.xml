@@ -24,7 +24,8 @@
           <reference-database availability="public" curated="true">
               <reference-sequence id="ref1"  start="0" end="3" name="a" accession="public"/>
         </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1">
+        
+        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="78" description="friendly">
           <sequence>
             GCTCTCAC
           </sequence>
@@ -33,6 +34,17 @@
           </variant>
           <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
         </consensus-sequence-block>
+        
+        <consensus-sequence-block reference-sequence-id="ref1" start="42" end="66878565557777777" description="friendly">
+          <sequence>
+            GCTCTCAC
+          </sequence>
+          <variant id="0" reference-bases="T" alternate-bases="C" start="29942937" end="29943001" quality-score="90" filter="pass">
+              <variant-effect term="missense_variant" />
+          </variant>
+          <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
+        </consensus-sequence-block>
+        
       </consensus-sequence>
     </typing>
     </sample>
