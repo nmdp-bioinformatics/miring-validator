@@ -28,7 +28,7 @@
           <sequence>
             GCT
           </sequence>
-          <variant id="0" reference-bases="T" alternate-bases="C" start="29942937" end="29943001" quality-score="90" filter="pass">
+          <variant reference-bases="T" alternate-bases="C" start="29942937" end="29943001" >
               <variant-effect term="missense_variant" />
           </variant>
           <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
