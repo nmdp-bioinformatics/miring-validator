@@ -35,50 +35,37 @@
     <!--
     Rule 4.2.3.e
     Length of sequence node text (trimmed) should be = end-start.
+    There are sequence nodes elsewhere in HML.  Only want the children of CSBs
       -->
     <pattern name="CSB Sequence Length">
-        <rule context="hml:consensus-sequence-block">
-            <let name="csbStart" value="number(attribute(start))" />
-            <let name="csbEnd" value="number(attribute(end))" />
-            <let name="seq" value="./sequence" />
-            <let name="seqLength" value="string-length(./sequence)" />
-
-            <report test="//hml:sequence"> CSB: Sequence = <value-of select="$seq"/> length = <value-of select="$seqLength"/> </report>
-
+        <rule context="//hml:consensus-sequence-block/hml:sequence">
+            <let name="seq" value="replace(normalize-space(.),' ','')" />
+            <let name="seqLength" value="string-length($seq)" />
+            <assert test="..[@end - @start = $seqLength]">For every consensus-sequence-block node, the child sequence node must have a length of (end - start).  The sequence has a length of <value-of select="$seqLength"/>. start=<value-of select="../@start"/>. end=<value-of select="../@end"/> </assert>
         </rule>
     </pattern>
-      
-      
-      
-      
+
     <!--
     Rule 4.2.4.b
       -->
+    <pattern name="Depricated CSB phasing-group">
+        <rule context="hml:consensus-sequence-block">
+            <report test="@phasing-group">On a consensus-sequence-block node, the phasing-group attribute is deprecated.</report>
+        </rule>
+    </pattern>
+      
     <!--
     Rule 4.2.7.b
      -->
-
-
-
-    <!-- 
-    Rule 2.2.c
-     -->
-    <!-- <pattern name="Reference Sequence Start and End">    
-        <rule context="hml:reference-sequence">            
-            <assert test="number(@end) >= number(@start)">On a reference sequence node, end attribute should be greater than or equal to the start attribute.</assert>
+    <pattern name="CSB continuity">
+        <rule context="hml:consensus-sequence-block">
+            <let name="csbCont" value="attribute(continuity)" />
+            <let name="csbStart" value="attribute(start)" />
+            <let name="csbRefSeqID" value="attribute(reference-sequence-id)" />
+            <let name="csbPhaseSet" value="attribute(phase-set)" />
+            <let name="csbPreviousEnd" value="preceding-sibling::*[@reference-sequence-id=$csbRefSeqID and @phase-set=$csbPhaseSet][1]/@end" />
+            <report test="$csbCont='true' and $csbStart!=$csbPreviousEnd and $csbPreviousEnd!='' ">A consensus-sequence-block with attribute continuity="true" does not appear to be continuous with it's previous sibling consensus-sequence-block node, matched by reference-sequence-id and phase-set. (start=<value-of select="$csbStart"/>)!=(prev. sib's end=<value-of select="$csbPreviousEnd"/>)</report>
         </rule>
-    </pattern> -->
+    </pattern>
     
-    <!--
-    Rule 2.2.1.c
-    Get every id belonging to a reference-sequence.
-    Assert that there is a node with a idref of "@id" on a node named "consensus-sequence-block:
-     -->
-    <!-- <pattern name="Reference Sequence ID">    
-        <rule context="hml:reference-sequence">            
-            <let name="refSeqId" value="attribute(id)" />
-            <assert test="//hml:consensus-sequence-block[@reference-sequence-id=$refSeqId]">A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</assert>
-        </rule>
-    </pattern> -->
-
 </schema>

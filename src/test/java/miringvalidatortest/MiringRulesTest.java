@@ -40,14 +40,7 @@ public class MiringRulesTest
     @Test
     public void testTemp()
     {
-        //4.2.3.e
-        String xml = Utilities.readXmlResource("/hml/Element4.CSB.good.sequencelength.xml");
-        String results = new MiringValidator(xml).validate();
-        assertFalse(Utilities.containsErrorNode(results, "ERR"));
-        
-        xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.sequencelength.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "ERR"));
+
     }
     
     @Test
@@ -256,8 +249,28 @@ public class MiringRulesTest
         assertTrue(Utilities.containsErrorNode(results, "The start attribute on a consensus sequence node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
         assertTrue(Utilities.containsErrorNode(results, "The end attribute on a consensus sequence node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
         
+        //4.2.3.e
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.good.sequencelength.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."));
+        
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.sequencelength.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."));
+
         //4.2.4.b
+        xml = Utilities.readXmlResource("/hml/Element4.phasinggroup.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "On a consensus-sequence-block node, the phasing-group attribute is deprecated."));
         
         //4.2.7.b
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.continuous.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node,"));
+        
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.not.continuous.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node,"));
+
     }
 }

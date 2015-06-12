@@ -356,6 +356,7 @@ public class SchemaValidator
                 else if(missingAttributeName.equals("phase-set"))
                 {
                     miringRuleID = "4.2.4.a";
+                    solutionMessage = "Phasing information is not strictly required, this is just a warning.";
                     isFatal = false;
                 }
                 else if(missingAttributeName.equals("expected-copy-number"))
