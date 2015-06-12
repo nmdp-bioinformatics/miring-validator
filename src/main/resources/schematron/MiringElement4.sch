@@ -24,10 +24,10 @@
             <let name="csbEnd" value="attribute(end)" />
             
             <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @start &lt;= $csbStart]">
-            The start attribute on a consensus sequence node should be greater than or equal to the start attribute on the corresponding reference-sequence node.  CSB:start=<value-of select="$csbStart"/> ,RefSeq:start=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@start"/>
+            The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.  CSB:start=<value-of select="$csbStart"/> ,RefSeq:start=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@start"/>
             </assert>
             <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @end &gt;= $csbEnd]">
-            The end attribute on a consensus sequence node should be less than or equal to the end attribute on the corresponding reference-sequence node.  CSB:end=<value-of select="$csbEnd"/> ,RefSeq:end=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@end"/>
+            The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.  CSB:end=<value-of select="$csbEnd"/> ,RefSeq:end=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@end"/>
             </assert>
         </rule>
     </pattern>

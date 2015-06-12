@@ -18,20 +18,30 @@
           HLA-A*02:01:01:01
         </glstring>
       </allele-assignment>
-      <typing-method> 
+      <typing-method>
       </typing-method>
       <consensus-sequence date="2014-10-22">
           <reference-database availability="public" curated="true">
-              <reference-sequence id="ref1"  start="0" end="6" name="a" accession="public"/>
+              <reference-sequence id="ref1"  start="0" end="9" name="a" accession="public"/>
         </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="6" description="friendly" expected-copy-number="1" continuity="false">
+        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="3" description="friendly" expected-copy-number="1" continuity="false">
           <sequence>
-            GCTGGG
+            GCTGGGGGG
           </sequence>
-          <variant reference-bases="T" alternate-bases="C" start="1" end="3"  quality-score="90" filter="pass" id="0">
+          
+          <variant id="0" reference-bases="T" alternate-bases="C" start="1" end="2" quality-score="90" filter="pass">
               <variant-effect term="missense_variant" />
           </variant>
-          <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
+          
+           <variant id="1" reference-bases="T" alternate-bases="C" start="4" end="6" quality-score="90" filter="pass">
+              <variant-effect term="missense_variant" />
+          </variant>
+          
+          <variant id="4" reference-bases="T" alternate-bases="C" start="7" end="8" quality-score="90" filter="pass">
+              <variant-effect term="missense_variant" />
+          </variant>
+          
+          <sequence-quality sequence-start="4" sequence-end="5" quality-score="1.0" />
         </consensus-sequence-block>
       </consensus-sequence>
     </typing>

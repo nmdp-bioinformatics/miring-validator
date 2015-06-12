@@ -317,8 +317,8 @@ public class SchematronValidator
             ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
             ve.setFatal(false);
         }
-        else if(errorMessage.contains("The start attribute on a consensus sequence node should be greater than or equal to the start attribute")
-             || errorMessage.contains("The end attribute on a consensus sequence node should be less than or equal to the end attribute"))
+        else if(errorMessage.contains("The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute")
+             || errorMessage.contains("The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute"))
         {
             ve.setMiringRule("4.2.3.d");
             ve.setSolutionText("Verify that the start and end attributes on the consensus-sequence-block are >= and <= to the start and end attributes on the corresponding reference sequence.");
@@ -338,6 +338,18 @@ public class SchematronValidator
             ve.setMiringRule("4.2.7.b");
             ve.setSolutionText("Any consensus-sequence-block node with continuity=\"true\" is expected to be continuous with the previous sibling node.  Start=End(previous).  The previous node will have the same reference-sequence-id and phase-set, if applicable.");
         }
+        else if(errorMessage.contains("On a variant node, end attribute should be greater than or equal to the start attribute"))
+        {
+            ve.setMiringRule("5.2.b");
+            ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
+        }
+        else if(errorMessage.contains("The start attribute on a variant node should be greater than or equal to the start attribute")
+                || errorMessage.contains("The end attribute on a variant node should be less than or equal to the end attribute"))
+        {
+            ve.setMiringRule("5.2.d");
+            ve.setSolutionText("Verify that the start and end attributes on the variant are >= and <= to the start and end attributes on the corresponding reference sequence.");
+        }
+        
         else
         {
             ve.setMiringRule("Unhandled Miring Rule");
