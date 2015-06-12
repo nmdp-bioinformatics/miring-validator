@@ -33,58 +33,37 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-public class MiringRulesTest
+public class MiringTier2Test
 {
-    private static final Logger logger = LogManager.getLogger(MiringRulesTest.class);
+    private static final Logger logger = LogManager.getLogger(MiringTier2Test.class);
 
     @Test
     public void testTemp()
     {
-        //4.2.3.e
-        String xml = Utilities.readXmlResource("/hml/Element4.CSB.good.sequencelength.xml");
+        //5.3.b and 5.3.c
+        String xml = Utilities.readXmlResource("/hml/Element5.variant.good.ids.xml");
         String results = new MiringValidator(xml).validate();
-        assertFalse(Utilities.containsErrorNode(results, "ERR"));
+        System.out.println(results);
+        assertFalse(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
         
-        xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.sequencelength.xml");
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.1.xml");
         results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "ERR"));
+        System.out.println(results);
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
+
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.2.xml");
+        results = new MiringValidator(xml).validate();
+        System.out.println(results);
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
+
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.3.xml");
+        results = new MiringValidator(xml).validate();
+        System.out.println(results);
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
+
+
     }
-    
-    @Test
-    public void testMiringElement1Tier1()
-    {
-        logger.debug("starting testMiringElement1Tier1");
-        //1.1.a
-        String xml = Utilities.readXmlResource("/hml/Element1.no.hmlid.xml");
-        String results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "There is a missing hmlid node underneath the hml node."));
-        
-        //1.2.a
-        xml = Utilities.readXmlResource("/hml/Element1.no.reportingcenter.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "There is a missing reporting-center node underneath the hml node."));
-        
-        //1.3.a
-        xml = Utilities.readXmlResource("/hml/Element1.sbtngs.missing.testid.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id attribute."));
-        assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id-source attribute."));
-        
-        //1.5.a
-        xml = Utilities.readXmlResource("/hml/Element1.missing.rawreads.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "There is a missing raw-reads node underneath the sbt-ngs node."));
-        
-        //1.5.b
-        xml = Utilities.readXmlResource("/hml/Element1.rawreads.no.availability.xml");
-        String noAvailResults = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(noAvailResults, "The node raw-reads is missing a availability attribute."));
-        
-        xml = Utilities.readXmlResource("/hml/Element1.rawreads.availability.xml");
-        String availResults = new MiringValidator(xml).validate();
-        assertFalse(Utilities.containsErrorNode(availResults, "The node raw-reads is missing a availability attribute."));
-    }
-    
+
     @Test
     public void testMiringElement1Tier2()
     {
@@ -124,37 +103,7 @@ public class MiringRulesTest
         assertTrue(Utilities.containsErrorNode(invalidTestIDErrorReport, "On a sbt-ngs node, test-id is not formatted like a GTR test ID."));
         assertTrue(Utilities.containsErrorNode(invalidTestIDErrorReport, "On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."));
     }
-    
-    @Test
-    public void testMiringElement2Tier1()
-    {
-        logger.debug("starting testMiringElement2Tier1");
-        
-        //2.1.a
-        String xml = Utilities.readXmlResource("/hml/Element2.no.alleleassignment.xml");
-        String results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "There is a missing allele-assignment node underneath the typing node."));
-        
-        //2.1.b and 2.1.c
-        xml = Utilities.readXmlResource("/hml/Element2.no.alleleassignment.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-db attribute."));
-        assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-version attribute."));
-        
-        //2.2.b
-        xml = Utilities.readXmlResource("/hml/Element2.referencesequence.missing.attributes.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a name attribute."));
-        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a start attribute."));
-        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a end attribute."));
-        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a accession attribute."));
-        
-        //2.3.b
-        xml = Utilities.readXmlResource("/hml/Element2.referencesequence.missing.attributes.xml");
-        results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "The node reference-database is missing a curated attribute."));
-    }
-    
+
     @Test
     public void testMiringElement2Tier2()
     {
@@ -182,49 +131,21 @@ public class MiringRulesTest
     }
 
     @Test
-    public void testMiringElement3Tier1()
-    {
-        logger.debug("starting testMiringElement3Tier1");
-        logger.debug("Nothing tested in Element 3 yet.");
-    }
-    
-    @Test
     public void testMiringElement3Tier2()
     {
         logger.debug("starting testMiringElement3Tier2");
         logger.debug("Nothing tested in Element 3 yet.");
     }
-    
-    @Test
-    public void testMiringElement4Tier1()
-    {
-        logger.debug("starting testMiringElement4Tier1");
-        
-        //4.2.a and 4.2.3.a and 4.2.4.a 
-        //and 4.2.5.a and 4.2.7.a
-        String xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.attributes.xml");
-        String badResults = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a description attribute."));
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a start attribute."));
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a end attribute."));
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a phase-set attribute."));
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a expected-copy-number attribute."));
-        assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a continuity attribute."));
-        
-        xml = Utilities.readXmlResource("/hml/Element4.CSB.good.attributes.xml");
-        String goodResults = new MiringValidator(xml).validate();
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a description attribute."));
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a start attribute."));
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a end attribute."));
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a phase-set attribute."));
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a expected-copy-number attribute."));
-        assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a continuity attribute."));
-    }
-    
+
     @Test
     public void testMiringElement4Tier2()
     {
         logger.debug("starting testMiringElement4Tier2");
+        
+        //4.a
+        fail("not implemented yet.");
+        //4.b
+        fail("not implemented yet.");
         
         //4.2.3.b
         String xml = Utilities.readXmlResource("/hml/Element4.CSB.good.startend.xml");
@@ -253,11 +174,53 @@ public class MiringRulesTest
         
         xml = Utilities.readXmlResource("/hml/Element4.CSB.outside.refseq.3.xml");
         results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "The start attribute on a consensus sequence node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
-        assertTrue(Utilities.containsErrorNode(results, "The end attribute on a consensus sequence node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
+        assertTrue(Utilities.containsErrorNode(results, "The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
+        assertTrue(Utilities.containsErrorNode(results, "The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
         
+        //4.2.3.e
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.good.sequencelength.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."));
+        
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.sequencelength.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."));
+
         //4.2.4.b
+        xml = Utilities.readXmlResource("/hml/Element4.phasinggroup.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "On a consensus-sequence-block node, the phasing-group attribute is deprecated."));
         
         //4.2.7.b
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.continuous.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node,"));
+        
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.not.continuous.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node,"));
+    }
+
+    @Test
+    public void testMiringElement5Tier2()
+    {
+        logger.debug("starting testMiringElement5Tier2");
+        
+        //5.2.b and 5.2.d
+        String xml = Utilities.readXmlResource("/hml/Element5.variant.bad.attributes.xml");
+        String badResults = new MiringValidator(xml).validate();
+        System.out.println(badResults);
+        assertFalse(Utilities.containsErrorNode(badResults, "The start attribute on a variant node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
+        assertTrue(Utilities.containsErrorNode(badResults, "The end attribute on a variant node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
+        assertTrue(Utilities.containsErrorNode(badResults, "On a variant node, end attribute should be greater than or equal to the start attribute."));
+
+        xml = Utilities.readXmlResource("/hml/Element5.variant.good.attributes.xml");
+        String goodResults = new MiringValidator(xml).validate();
+        System.out.println(goodResults);
+        assertFalse(Utilities.containsErrorNode(goodResults, "The start attribute on a variant node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "The end attribute on a variant node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
+        assertFalse(Utilities.containsErrorNode(goodResults, "On a variant node, end attribute should be greater than or equal to the start attribute."));
+
+
     }
 }

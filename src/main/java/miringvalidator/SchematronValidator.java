@@ -284,45 +284,72 @@ public class SchematronValidator
             ve.addMoreInformation("While performing test: " + testText);
         }
         
-        if(errorMessage.equals("The hmlid root is formatted like an OID."))
+        if(errorMessage.contains("The hmlid root is formatted like an OID."))
         {
             ve.setMiringRule("1.1.c");
             ve.setSolutionText("No solution needed.  This is a good thing.");
             ve.setFatal(false);
         }
-        else if(errorMessage.equals("The hmlid root is not formatted like an OID."))
+        else if(errorMessage.contains("The hmlid root is not formatted like an OID."))
         {
             ve.setMiringRule("1.1.c");
             ve.setSolutionText("Please format the hmlid node's root attribute like an OID:  11.234.55555.65");
             ve.setFatal(false);
         }
-        else if(errorMessage.equals("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
+        else if(errorMessage.contains("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
         {
             ve.setMiringRule("1.3.b");
             ve.setSolutionText("Please verify that the test-id attribute looks like a GTR test ID: GTR000000000.0");
         }
-        else if(errorMessage.equals("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
+        else if(errorMessage.contains("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
         {
             ve.setMiringRule("1.3.b");
             ve.setSolutionText("Please verify that the test-id-source attribute is 'NCBI-GTR'");
         }
-        else if(errorMessage.equals("On a reference sequence node, end attribute should be greater than or equal to the start attribute."))
+        else if(errorMessage.contains("On a reference sequence node, end attribute should be greater than or equal to the start attribute."))
         {
             ve.setMiringRule("2.2.c");
             ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
         }
-        else if(errorMessage.equals("A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."))
+        else if(errorMessage.contains("A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."))
         {
             ve.setMiringRule("2.2.1.c");
             ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
             ve.setFatal(false);
         }
-        else if(errorMessage.contains("The start attribute on a consensus sequence node should be greater than or equal to the start attribute")
-             || errorMessage.contains("The end attribute on a consensus sequence node should be less than or equal to the end attribute"))
+        else if(errorMessage.contains("The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute")
+             || errorMessage.contains("The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute"))
         {
             ve.setMiringRule("4.2.3.d");
             ve.setSolutionText("Verify that the start and end attributes on the consensus-sequence-block are >= and <= to the start and end attributes on the corresponding reference sequence.");
         }
+        else if(errorMessage.contains("For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."))
+        {
+            ve.setMiringRule("4.2.3.e");
+            ve.setSolutionText("Please check the sequence length against the start and end attributes.");
+        }
+        else if(errorMessage.contains("On a consensus-sequence-block node, the phasing-group attribute is deprecated."))
+        {
+            ve.setMiringRule("4.2.4.b");
+            ve.setSolutionText("Please use phase-set instead.");
+        }
+        else if(errorMessage.contains("A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous"))
+        {
+            ve.setMiringRule("4.2.7.b");
+            ve.setSolutionText("Any consensus-sequence-block node with continuity=\"true\" is expected to be continuous with the previous sibling node.  Start=End(previous).  The previous node will have the same reference-sequence-id and phase-set, if applicable.");
+        }
+        else if(errorMessage.contains("On a variant node, end attribute should be greater than or equal to the start attribute"))
+        {
+            ve.setMiringRule("5.2.b");
+            ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
+        }
+        else if(errorMessage.contains("The start attribute on a variant node should be greater than or equal to the start attribute")
+                || errorMessage.contains("The end attribute on a variant node should be less than or equal to the end attribute"))
+        {
+            ve.setMiringRule("5.2.d");
+            ve.setSolutionText("Verify that the start and end attributes on the variant are >= and <= to the start and end attributes on the corresponding reference sequence.");
+        }
+        
         else
         {
             ve.setMiringRule("Unhandled Miring Rule");
