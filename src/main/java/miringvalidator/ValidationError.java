@@ -28,9 +28,16 @@ public class ValidationError implements Comparable
     String solutionText;
     String miringRule;
     String xPath;
-    String moreInformation;
+    Severity severity;
 
-    boolean fatal;
+    public enum Severity 
+    {
+        //FATAL = Cannot continue validation.  Most likely an HML/XML Structure issue
+        //MIRING = A MIRING Rule Validation error. 
+        //WARNING = A potential problem, but not enough to reject the document
+        //INFO = Purely informational, no problems.
+        FATAL, MIRING, WARNING, INFO
+    }
     
     /**
      * Constructor for a ValidationError object. A ValidationError has getters and setters and doesn't do much else.
@@ -38,10 +45,10 @@ public class ValidationError implements Comparable
      * @param errorText Text containing a description of the error.
      * @param fatal is the error considered fatal?  Should we reject the Miring HML?
      */
-    public ValidationError(String errorText, boolean fatal)
+    public ValidationError(String errorText, Severity severity)
     {
         this.errorText = errorText;
-        this.fatal = fatal;
+        this.severity = severity;
         this.solutionText = "";
         this.xPath = "";
         this.miringRule = "";
@@ -53,11 +60,10 @@ public class ValidationError implements Comparable
         ValidationError otherError = (ValidationError) otherObject;
         if(
             this.errorText.equals(otherError.errorText)
-            && this.fatal == otherError.fatal
+            && this.severity == otherError.severity
             && this.solutionText.equals(otherError.solutionText)
             && this.xPath.equals(otherError.xPath)
             && this.miringRule.equals(otherError.miringRule)
-            && this.moreInformation.equals(otherError.moreInformation)
         )
         {
             return true;
@@ -89,13 +95,13 @@ public class ValidationError implements Comparable
      
     public void addMoreInformation(String moreInformation)
     {
-        if(this.moreInformation ==null)
+        if(this.errorText ==null)
         {
-            this.moreInformation = moreInformation;
+            this.errorText = moreInformation;
         }
         else
         {
-            this.moreInformation = this.moreInformation + " " + moreInformation;
+            this.errorText = this.errorText + " " + moreInformation;
         }
     }
     
@@ -119,14 +125,14 @@ public class ValidationError implements Comparable
         this.solutionText = solutionText;
     }
 
-    public boolean isFatal()
+    public Severity getSeverity()
     {
-        return fatal;
+        return severity;
     }
     
-    public void setFatal(boolean isFatal)
+    public void setSeverity(Severity severity)
     {
-        this.fatal = isFatal;
+        this.severity = severity;
     }
     
     public String getXPath()
@@ -147,10 +153,5 @@ public class ValidationError implements Comparable
     public void setMiringRule(String miringRule)
     {
         this.miringRule = miringRule;
-    }
-    
-    public String getMoreInformation()
-    {
-        return moreInformation;
     }
 }

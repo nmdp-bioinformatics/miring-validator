@@ -33,6 +33,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.*;
 
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -175,7 +177,7 @@ public class SchemaValidator
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
-                ve = new ValidationError("Content is not allowed in prolog.",true);
+                ve = new ValidationError("Content is not allowed in prolog.",Severity.FATAL);
                 ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
             }            
             else if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
@@ -237,7 +239,7 @@ public class SchemaValidator
                 //There are more types of errors probably. 
                 //What if I have too many of a thing?
                 logger.error("This Sax Parser Exception isn't handled gracefully :" + exception.getMessage());
-                ve = new ValidationError("Unhandled Sax Parser Error: " + exception.getMessage(), true);
+                ve = new ValidationError("Unhandled Sax Parser Error: " + exception.getMessage(), Severity.FATAL);
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("?");
             }
@@ -253,7 +255,8 @@ public class SchemaValidator
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             String moreInformation = "";
-            boolean isFatal = true;
+            //boolean isFatal = true;
+            Severity severity = Severity.MIRING;
             
             //Specific logic for various MIRING rules
             //I think I have access to lots more information than what I'm putting here.
@@ -357,7 +360,7 @@ public class SchemaValidator
                 {
                     miringRuleID = "4.2.4.a";
                     solutionMessage = "Phasing information is not strictly required, this is just a warning.";
-                    isFatal = false;
+                    severity=Severity.WARNING;
                 }
                 else if(missingAttributeName.equals("expected-copy-number"))
                 {
@@ -386,13 +389,18 @@ public class SchemaValidator
                 {
                     logger.error("Missing attribute name not handled! : " + missingAttributeName);
                 }
+                
+                if(missingAttributeName.equals("accession"))
+                {
+                    severity=Severity.WARNING;
+                }
             }
             else
             {
                 logger.error("Node Name Not Handled! : " + nodeName);
             }
             
-            ve =  new ValidationError(errorMessage,isFatal);
+            ve =  new ValidationError(errorMessage,severity);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
             ve.addMoreInformation(moreInformation);
@@ -407,6 +415,7 @@ public class SchemaValidator
             String miringRuleID = "Unhandled Miring Rule ID";
             String parentNodeName = "Unhandled Parent Node Name";
             String parentAttributes = null;
+            Severity severity = Severity.MIRING;
             ValidationError ve;
             
             //the last node name on this xpath is the parent node name.
@@ -458,7 +467,7 @@ public class SchemaValidator
                 logger.error("MissingNodeName Not Handled: " + missingNodeName);
             }
 
-            ve =  new ValidationError(errorMessage,true);
+            ve =  new ValidationError(errorMessage,severity);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
 
