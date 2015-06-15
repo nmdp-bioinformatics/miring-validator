@@ -48,11 +48,23 @@ public class MiringValidatorService
     @Produces("application/xml")
     public String validateMiring(@FormParam("xml") String xml)
     {
-        logger.debug( "Received web service call with xml length =" + xml.length());
-        MiringValidator myValidator = new MiringValidator(xml);
-        myValidator.validate();
-
-        String report = myValidator.getReport();
-        return report;
+        logger.debug( "Received web service call.");
+        
+        if(xml == null || xml.length() == 0)
+        {
+            logger.error("XML is Null or Empty.");
+            //TODO: Format this like an error report.
+            return "XML IS NULL OR EMPTY.";
+        }
+        else
+        {
+            logger.debug("XML Length = " + xml.length());
+            logger.debug(xml);
+            MiringValidator myValidator = new MiringValidator(xml);
+            myValidator.validate();
+    
+            String report = myValidator.getReport();
+            return report;
+        }
     }
 }

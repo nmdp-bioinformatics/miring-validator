@@ -19,20 +19,25 @@
         </glstring>
       </allele-assignment>
       <typing-method>
-      </typing-method>
+      </typing-method>      
       <consensus-sequence date="2014-10-22">
-          <reference-database availability="public" curated="true">
-              <reference-sequence id="ref1"  start="0" end="3" name="a" accession="public"/>
+          <reference-database availability="public" curated="true" name="RefDatabaseName">
+              <reference-sequence id="ref1"  start="0" end="12" name="a" accession="public"/>
+              <reference-sequence id="ref2"  start="0" end="12" name="a" accession="public"/>
         </reference-database>
-        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="3" description="friendly" expected-copy-number="1" continuity="false">
+        
+        <!-- For the first CSB in the series, it doesn't really matter if it's continuous or not, since it can only be continuous with a previous node -->
+        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="3" description="friendly" continuity = "false" phase-set="1">
           <sequence>
             GCT
           </sequence>
-          <variant id="0" reference-bases="T" alternate-bases="C" start="29942937" end="29943001" quality-score="90" filter="pass">
-              <variant-effect term="missense_variant" />
-          </variant>
-          <sequence-quality sequence-start="29942955" sequence-end="29943020" quality-score="1.0" />
+        </consensus-sequence-block>        
+        <consensus-sequence-block reference-sequence-id="ref1" start="4" end="10" description="friendly" continuity = "true" phase-set="1">
+          <sequence>
+            GCTGCT
+          </sequence>
         </consensus-sequence-block>
+
       </consensus-sequence>
     </typing>
     </sample>
