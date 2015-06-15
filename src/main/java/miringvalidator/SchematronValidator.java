@@ -35,6 +35,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
@@ -220,7 +222,7 @@ public class SchematronValidator
                         }
                     }
 
-                    ValidationError validationError = generateValidationError(errorText, locationText, testText);
+                    ValidationError validationError = generateValidationError(errorText, locationText);
                     Utilities.addValidationError(validationErrors, validationError);
                 }
             }
@@ -229,7 +231,7 @@ public class SchematronValidator
         {
             logger.error("Error forming DOM from schematron results: " + e);
             validationErrors.add(new ValidationError(
-                "Unhandled Schematron validation exception: " + e, true
+                "Unhandled Schematron validation exception: " + e, Severity.FATAL
             ));
             
         }
@@ -271,40 +273,38 @@ public class SchematronValidator
      * @param testText text containing the actual test that probatron ran to generate this error
      * @return a ValidationError object describing the miring validation problem
      */
-    private static ValidationError generateValidationError(String errorMessage, String locationText, String testText)
+    private static ValidationError generateValidationError(String errorMessage, String locationText)
     {
-        ValidationError ve = new ValidationError(errorMessage,true);
+        ValidationError ve = new ValidationError(errorMessage,Severity.MIRING);
         
         if(locationText != null)
         {
             ve.setXPath(stripNamespace(locationText));
-        }
-        if(testText != null)
-        {
-            ve.addMoreInformation("While performing test: " + testText);
         }
         
         if(errorMessage.contains("The hmlid root is formatted like an OID."))
         {
             ve.setMiringRule("1.1.c");
             ve.setSolutionText("No solution needed.  This is a good thing.");
-            ve.setFatal(false);
+            ve.setSeverity(Severity.INFO);
         }
         else if(errorMessage.contains("The hmlid root is not formatted like an OID."))
         {
             ve.setMiringRule("1.1.c");
             ve.setSolutionText("Please format the hmlid node's root attribute like an OID:  11.234.55555.65");
-            ve.setFatal(false);
+            ve.setSeverity(Severity.INFO);
         }
         else if(errorMessage.contains("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
         {
             ve.setMiringRule("1.3.b");
-            ve.setSolutionText("Please verify that the test-id attribute looks like a GTR test ID: GTR000000000.0");
+            ve.setSolutionText("Other options are allowed. It isn't necessary to onluy use a GTR test ID: GTR000000000.0");
+            ve.setSeverity(Severity.INFO);
         }
         else if(errorMessage.contains("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
         {
             ve.setMiringRule("1.3.b");
-            ve.setSolutionText("Please verify that the test-id-source attribute is 'NCBI-GTR'");
+            ve.setSolutionText("Other options are allowed. It isn't necessary to only use NCBI-GTR'");
+            ve.setSeverity(Severity.INFO);
         }
         else if(errorMessage.contains("On a reference sequence node, end attribute should be greater than or equal to the start attribute."))
         {
@@ -315,7 +315,7 @@ public class SchematronValidator
         {
             ve.setMiringRule("2.2.1.c");
             ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
-            ve.setFatal(false);
+            ve.setSeverity(Severity.WARNING);
         }
         else if(errorMessage.contains("The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute")
              || errorMessage.contains("The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute"))

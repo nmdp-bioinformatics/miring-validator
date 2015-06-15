@@ -27,6 +27,7 @@ import main.java.miringvalidator.MiringValidatorService;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.Utilities;
 import main.java.miringvalidator.ValidationError;
+import main.java.miringvalidator.ValidationError.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -46,11 +47,11 @@ public class ReportGeneratorTest
 
         try
         {
-            ValidationError error1 = new ValidationError("This is a big problem 1.", true);
-            ValidationError error2 = new ValidationError("This is a big problem 2.", true);
-            ValidationError error3 = new ValidationError("This is a big problem 3.", true);
-            ValidationError error4 = new ValidationError("This is a big problem 4.", true);
-            ValidationError error5 = new ValidationError("This is a big problem 5.", true);
+            ValidationError error1 = new ValidationError("This is a big problem 1.", Severity.MIRING);
+            ValidationError error2 = new ValidationError("This is a big problem 2.", Severity.MIRING);
+            ValidationError error3 = new ValidationError("This is a big problem 3.", Severity.MIRING);
+            ValidationError error4 = new ValidationError("This is a big problem 4.", Severity.MIRING);
+            ValidationError error5 = new ValidationError("This is a big problem 5.", Severity.MIRING);
             
             ValidationError[] tier1Errors = {error1, error2};
             ValidationError[] tier2Errors = {error3, error4, error5};
@@ -75,27 +76,20 @@ public class ReportGeneratorTest
             assertTrue(hmlIDExtension.equals("1.2.3.4"));
             
             //Test the qualityscore of a report.              
-            ValidationError fatalError = new ValidationError("A fatal error", true);
-            ValidationError nonFatalError = new ValidationError("A nonFatal error", false);
+            ValidationError fatalError = new ValidationError("A fatal error", Severity.FATAL);
+            ValidationError nonFatalError = new ValidationError("A nonFatal error", Severity.WARNING);
             
-            //1 = Perfectly conforms to MIRING, no errors
-            //2 = Some nonfatal warnings
-            //3 = Rejected.
             String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4");
             String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4");
             String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4");
             
-            NodeList score1QualityScoreNodes = Utilities.xmlToDomObject(score1Report).getElementsByTagName("QualityScore");
-            NodeList score2QualityScoreNodes = Utilities.xmlToDomObject(score2Report).getElementsByTagName("QualityScore");
-            NodeList score3QualityScoreNodes = Utilities.xmlToDomObject(score3Report).getElementsByTagName("QualityScore");
+            String score1Compliance = Utilities.xmlToDomObject(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score2Compliance = Utilities.xmlToDomObject(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score3Compliance = Utilities.xmlToDomObject(score3Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
             
-            assertEquals(score1QualityScoreNodes.getLength() ,1);
-            assertEquals(score2QualityScoreNodes.getLength() ,1);
-            assertEquals(score3QualityScoreNodes.getLength() ,1);
-             
-            assertEquals(score1QualityScoreNodes.item(0).getTextContent() ,"1");
-            assertEquals(score2QualityScoreNodes.item(0).getTextContent() ,"2");
-            assertEquals(score3QualityScoreNodes.item(0).getTextContent() ,"3");
+            assertEquals(score1Compliance ,"true");
+            assertEquals(score2Compliance ,"true");
+            assertEquals(score3Compliance ,"false");
         }
         catch(Exception e)
         {

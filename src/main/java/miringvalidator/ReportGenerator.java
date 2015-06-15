@@ -33,6 +33,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
@@ -63,6 +65,16 @@ public class ReportGenerator
             Element rootElement = doc.createElement("MiringReport");
             doc.appendChild(rootElement);
             
+            //MIRINGCOMPLIANT ATTRIBUTE
+            Attr compliantAttr = doc.createAttribute("miringCompliant");
+            compliantAttr.setValue(
+                (validationErrors == null)?"false"
+                :(validationErrors.length==0)?"true"
+                :(isMiringCompliant(validationErrors))?"true"
+                :"false"
+            );
+            rootElement.setAttributeNode(compliantAttr);
+            
             //HMLID element
             Element hmlidElement = doc.createElement("hmlid");
             if(root != null && root.length()>0)
@@ -84,13 +96,13 @@ public class ReportGenerator
             //No errors = 1. 
             //No fatal errors = 2.
             //Some fatal errors = 3.            
-            String quality = (validationErrors.length==0)?"1"
+            /*String quality = (validationErrors.length==0)?"1"
                     :(!containsFatalErrors(validationErrors))?"2"
                     :"3";
             
             Element qualityElement = doc.createElement("QualityScore");
             qualityElement.appendChild(doc.createTextNode(quality));
-            rootElement.appendChild(qualityElement);
+            rootElement.appendChild(qualityElement);*/
             
             //INVALIDMIRINGRESULT ELEMENTS
             if(validationErrors != null)
@@ -118,22 +130,22 @@ public class ReportGenerator
     }
     
     /**
-     * Does this array contain any fatal errors?
+     * Does this array contain zero fatal errors?  Any ValidationErrors with Severity=FATAL OR Severity=MIRING will return false.
      *
      * @param errors an array of ValidationError objects
-     * @return does this array contain any fatal errors?
+     * @return is this report miring compliant?
      */
-    public static boolean containsFatalErrors(ValidationError[] errors)
+    private static boolean isMiringCompliant(ValidationError[] errors)
     {
         //Does this list contain any fatal errors?
         for(int i = 0; i < errors.length; i++)
         {
-            if(errors[i].isFatal())
+            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING)
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
     
     private static Element generateValidationErrorNode(Document doc, ValidationError validationError)
@@ -146,9 +158,13 @@ public class ReportGenerator
         miringElementAttr.setValue(validationError.getMiringRule());
         invMiringElement.setAttributeNode(miringElementAttr);
         
-        //fatal
-        Attr fatalAttr = doc.createAttribute("fatal");
-        fatalAttr.setValue(validationError.isFatal()?"true":"false");
+        //severity
+        Attr fatalAttr = doc.createAttribute("severity");
+        fatalAttr.setValue(validationError.getSeverity()==Severity.FATAL?"fatal":
+            validationError.getSeverity()==Severity.MIRING?"miring":
+            validationError.getSeverity()==Severity.WARNING?"warning":
+            validationError.getSeverity()==Severity.INFO?"info":
+                "?");
         invMiringElement.setAttributeNode(fatalAttr);
         
         //description
@@ -170,12 +186,12 @@ public class ReportGenerator
         }
         
         //moreInformation
-        if(validationError.getMoreInformation() != null && validationError.getMoreInformation().length() > 0)
+        /*if(validationError.getMoreInformation() != null && validationError.getMoreInformation().length() > 0)
         {
             Element moreInfoElement = doc.createElement("more-information");
             moreInfoElement.appendChild(doc.createTextNode(validationError.getMoreInformation()));
             invMiringElement.appendChild(moreInfoElement);
-        }
+        }*/
 
         return invMiringElement;
     }
