@@ -64,11 +64,9 @@ public class SimpleXmlModel
     
     public int getHighestChildIndex(String childName)
     {
-        int highestIndex = 0;            
+        int highestIndex = 0;
         try
         {
-            //Get the highest index of a child named childName
-            //The first child is index 1.  Return a 0 if there isn't any children with nodeName childName
             for(int i = 0; i < childrenNodes.size(); i++)
             {
                 SimpleXmlModel childNode = childrenNodes.get(i);

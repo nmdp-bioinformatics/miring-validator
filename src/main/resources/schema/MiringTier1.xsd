@@ -1392,7 +1392,7 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="uri" type="xs:anyURI" use="optional" />
+            <xs:attribute name="uri" type="xs:anyURI" use="required" />
           </xs:complexType>
         </xs:element>
 

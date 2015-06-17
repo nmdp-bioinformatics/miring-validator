@@ -95,6 +95,7 @@ public class MiringTier1Test
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a start attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a end attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a accession attribute."));
+        assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a uri attribute."));
         
         //2.3.b
         xml = Utilities.readXmlResource("/hml/Element2.referencesequence.missing.attributes.xml");

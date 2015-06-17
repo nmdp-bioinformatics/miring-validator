@@ -332,6 +332,7 @@ public class SchematronValidator
         {
             ve.setMiringRule("4.2.4.b");
             ve.setSolutionText("Please use phase-set instead.");
+            ve.setSeverity(Severity.WARNING);
         }
         else if(errorMessage.contains("A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous"))
         {
