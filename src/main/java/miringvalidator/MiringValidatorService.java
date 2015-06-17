@@ -59,10 +59,10 @@ public class MiringValidatorService
         else
         {
             logger.debug("XML Length = " + xml.length());
-            logger.debug(xml);
+            //logger.debug(xml);
             MiringValidator myValidator = new MiringValidator(xml);
             myValidator.validate();
-    
+
             String report = myValidator.getReport();
             return report;
         }

@@ -22,12 +22,15 @@
 */
 package main.java.miringvalidator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ValidationError implements Comparable
 {
     String errorText;
     String solutionText;
     String miringRule;
-    String xPath;
+    List<String> xPaths;
     Severity severity;
 
     public enum Severity 
@@ -50,7 +53,7 @@ public class ValidationError implements Comparable
         this.errorText = errorText;
         this.severity = severity;
         this.solutionText = "";
-        this.xPath = "";
+        this.xPaths = new ArrayList<String>();
         this.miringRule = "";
     }
     
@@ -62,7 +65,7 @@ public class ValidationError implements Comparable
             this.errorText.equals(otherError.errorText)
             && this.severity == otherError.severity
             && this.solutionText.equals(otherError.solutionText)
-            && this.xPath.equals(otherError.xPath)
+            && this.xPaths.equals(otherError.xPaths)
             && this.miringRule.equals(otherError.miringRule)
         )
         {
@@ -135,14 +138,14 @@ public class ValidationError implements Comparable
         this.severity = severity;
     }
     
-    public String getXPath()
+    public List<String> getXPaths()
     {
-        return xPath;
+        return xPaths;
     }
 
-    public void setXPath(String xPath)
+    public void addXPath(String xPath)
     {
-        this.xPath = xPath;
+        this.xPaths.add(xPath);
     }
 
     public void setErrorText(String errorText)

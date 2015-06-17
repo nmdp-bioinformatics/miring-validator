@@ -57,11 +57,14 @@ public class SchemaValidator
      */
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
-        logger.debug("Starting a schema validation");        
+        logger.debug("Starting a schema validation");
         validationErrors = new ArrayList<ValidationError>();
 
         try 
         {
+            MiringValidationContentHandler.xmlCurrentNode = null;
+            MiringValidationContentHandler.xmlRootNode = null;
+            
             URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
             logger.debug("Schema URL Resource Location = " + schemaURL);
             File schemaFile = new File(schemaURL.toURI());
@@ -85,7 +88,7 @@ public class SchemaValidator
         }
         catch (Exception e)
         {
-            logger.error("Exception during schema validation: " + e.getLocalizedMessage());
+            logger.error("Exception during schema validation: " + e);
         }
         
         if(validationErrors.size() > 0)
@@ -109,35 +112,61 @@ public class SchemaValidator
         //pseudoXPath probably could  have indexes of the nodes for more information.  Look into this later.
         //attributesLinkedList is ordered, and the elements correspond to the pseudoXpath.
         //We will add and remove elements from these as the parser parses.
-        private static String pseudoXPath = "";
-        public static List<String> attributesLinkedList = new ArrayList<String>();
+        //private static String xPath = "";
+        //public static List<String> attributesLinkedList = new ArrayList<String>();
+        
+        public static SimpleXmlModel xmlRootNode;
+        public static SimpleXmlModel xmlCurrentNode;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
+            System.out.println("**START ELEMENT: " + localName);
+
             try
             {
-                pseudoXPath = pseudoXPath + "/" + localName; 
-                attributesLinkedList.add(Utilities.getAttributes(attributes));
+                if(xmlRootNode==null)
+                {
+                    //This is the new root node.
+                    xmlRootNode = new SimpleXmlModel(localName,1,Utilities.getAttributes(attributes));
+                    xmlCurrentNode = xmlRootNode;
+                    System.out.println("****XPATH BEGIN: " + xmlCurrentNode.generateXpath());
+                }
+                else
+                {
+                    System.out.println("***XPATH BEFORE: " + xmlCurrentNode.generateXpath());
+                    //There is a root node already.  This must be a child node.
+                    int highestChildIndex = xmlCurrentNode.getHighestChildIndex(localName);                    
+                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1 , Utilities.getAttributes(attributes));
+                    xmlCurrentNode.addChildNode(newCurrentNode);
+                    xmlCurrentNode = newCurrentNode;
+                }
             }
             catch(Exception e)
             {
                 logger.error("Exception in startElement: " + e);
             }
+            System.out.println("****XPATH AFTER: " + xmlCurrentNode.generateXpath());
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException 
         {
+            System.out.println("****END ELEMENT: " + localName);
+            System.out.println("***XPATH BEFORE: " + xmlCurrentNode.generateXpath());
             try
             {
-                pseudoXPath = pseudoXPath.substring( 0, pseudoXPath.lastIndexOf("/") );
-                attributesLinkedList.remove(attributesLinkedList.size()-1);
+                if(xmlCurrentNode.parentNode != null)
+                {
+                    //If the parent node IS null, that means we're closing out the HML element.  All done.  Otherwise:
+                    xmlCurrentNode = xmlCurrentNode.parentNode;
+                }
             }
             catch(Exception e)
             {
                 logger.error("Exception in endElement: " + e);
             }
+            System.out.println("****XPATH AFTER: " + xmlCurrentNode.generateXpath());
         }
         
         //warning(), error(), and fatalError() are overrides which are triggered by 
@@ -243,8 +272,12 @@ public class SchemaValidator
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("?");
             }
-                       
-            ve.xPath = pseudoXPath;
+
+            if(xmlCurrentNode != null)
+            {
+                String xPath = xmlCurrentNode.generateXpath();
+                ve.addXPath(xPath);
+            }
             Utilities.addValidationError(validationErrors, ve);
         }
 
@@ -419,21 +452,34 @@ public class SchemaValidator
             ValidationError ve;
             
             //the last node name on this xpath is the parent node name.
-            if(pseudoXPath != null && pseudoXPath.length() > 0 && pseudoXPath.contains("/")) 
+            /*if(xPath != null && xPath.length() > 0 && xPath.contains("/")) 
             {
-                parentNodeName = pseudoXPath.substring( pseudoXPath.lastIndexOf("/") + 1, pseudoXPath.length());
+                parentNodeName = xPath.substring( xPath.lastIndexOf("/") + 1, xPath.length());
             }
             else
             {
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
+            }*/
+            
+            parentNodeName = xmlCurrentNode.nodeName;
+            if(parentNodeName.isEmpty())
+            {
+                logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
             
+                    
+            
             //The top element on this list should be the parent attributes
-            if(attributesLinkedList != null && attributesLinkedList.size() > 0)
+            /*if(attributesLinkedList != null && attributesLinkedList.size() > 0)
             {
                 parentAttributes = attributesLinkedList.get(attributesLinkedList.size()-1);
             }
             else
+            {
+                logger.error("No parent attributes found for missingNodeName=" + missingNodeName);
+            }*/
+            parentAttributes = xmlCurrentNode.attributes;
+            if(parentAttributes.isEmpty())
             {
                 logger.error("No parent attributes found for missingNodeName=" + missingNodeName);
             }

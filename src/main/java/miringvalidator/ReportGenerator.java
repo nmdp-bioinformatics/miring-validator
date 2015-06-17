@@ -23,6 +23,7 @@
 package main.java.miringvalidator;
 
 import java.io.StringWriter;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -178,11 +179,15 @@ public class ReportGenerator
         invMiringElement.appendChild(solutionElement);
         
         //xPath
-        if(validationError.getXPath() != null && validationError.getXPath().length() > 0)
+        if(validationError.getXPaths() != null && validationError.getXPaths().size() > 0)
         {
-            Element xPathElement = doc.createElement("xpath");
-            xPathElement.appendChild(doc.createTextNode(validationError.getXPath()));
-            invMiringElement.appendChild(xPathElement);
+            List<String> xPaths = validationError.getXPaths();
+            for(int i = 0; i < xPaths.size(); i++)
+            {
+                Element xPathElement = doc.createElement("xpath");
+                xPathElement.appendChild(doc.createTextNode(xPaths.get(i)));
+                invMiringElement.appendChild(xPathElement);
+            }
         }
         
         //moreInformation

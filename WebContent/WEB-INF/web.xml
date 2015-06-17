@@ -6,12 +6,12 @@
   </welcome-file-list>
   
   <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>Miring Validator</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name> Jersey Web Application</servlet-name>
+    <servlet-name>Miring Validator</servlet-name>
     <url-pattern>/validator/*</url-pattern>
   </servlet-mapping>
 </web-app>
