@@ -57,11 +57,14 @@ public class SchemaValidator
      */
     public static ValidationError[] validate(String xml, String schemaFileName) 
     {
-        logger.debug("Starting a schema validation");        
+        logger.debug("Starting a schema validation");
         validationErrors = new ArrayList<ValidationError>();
 
         try 
         {
+            MiringValidationContentHandler.xmlCurrentNode = null;
+            MiringValidationContentHandler.xmlRootNode = null;
+            
             URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
             logger.debug("Schema URL Resource Location = " + schemaURL);
             File schemaFile = new File(schemaURL.toURI());
@@ -85,7 +88,7 @@ public class SchemaValidator
         }
         catch (Exception e)
         {
-            logger.error("Exception during schema validation: " + e.getLocalizedMessage());
+            logger.error("Exception during schema validation: " + e);
         }
         
         if(validationErrors.size() > 0)
@@ -109,16 +112,31 @@ public class SchemaValidator
         //pseudoXPath probably could  have indexes of the nodes for more information.  Look into this later.
         //attributesLinkedList is ordered, and the elements correspond to the pseudoXpath.
         //We will add and remove elements from these as the parser parses.
-        private static String pseudoXPath = "";
-        public static List<String> attributesLinkedList = new ArrayList<String>();
+        //private static String xPath = "";
+        //public static List<String> attributesLinkedList = new ArrayList<String>();
+        
+        public static SimpleXmlModel xmlRootNode;
+        public static SimpleXmlModel xmlCurrentNode;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
             try
             {
-                pseudoXPath = pseudoXPath + "/" + localName; 
-                attributesLinkedList.add(Utilities.getAttributes(attributes));
+                if(xmlRootNode==null)
+                {
+                    //This is the new root node.
+                    xmlRootNode = new SimpleXmlModel(localName,1,Utilities.getAttributes(attributes));
+                    xmlCurrentNode = xmlRootNode;
+                }
+                else
+                {
+                    //There is a root node already.  This must be a child node.
+                    int highestChildIndex = xmlCurrentNode.getHighestChildIndex(localName);                    
+                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1 , Utilities.getAttributes(attributes));
+                    xmlCurrentNode.addChildNode(newCurrentNode);
+                    xmlCurrentNode = newCurrentNode;
+                }
             }
             catch(Exception e)
             {
@@ -131,8 +149,11 @@ public class SchemaValidator
         {
             try
             {
-                pseudoXPath = pseudoXPath.substring( 0, pseudoXPath.lastIndexOf("/") );
-                attributesLinkedList.remove(attributesLinkedList.size()-1);
+                if(xmlCurrentNode.parentNode != null)
+                {
+                    //If the parent node IS null, that means we're closing out the HML element.  All done.  Otherwise:
+                    xmlCurrentNode = xmlCurrentNode.parentNode;
+                }
             }
             catch(Exception e)
             {
@@ -243,8 +264,12 @@ public class SchemaValidator
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("?");
             }
-                       
-            ve.xPath = pseudoXPath;
+
+            if(xmlCurrentNode != null)
+            {
+                String xPath = xmlCurrentNode.generateXpath();
+                ve.addXPath(xPath);
+            }
             Utilities.addValidationError(validationErrors, ve);
         }
 
@@ -254,7 +279,7 @@ public class SchemaValidator
             String miringRuleID = "Unhandled Miring Rule ID";
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
-            String moreInformation = "";
+            //String moreInformation = "";
             //boolean isFatal = true;
             Severity severity = Severity.MIRING;
             
@@ -311,7 +336,7 @@ public class SchemaValidator
                 if(missingAttributeName.equals("availability"))
                 {
                     miringRuleID = "1.5.b";
-                    moreInformation = moreInformation + ("availability attribute can be one of: public, private, or permission.  ");
+                    errorMessage = errorMessage + ("  availability attribute can be one of: public, private, or permission.  ");
                 }
                 else
                 {
@@ -323,7 +348,7 @@ public class SchemaValidator
                 if(missingAttributeName.equals("test-id") || missingAttributeName.equals("test-id-source"))
                 {
                     miringRuleID = "1.3.a";
-                    moreInformation = moreInformation + ("test-id and test-id-source should refer to a valid NCBI-GRT procedure.  ");
+                    errorMessage = errorMessage + ("test-id and test-id-source should refer to a valid NCBI-GRT procedure.  ");
                 }
                 else
                 {
@@ -381,7 +406,8 @@ public class SchemaValidator
                     || missingAttributeName.equals("name")
                     || missingAttributeName.equals("start")
                     || missingAttributeName.equals("end")
-                    || missingAttributeName.equals("accession"))
+                    || missingAttributeName.equals("accession")
+                    || missingAttributeName.equals("uri"))
                 {
                     miringRuleID = "2.2.b";
                 }
@@ -390,8 +416,9 @@ public class SchemaValidator
                     logger.error("Missing attribute name not handled! : " + missingAttributeName);
                 }
                 
-                if(missingAttributeName.equals("accession"))
+                if(missingAttributeName.equals("accession") || missingAttributeName.equals("uri"))
                 {
+                    solutionMessage = "accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.";
                     severity=Severity.WARNING;
                 }
             }
@@ -403,7 +430,7 @@ public class SchemaValidator
             ve =  new ValidationError(errorMessage,severity);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
-            ve.addMoreInformation(moreInformation);
+            
             return ve;
         }
 
@@ -418,22 +445,14 @@ public class SchemaValidator
             Severity severity = Severity.MIRING;
             ValidationError ve;
             
-            //the last node name on this xpath is the parent node name.
-            if(pseudoXPath != null && pseudoXPath.length() > 0 && pseudoXPath.contains("/")) 
-            {
-                parentNodeName = pseudoXPath.substring( pseudoXPath.lastIndexOf("/") + 1, pseudoXPath.length());
-            }
-            else
+            parentNodeName = xmlCurrentNode.nodeName;
+            if(parentNodeName.isEmpty())
             {
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
-            
-            //The top element on this list should be the parent attributes
-            if(attributesLinkedList != null && attributesLinkedList.size() > 0)
-            {
-                parentAttributes = attributesLinkedList.get(attributesLinkedList.size()-1);
-            }
-            else
+
+            parentAttributes = xmlCurrentNode.attributes;
+            if(parentAttributes.isEmpty())
             {
                 logger.error("No parent attributes found for missingNodeName=" + missingNodeName);
             }
@@ -441,7 +460,7 @@ public class SchemaValidator
             
             //Default error message and solution.  Might replace this later depending on node.
             errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            solutionMessage = "Please add exactly one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
             
             //Specific logic for various MIRING errors
             if(missingNodeName.equals("hmlid"))

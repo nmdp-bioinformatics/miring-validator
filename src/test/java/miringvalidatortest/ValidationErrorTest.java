@@ -42,14 +42,14 @@ public class ValidationErrorTest
         ValidationError firstError= new ValidationError("There is a problem with the HML",Severity.FATAL);
         firstError.setMiringRule("1.3.4.d");
         firstError.setSolutionText("Fix the data please.  It's obnoxious and obtrusive.");
-        firstError.setXPath("Xpath of the ValidationError");
+        firstError.addXPath("Xpath of the ValidationError");
         firstError.addMoreInformation("The parent node has an ID of six.  Six!  ");
         firstError.addMoreInformation("And don't even get me started on it's sibling nodes.  ");
         
         ValidationError secondError = new ValidationError("There is a problem with the HML",Severity.FATAL);
         secondError.setMiringRule("1.3.4.d");
         secondError.setSolutionText("Fix the data please.  It's obnoxious and obtrusive.");
-        secondError.setXPath("Xpath of the ValidationError");
+        secondError.addXPath("Xpath of the ValidationError");
         secondError.addMoreInformation("The parent node has an ID of six.  Six!  ");
         secondError.addMoreInformation("And don't even get me started on it's sibling nodes.  ");
         

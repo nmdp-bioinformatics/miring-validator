@@ -279,7 +279,7 @@ public class SchematronValidator
         
         if(locationText != null)
         {
-            ve.setXPath(stripNamespace(locationText));
+            ve.addXPath(stripNamespace(locationText));
         }
         
         if(errorMessage.contains("The hmlid root is formatted like an OID."))
@@ -297,7 +297,7 @@ public class SchematronValidator
         else if(errorMessage.contains("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
         {
             ve.setMiringRule("1.3.b");
-            ve.setSolutionText("Other options are allowed. It isn't necessary to onluy use a GTR test ID: GTR000000000.0");
+            ve.setSolutionText("Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0");
             ve.setSeverity(Severity.INFO);
         }
         else if(errorMessage.contains("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
@@ -332,6 +332,7 @@ public class SchematronValidator
         {
             ve.setMiringRule("4.2.4.b");
             ve.setSolutionText("Please use phase-set instead.");
+            ve.setSeverity(Severity.WARNING);
         }
         else if(errorMessage.contains("A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous"))
         {

@@ -23,12 +23,8 @@
             <let name="csbStart" value="attribute(start)" />
             <let name="csbEnd" value="attribute(end)" />
             
-            <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @start &lt;= $csbStart]">
-            The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.  CSB:start=<value-of select="$csbStart"/> ,RefSeq:start=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@start"/>
-            </assert>
-            <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @end &gt;= $csbEnd]">
-            The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.  CSB:end=<value-of select="$csbEnd"/> ,RefSeq:end=<value-of select="//hml:reference-sequence[@id = $csbRefSeqId]/@end"/>
-            </assert>
+            <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @start &lt;= $csbStart]">The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.</assert>
+            <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @end &gt;= $csbEnd]">The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.</assert>
         </rule>
     </pattern>
 
@@ -64,7 +60,7 @@
             <let name="csbRefSeqID" value="attribute(reference-sequence-id)" />
             <let name="csbPhaseSet" value="attribute(phase-set)" />
             <let name="csbPreviousEnd" value="preceding-sibling::*[@reference-sequence-id=$csbRefSeqID and @phase-set=$csbPhaseSet][1]/@end" />
-            <report test="$csbCont='true' and $csbStart!=$csbPreviousEnd and $csbPreviousEnd!='' ">A consensus-sequence-block with attribute continuity="true" does not appear to be continuous with it's previous sibling consensus-sequence-block node, matched by reference-sequence-id and phase-set. (start=<value-of select="$csbStart"/>)!=(prev. sib's end=<value-of select="$csbPreviousEnd"/>)</report>
+            <report test="$csbCont='true' and $csbStart!=$csbPreviousEnd and $csbPreviousEnd!='' ">A consensus-sequence-block with attribute continuity="true" does not appear to be continuous with it's previous sibling consensus-sequence-block node, matched by reference-sequence-id and phase-set.</report>
         </rule>
     </pattern>
     

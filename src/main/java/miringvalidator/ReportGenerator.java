@@ -23,6 +23,10 @@
 package main.java.miringvalidator;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,6 +59,7 @@ public class ReportGenerator
      */
     public static String generateReport(ValidationError[] validationErrors, String root, String extension)
     {
+        validationErrors = combineSimilarErrors(validationErrors);
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -129,6 +134,49 @@ public class ReportGenerator
         return null;
     }
     
+    private static ValidationError[] combineSimilarErrors(ValidationError[] validationErrors)
+    {
+        //Many errors are very similar to eachother.  If they have the same error text, then we should combine them.  Hopefully they have distinct xpaths.
+        List<ValidationError> newErrorList = new ArrayList<ValidationError>();
+        
+        for(int i = 0; i < validationErrors.length; i++)
+        {
+            ValidationError oldError = validationErrors[i];
+            //Scan existing list for an error that is a close match.
+            boolean foundMatch = false;
+            for (ValidationError newError: newErrorList)
+            {
+                if(oldError.miringRule.equals(newError.miringRule)
+                    && oldError.errorText.equals(newError.errorText))
+                {
+                    foundMatch = true;
+                    //Add all the xpaths to the existing new error.
+                    for (String xPath:oldError.xPaths)
+                    {
+                        if(!newError.xPaths.contains(xPath))
+                        {
+                            newError.addXPath(xPath);
+                        }
+                    }
+                    Collections.sort(newError.xPaths);
+                }
+            }
+            
+            if(!foundMatch)
+            {
+                newErrorList.add(oldError);
+            }
+        }
+        
+        ValidationError[] results = new ValidationError[newErrorList.size()];
+        for(int i = 0; i < newErrorList.size(); i++)
+        {
+            results[i]=newErrorList.get(i);
+        }
+        
+        return results;
+    }
+
     /**
      * Does this array contain zero fatal errors?  Any ValidationErrors with Severity=FATAL OR Severity=MIRING will return false.
      *
@@ -178,21 +226,17 @@ public class ReportGenerator
         invMiringElement.appendChild(solutionElement);
         
         //xPath
-        if(validationError.getXPath() != null && validationError.getXPath().length() > 0)
+        if(validationError.getXPaths() != null && validationError.getXPaths().size() > 0)
         {
-            Element xPathElement = doc.createElement("xpath");
-            xPathElement.appendChild(doc.createTextNode(validationError.getXPath()));
-            invMiringElement.appendChild(xPathElement);
+            List<String> xPaths = validationError.getXPaths();
+            for(int i = 0; i < xPaths.size(); i++)
+            {
+                Element xPathElement = doc.createElement("xpath");
+                xPathElement.appendChild(doc.createTextNode(xPaths.get(i)));
+                invMiringElement.appendChild(xPathElement);
+            }
         }
         
-        //moreInformation
-        /*if(validationError.getMoreInformation() != null && validationError.getMoreInformation().length() > 0)
-        {
-            Element moreInfoElement = doc.createElement("more-information");
-            moreInfoElement.appendChild(doc.createTextNode(validationError.getMoreInformation()));
-            invMiringElement.appendChild(moreInfoElement);
-        }*/
-
         return invMiringElement;
     }
     
