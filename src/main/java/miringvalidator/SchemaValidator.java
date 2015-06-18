@@ -126,14 +126,14 @@ public class SchemaValidator
                 if(xmlRootNode==null)
                 {
                     //This is the new root node.
-                    xmlRootNode = new SimpleXmlModel(localName,1,Utilities.getAttributes(attributes));
+                    xmlRootNode = new SimpleXmlModel(localName,1/*,Utilities.getAttributes(attributes)*/);
                     xmlCurrentNode = xmlRootNode;
                 }
                 else
                 {
                     //There is a root node already.  This must be a child node.
                     int highestChildIndex = xmlCurrentNode.getHighestChildIndex(localName);                    
-                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1 , Utilities.getAttributes(attributes));
+                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1 /*, Utilities.getAttributes(attributes)*/);
                     xmlCurrentNode.addChildNode(newCurrentNode);
                     xmlCurrentNode = newCurrentNode;
                 }
@@ -441,7 +441,7 @@ public class SchemaValidator
             String moreInformation = "";
             String miringRuleID = "Unhandled Miring Rule ID";
             String parentNodeName = "Unhandled Parent Node Name";
-            String parentAttributes = null;
+            //String parentAttributes = null;
             Severity severity = Severity.MIRING;
             ValidationError ve;
             
@@ -451,11 +451,11 @@ public class SchemaValidator
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
 
-            parentAttributes = xmlCurrentNode.attributes;
-            if(parentAttributes.isEmpty())
+            //parentAttributes = xmlCurrentNode.attributes;
+            /*if(parentAttributes.isEmpty())
             {
                 logger.error("No parent attributes found for missingNodeName=" + missingNodeName);
-            }
+            }*/
             
             
             //Default error message and solution.  Might replace this later depending on node.
@@ -490,7 +490,7 @@ public class SchemaValidator
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
 
-            moreInformation = moreInformation + "Parent node " + parentNodeName + " has these attributes: " + parentAttributes;
+            //moreInformation = moreInformation + "Parent node " + parentNodeName + " has these attributes: " + parentAttributes;
             ve.addMoreInformation(moreInformation);
 
             return ve;
