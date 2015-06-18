@@ -33,14 +33,14 @@ public class SimpleXmlModel
     public int nodeIndex;
     public List<SimpleXmlModel> childrenNodes = new ArrayList<SimpleXmlModel>();
     public SimpleXmlModel parentNode;
-    public String attributes;
+    //public String attributes;
     private static final Logger logger = LogManager.getLogger(SimpleXmlModel.class);
     
-    public SimpleXmlModel(String nodeName, int nodeIndex, String attributes)
+    public SimpleXmlModel(String nodeName, int nodeIndex/*, String attributes*/)
     {
         this(nodeName);
         this.nodeIndex = nodeIndex;
-        this.attributes = attributes;
+        //this.attributes = attributes;
     }
     
     public SimpleXmlModel(String nodeName)
@@ -87,7 +87,7 @@ public class SimpleXmlModel
     {
         try
         {
-            //Recursively build a xPath for the current node.
+            //Recursively build an xPath for the current node.
             String currentXPath = "/" + nodeName + "[" + nodeIndex + "]";
             if(parentNode == null)
             {
