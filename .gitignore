@@ -1,17 +1,5 @@
 /target/
-/doc/
-.project
-.classpath
+/log/
 
 *.log
-<<<<<<< HEAD
-<<<<<<< HEAD
 *.class
-=======
-*.class
-
->>>>>>> origin/master
-=======
-*.class
-
->>>>>>> origin/master
