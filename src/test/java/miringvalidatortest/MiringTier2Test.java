@@ -71,17 +71,14 @@ public class MiringTier2Test
         logger.debug("starting testMiringElement1Tier2");
 
         String xml;
-        ValidationError[] errors; 
         
         //1.1.c
         //Test if HMLID root is an OID
         xml = Utilities.readXmlResource("/hml/Element1.hmlid.OID.xml");
-        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
-        String oidHmlidErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        String oidHmlidErrorReport = new MiringValidator(xml).validate();
         
         xml = Utilities.readXmlResource("/hml/Element1.hmlid.not.OID.xml");
-        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
-        String notOidHmlidErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        String notOidHmlidErrorReport = new MiringValidator(xml).validate();
 
         assertFalse(Utilities.containsErrorNode(oidHmlidErrorReport, "The hmlid root is not formatted like an OID."));
         assertTrue(Utilities.containsErrorNode(oidHmlidErrorReport, "The hmlid root is formatted like an OID."));
@@ -91,12 +88,10 @@ public class MiringTier2Test
 
         //1.3.b
         xml = Utilities.readXmlResource("/hml/Element1.valid.testidsource.xml");
-        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
-        String validTestIDErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        String validTestIDErrorReport = new MiringValidator(xml).validate();
         
         xml = Utilities.readXmlResource("/hml/Element1.invalid.testidsource.xml");
-        errors = SchematronValidator.validate(xml,new String[]{"/schematron/MiringElement1.sch"});
-        String invalidTestIDErrorReport = ReportGenerator.generateReport(errors,Utilities.getHMLIDRoot(xml), Utilities.getHMLIDExtension(xml));
+        String invalidTestIDErrorReport = new MiringValidator(xml).validate();
 
         assertFalse(Utilities.containsErrorNode(validTestIDErrorReport, "On a sbt-ngs node, test-id is not formatted like a GTR test ID."));
         assertFalse(Utilities.containsErrorNode(validTestIDErrorReport, "On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."));

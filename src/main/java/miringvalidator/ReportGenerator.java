@@ -75,7 +75,7 @@ public class ReportGenerator
             compliantAttr.setValue(
                 (validationErrors == null)?"false"
                 :(validationErrors.length==0)?"true"
-                :(isMiringCompliant(validationErrors))?"true"
+                :(Utilities.isMiringCompliant(validationErrors))?"true"
                 :"false"
             );
             rootElement.setAttributeNode(compliantAttr);
@@ -177,24 +177,7 @@ public class ReportGenerator
         return results;
     }
 
-    /**
-     * Does this array contain zero fatal errors?  Any ValidationErrors with Severity=FATAL OR Severity=MIRING will return false.
-     *
-     * @param errors an array of ValidationError objects
-     * @return is this report miring compliant?
-     */
-    private static boolean isMiringCompliant(ValidationError[] errors)
-    {
-        //Does this list contain any fatal errors?
-        for(int i = 0; i < errors.length; i++)
-        {
-            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+
     
     private static Element generateValidationErrorNode(Document doc, ValidationError validationError)
     {

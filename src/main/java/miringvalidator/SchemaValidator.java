@@ -80,6 +80,15 @@ public class SchemaValidator
             //parser.parse is what does the actual "validation."  It parses the sample xml referring to the schema.
             //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
             parser.parse(new InputSource(new StringReader(xml)), handler);
+            
+            //Just in case these are still hanging out somewhere
+            //Having some memory problems and want to make sure these aren't hanging out.
+            if(MiringValidationContentHandler.xmlRootNode != null)
+            {
+                MiringValidationContentHandler.xmlRootNode.deAllocate();
+                MiringValidationContentHandler.xmlRootNode = null;
+                MiringValidationContentHandler.xmlCurrentNode = null;
+            }
         } 
         catch (SAXException e) 
         {
@@ -108,12 +117,9 @@ public class SchemaValidator
 
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
-        //pseudoXPath and attributesLinkedList are used to keep track of where the parser is in the document.
-        //pseudoXPath probably could  have indexes of the nodes for more information.  Look into this later.
-        //attributesLinkedList is ordered, and the elements correspond to the pseudoXpath.
-        //We will add and remove elements from these as the parser parses.
-        //private static String xPath = "";
-        //public static List<String> attributesLinkedList = new ArrayList<String>();
+        //xmlRootNode represents the root node of the xml document.
+        //A skeleton representation of the document is being built as parsing happens
+        //This model is used to generate an xpath on the report
         
         public static SimpleXmlModel xmlRootNode;
         public static SimpleXmlModel xmlCurrentNode;
@@ -126,14 +132,14 @@ public class SchemaValidator
                 if(xmlRootNode==null)
                 {
                     //This is the new root node.
-                    xmlRootNode = new SimpleXmlModel(localName,1/*,Utilities.getAttributes(attributes)*/);
+                    xmlRootNode = new SimpleXmlModel(localName,1);
                     xmlCurrentNode = xmlRootNode;
                 }
                 else
                 {
                     //There is a root node already.  This must be a child node.
-                    int highestChildIndex = xmlCurrentNode.getHighestChildIndex(localName);                    
-                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1 /*, Utilities.getAttributes(attributes)*/);
+                    int highestChildIndex = xmlCurrentNode.getHighestChildIndex(localName);
+                    SimpleXmlModel newCurrentNode = new SimpleXmlModel(localName , highestChildIndex + 1);
                     xmlCurrentNode.addChildNode(newCurrentNode);
                     xmlCurrentNode = newCurrentNode;
                 }
@@ -151,7 +157,8 @@ public class SchemaValidator
             {
                 if(xmlCurrentNode.parentNode != null)
                 {
-                    //If the parent node IS null, that means we're closing out the HML element.  All done.  Otherwise:
+                    //If the parent node *IS* null, that means we're closing out the root HML element.  All done.  
+                    //Otherwise zoom out the parser to the parent
                     xmlCurrentNode = xmlCurrentNode.parentNode;
                 }
             }
@@ -279,8 +286,6 @@ public class SchemaValidator
             String miringRuleID = "Unhandled Miring Rule ID";
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
-            //String moreInformation = "";
-            //boolean isFatal = true;
             Severity severity = Severity.MIRING;
             
             //Specific logic for various MIRING rules
@@ -441,7 +446,6 @@ public class SchemaValidator
             String moreInformation = "";
             String miringRuleID = "Unhandled Miring Rule ID";
             String parentNodeName = "Unhandled Parent Node Name";
-            //String parentAttributes = null;
             Severity severity = Severity.MIRING;
             ValidationError ve;
             
@@ -451,13 +455,6 @@ public class SchemaValidator
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
 
-            //parentAttributes = xmlCurrentNode.attributes;
-            /*if(parentAttributes.isEmpty())
-            {
-                logger.error("No parent attributes found for missingNodeName=" + missingNodeName);
-            }*/
-            
-            
             //Default error message and solution.  Might replace this later depending on node.
             errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
             solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
@@ -490,7 +487,6 @@ public class SchemaValidator
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
 
-            //moreInformation = moreInformation + "Parent node " + parentNodeName + " has these attributes: " + parentAttributes;
             ve.addMoreInformation(moreInformation);
 
             return ve;

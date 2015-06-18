@@ -47,6 +47,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -361,4 +363,43 @@ public class Utilities
         }
         return attributeString;
     }
+
+    /**
+     * Does this array contain zero Miring errors?  Any ValidationErrors with Severity=FATAL OR Severity=MIRING will return false.
+     *
+     * @param errors an array of ValidationError objects
+     * @return is this report miring compliant?
+     */
+    public static boolean isMiringCompliant(ValidationError[] errors)
+    {
+        //Does this list contain any fatal errors?
+        for(int i = 0; i < errors.length; i++)
+        {
+            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Does this array contain any fatal errors?  Any ValidationErrors with Severity=FATAL will return true.
+     *
+     * @param errors an array of ValidationError objects
+     * @return true if this report has at least one fatal error
+     */
+    public static boolean hasFatalErrors(ValidationError[] errors)
+    {
+        //Does this list contain any fatal errors?
+        for(int i = 0; i < errors.length; i++)
+        {
+            if(errors[i].getSeverity()==Severity.FATAL)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
