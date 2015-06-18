@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pattern id="Miring.Element.2" xmlns="http://purl.oclc.org/dsdl/schematron">
+
+    <!-- 
+        Rule 2.2.c
+        end >= start
+     -->
+    <rule context="hml:reference-sequence">
+        <assert test="number(@end) >= number(@start)">On a reference sequence node, end attribute should be greater than or equal to the start attribute.</assert>
+
+    <!--
+        Rule 2.2.1.c
+        Every <reference-sequence> id corresponds to at least one <consensus-sequence-block> id
+        Get every id belonging to a reference-sequence.
+        Assert that there is a node with a idref of "@id" on a node named "consensus-sequence-block:
+     -->
+        <let name="refSeqId" value="attribute(id)" />
+        <assert test="@oopypoopy">need this attribute oopypoopy</assert>
+        
+        <assert test="//hml:consensus-sequence-block[@reference-sequence-id=$refSeqId]">A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</assert>
+    </rule>
+    
+</pattern>

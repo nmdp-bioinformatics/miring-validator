@@ -33,14 +33,12 @@ public class SimpleXmlModel
     public int nodeIndex;
     public List<SimpleXmlModel> childrenNodes = new ArrayList<SimpleXmlModel>();
     public SimpleXmlModel parentNode;
-    //public String attributes;
     private static final Logger logger = LogManager.getLogger(SimpleXmlModel.class);
     
     public SimpleXmlModel(String nodeName, int nodeIndex/*, String attributes*/)
     {
         this(nodeName);
         this.nodeIndex = nodeIndex;
-        //this.attributes = attributes;
     }
     
     public SimpleXmlModel(String nodeName)
@@ -103,5 +101,26 @@ public class SimpleXmlModel
             logger.error("Error during generateXpath(): " + e);
         }
         return null;
+    }
+    
+    public void deAllocate()
+    {
+        //This is a recursive function that deallocates this object, as well as it's children.
+        //That sounds rather violent when i write it down.
+        //I feel like i shouldn't need to do this.
+        nodeName = null;
+        nodeIndex = 0;
+        parentNode = null;
+        
+        if(childrenNodes != null)
+        {
+            while(!childrenNodes.isEmpty())
+            {
+                SimpleXmlModel temp = childrenNodes.remove(childrenNodes.size() - 1);
+                temp.deAllocate();
+                temp = null;
+            }
+            childrenNodes = null;
+        }
     }
 }

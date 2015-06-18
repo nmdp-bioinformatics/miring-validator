@@ -64,25 +64,14 @@ public class MiringValidator
         //I mean fatal as in it's a bad XML file, not a bad MIRING file.
         //Schematron can't get errors if it can't parse the XML validly.
         //For now I only know about the "Content is not allowed in prolog." error
-        String tier1Report = ReportGenerator.generateReport(tier1ValidationErrors, null, null);
-        if(!Utilities.containsErrorNode(tier1Report,"Content is not allowed in prolog."))
+        if(!Utilities.hasFatalErrors(tier1ValidationErrors))
         {
-            //It's probably a big resource overhead to do a schematron for each schema file.  
-            //If time is a problem, we should proably combine all the schematron schema into one file.
-            //For each schematron validation, several XSLT transforms are required, and it's kinda time consuming.
-            //Consider combining all the schema.
-            //It might be possible to have one schema load several other ones, I'll have to look into that.
-            //And by that i mean embedding a schematron in another schematron.  Possible?  Maybe?
             logger.debug("Attempting Tier 2 validation");
             
-            //tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"demo.sch"});
-            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] 
-                    {"/schematron/MiringElement1.sch", "/schematron/MiringElement2.sch", "/schematron/MiringElement3.sch", "/schematron/MiringElement4.sch"
-                    , "/schematron/MiringElement5.sch", "/schematron/MiringElement6.sch", "/schematron/MiringElement7.sch", "/schematron/MiringElement8.sch"}
-            );
+            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"/schematron/MiringAll.sch"});
             
             //Tier 3 is outside scope for now.  Okay.
-            /*if(!containsFatalErrors(tier2ValidationErrors))
+            /*if(!Utilities.hasFatalErrors(tier2ValidationErrors)))
             {
             //tier3();
             }*/
@@ -109,5 +98,4 @@ public class MiringValidator
     {
         return report;
     }
-
 }

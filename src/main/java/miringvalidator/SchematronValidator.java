@@ -22,8 +22,6 @@
 */
 package main.java.miringvalidator;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -189,7 +187,7 @@ public class SchematronValidator
                  */
                 for(int i = 0; i < combinedList.length; i++)
                 {
-                    String testText = null;
+                    String attributes = null;
                     String locationText = null;
                     String errorText = null;
                     
@@ -198,7 +196,7 @@ public class SchematronValidator
                     
                     //testText contains the actual test that schematron ran to get this report. 
                     //Not sure if we'll use that information at all
-                    testText = currAttributes.getNamedItem("test").getNodeValue();
+                    attributes = currAttributes.getNamedItem("test").getNodeValue();
                     
                     //locationText contains information about exactly where in the HML file we found the problem
                     //I believe it is or contains an xpath.  We're gonna put that on the report.
