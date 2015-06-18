@@ -87,7 +87,7 @@ public class SimpleXmlModel
     {
         try
         {
-            //Recursively build an xPath for the current node.
+            //Recursively build a xPath for the current node.
             String currentXPath = "/" + nodeName + "[" + nodeIndex + "]";
             if(parentNode == null)
             {
