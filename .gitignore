@@ -5,7 +5,12 @@
 
 *.log
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.class
+=======
+*.class
+
+>>>>>>> origin/master
 =======
 *.class
 
