@@ -4,4 +4,9 @@
 .classpath
 
 *.log
+<<<<<<< HEAD
 *.class
+=======
+*.class
+
+>>>>>>> origin/master
