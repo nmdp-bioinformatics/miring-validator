@@ -103,8 +103,9 @@ public class SimpleXmlModel
         return null;
     }
     
-    public void deAllocate()
+    public void deAllocate(int recursionDepth)
     {
+        //logger.debug("Recursion Depth in deAllocate" + recursionDepth);
         //This is a recursive function that deallocates this object, as well as it's children.
         //That sounds rather violent when i write it down.
         //I feel like i shouldn't need to do this.
@@ -119,7 +120,7 @@ public class SimpleXmlModel
                 while(!childrenNodes.isEmpty())
                 {
                     SimpleXmlModel temp = childrenNodes.remove(childrenNodes.size() - 1);
-                    temp.deAllocate();
+                    temp.deAllocate(recursionDepth + 1);
                     temp = null;
                 }
                 childrenNodes = null;

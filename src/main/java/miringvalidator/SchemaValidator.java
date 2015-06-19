@@ -113,13 +113,13 @@ public class SchemaValidator
         //Having some memory problems and want to make sure these aren't hanging out.
         if(MiringValidationContentHandler.xmlRootNode != null)
         {
-            MiringValidationContentHandler.xmlRootNode.deAllocate();
+            MiringValidationContentHandler.xmlRootNode.deAllocate(1);
             MiringValidationContentHandler.xmlRootNode = null;
         }
         
         if(MiringValidationContentHandler.xmlCurrentNode != null)
         {
-            MiringValidationContentHandler.xmlCurrentNode.deAllocate();
+            MiringValidationContentHandler.xmlCurrentNode.deAllocate(1);
             MiringValidationContentHandler.xmlCurrentNode = null;
         }
 
@@ -140,7 +140,7 @@ public class SchemaValidator
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
             nodeCount++;
-            logger.debug("NODE COUNT: " + nodeCount + " NAME: " + localName + " ATTRIBUTES: " + Utilities.getAttributes(attributes));
+            //logger.debug("NODE COUNT: " + nodeCount + " NAME: " + localName + " ATTRIBUTES: " + Utilities.getAttributes(attributes));
             
             try
             {
@@ -216,7 +216,7 @@ public class SchemaValidator
             ValidationError ve = null;
             
             String errorMessage = exception.getMessage();
-            String[] exceptionTokens = tokenizeString(errorMessage);
+            String[] exceptionTokens = Utilities.tokenizeString(errorMessage);
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
@@ -507,25 +507,6 @@ public class SchemaValidator
             return ve;
         }
 
-        private static String[] tokenizeString(String exceptionMessage)
-        {
-            try
-            {
-                StringTokenizer st = new StringTokenizer(exceptionMessage);
-                String[] messageTokens = new String[st.countTokens()];
-                int counter = 0;
-                while (st.hasMoreTokens()) 
-                {
-                    messageTokens[counter] = st.nextToken();
-                    counter++;
-                }
-                return messageTokens;
-            }
-            catch(Exception e)
-            {
-                logger.error("Exception in tokenizeString(): " + e);
-                return null;
-            }
-        }
+
     }
 }
