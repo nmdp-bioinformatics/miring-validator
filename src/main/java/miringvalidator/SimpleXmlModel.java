@@ -108,19 +108,26 @@ public class SimpleXmlModel
         //This is a recursive function that deallocates this object, as well as it's children.
         //That sounds rather violent when i write it down.
         //I feel like i shouldn't need to do this.
-        nodeName = null;
-        nodeIndex = 0;
-        parentNode = null;
-        
-        if(childrenNodes != null)
+        try
         {
-            while(!childrenNodes.isEmpty())
+            nodeName = null;
+            nodeIndex = 0;
+            parentNode = null;
+            
+            if(childrenNodes != null)
             {
-                SimpleXmlModel temp = childrenNodes.remove(childrenNodes.size() - 1);
-                temp.deAllocate();
-                temp = null;
+                while(!childrenNodes.isEmpty())
+                {
+                    SimpleXmlModel temp = childrenNodes.remove(childrenNodes.size() - 1);
+                    temp.deAllocate();
+                    temp = null;
+                }
+                childrenNodes = null;
             }
-            childrenNodes = null;
+        }
+        catch(Exception e)
+        {
+            logger.error("Error during deAllocate(): " + e);
         }
     }
 }

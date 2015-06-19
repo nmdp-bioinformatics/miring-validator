@@ -16,8 +16,7 @@
         Assert that there is a node with a idref of "@id" on a node named "consensus-sequence-block:
      -->
         <let name="refSeqId" value="attribute(id)" />
-        <assert test="@oopypoopy">need this attribute oopypoopy</assert>
-        
+
         <assert test="//hml:consensus-sequence-block[@reference-sequence-id=$refSeqId]">A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</assert>
     </rule>
     
