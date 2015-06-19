@@ -1084,7 +1084,15 @@
         - Nucleotide sequence in DNA alphabet (string, required)
     </xs:documentation></xs:annotation>
       <xs:restriction base="xs:string">
-        <xs:pattern value="([\sACGTUMRWSYKVHDBXNacgtumrwsykvhdbxn])+" />
+      <!-- There is a bug with this pattern restriction.  It's an old apache bug from long ago.  
+      Essentially, the XML Parser goes into an infinite loop while parsing the sequence nodes and comparing to this regex, it throws a 
+      Stack Overflow and bails out.  Nice.  Solution is to comment the pattern so the xml parser doesn't do a regex match.
+      That is OK, because the MIRING validator already assumes this is a VALID HML file.
+      For more info see 
+      https://issues.apache.org/jira/browse/XERCESJ-589
+      http://apache-xml-project.6118.n7.nabble.com/java-lang-StackOverflowError-while-validating-CDATA-using-DomParser-td2557.html
+       -->
+        <!--  <xs:pattern value="([\sACGTUMRWSYKVHDBXNacgtumrwsykvhdbxn])+" />-->
         <xs:minLength value="1" />
       </xs:restriction>
   </xs:simpleType>

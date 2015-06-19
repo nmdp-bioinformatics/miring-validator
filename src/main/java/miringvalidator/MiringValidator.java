@@ -51,6 +51,8 @@ public class MiringValidator
      */
     public String validate()
     {
+        xml = Utilities.cleanSequences(xml);
+        
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");
         tier1ValidationErrors = SchemaValidator.validate(xml, "/schema/MiringTier1.xsd");

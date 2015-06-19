@@ -23,29 +23,20 @@
 package main.java.miringvalidator;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
+import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import main.java.miringvalidator.ValidationError.Severity;
 
@@ -57,7 +48,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class Utilities
 {
@@ -121,7 +111,7 @@ public class Utilities
      * @param parameterClass The class of the object expected by the reflected method.  It must be the correct class, and not an inherited class.
      * @return an Object which is the result of the reflected method.
      */
-    public static Object callReflectedMethod(Object callingObject, String methodName, Object singleParameter, Class parameterClass)
+    public static Object callReflectedMethod(Object callingObject, String methodName, Object singleParameter, Class<?> parameterClass)
     {
         Method method = null;
         try 
@@ -394,12 +384,62 @@ public class Utilities
         //Does this list contain any fatal errors?
         for(int i = 0; i < errors.length; i++)
         {
-            if(errors[i].getSeverity()==Severity.FATAL)
+            if(errors[i] != null)
             {
-                return true;
+                if(errors[i].getSeverity()==Severity.FATAL)
+                {
+                    return true;
+                }
             }
         }
         return false;
+    }    
+    
+    public static String[] tokenizeString(String text)
+    {
+        try
+        {
+            StringTokenizer st = new StringTokenizer(text);
+            String[] messageTokens = new String[st.countTokens()];
+            int counter = 0;
+            while (st.hasMoreTokens()) 
+            {
+                messageTokens[counter] = st.nextToken();
+                counter++;
+            }
+            return messageTokens;
+        }
+        catch(Exception e)
+        {
+            logger.error("Exception in tokenizeString(): " + e);
+            return null;
+        }
     }
 
+    //This method searches for <sequence> nodes, and cleans the text of any spaces or tabs.  
+    public static String cleanSequences(String xml)
+    {
+        //Sequence objects often have lots of tabs and spaces.  Im gonna remove them.
+        int indexBegin = xml.indexOf("<sequence>");
+        int indexEnd = xml.indexOf("</sequence>");
+        if(indexBegin != -1 && indexEnd != -1 && indexEnd > indexBegin)
+        {
+            //seqNode = "<sequence> AG GT </sequence>"
+            String seqNode = xml.substring(indexBegin, indexEnd + 11);
+            //rawSeq = " AG GT "
+            String rawSeq = xml.substring(indexBegin +10 , indexEnd);
+            
+            if(!rawSeq.contains("<") && !rawSeq.contains(">"))
+            {
+                //sequenceRemainder = ".......<AnotherSequenceToClean?>....."
+                String sequenceRemainder = cleanSequences(xml.substring(indexEnd + 11, xml.length()));
+                //polishedSeqNode = "<sequence>AGGT</sequence>"
+                String polishedSeqNode = seqNode.replace(" ", "").replace("\t", "").replace("\n", "");
+                //return <clean sequence> + <clean remainder>.
+                return xml.substring(0,indexEnd+11).replace(seqNode,polishedSeqNode) + sequenceRemainder;
+            }
+        }
+
+        return xml;
+    }
 }

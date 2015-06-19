@@ -62,8 +62,7 @@ public class SchemaValidator
 
         try 
         {
-            MiringValidationContentHandler.xmlCurrentNode = null;
-            MiringValidationContentHandler.xmlRootNode = null;
+            clearModel();
             
             URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
             logger.debug("Schema URL Resource Location = " + schemaURL);
@@ -81,14 +80,7 @@ public class SchemaValidator
             //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
             parser.parse(new InputSource(new StringReader(xml)), handler);
             
-            //Just in case these are still hanging out somewhere
-            //Having some memory problems and want to make sure these aren't hanging out.
-            if(MiringValidationContentHandler.xmlRootNode != null)
-            {
-                MiringValidationContentHandler.xmlRootNode.deAllocate();
-                MiringValidationContentHandler.xmlRootNode = null;
-                MiringValidationContentHandler.xmlCurrentNode = null;
-            }
+            clearModel();
         } 
         catch (SAXException e) 
         {
@@ -115,6 +107,25 @@ public class SchemaValidator
         }
     }
 
+    private static void clearModel()
+    {
+        //Just in case these are still hanging out somewhere
+        //Having some memory problems and want to make sure these aren't hanging out.
+        if(MiringValidationContentHandler.xmlRootNode != null)
+        {
+            MiringValidationContentHandler.xmlRootNode.deAllocate(1);
+            MiringValidationContentHandler.xmlRootNode = null;
+        }
+        
+        if(MiringValidationContentHandler.xmlCurrentNode != null)
+        {
+            MiringValidationContentHandler.xmlCurrentNode.deAllocate(1);
+            MiringValidationContentHandler.xmlCurrentNode = null;
+        }
+
+        MiringValidationContentHandler.nodeCount = 0;
+    }
+
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
         //xmlRootNode represents the root node of the xml document.
@@ -123,10 +134,14 @@ public class SchemaValidator
         
         public static SimpleXmlModel xmlRootNode;
         public static SimpleXmlModel xmlCurrentNode;
+        public static int nodeCount = 0;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException 
         {
+            nodeCount++;
+            //logger.debug("NODE COUNT: " + nodeCount + " NAME: " + localName + " ATTRIBUTES: " + Utilities.getAttributes(attributes));
+            
             try
             {
                 if(xmlRootNode==null)
@@ -201,7 +216,7 @@ public class SchemaValidator
             ValidationError ve = null;
             
             String errorMessage = exception.getMessage();
-            String[] exceptionTokens = tokenizeString(errorMessage);
+            String[] exceptionTokens = Utilities.tokenizeString(errorMessage);
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
@@ -492,25 +507,6 @@ public class SchemaValidator
             return ve;
         }
 
-        private static String[] tokenizeString(String exceptionMessage)
-        {
-            try
-            {
-                StringTokenizer st = new StringTokenizer(exceptionMessage);
-                String[] messageTokens = new String[st.countTokens()];
-                int counter = 0;
-                while (st.hasMoreTokens()) 
-                {
-                    messageTokens[counter] = st.nextToken();
-                    counter++;
-                }
-                return messageTokens;
-            }
-            catch(Exception e)
-            {
-                logger.error("Exception in tokenizeString(): " + e);
-                return null;
-            }
-        }
+
     }
 }
