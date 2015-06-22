@@ -442,4 +442,11 @@ public class Utilities
 
         return xml;
     }
+
+    public static String cleanNamespace(String xml)
+    {
+        
+
+        return xml;
+    }
 }

@@ -51,7 +51,7 @@ public class MiringValidator
      */
     public String validate()
     {
-        xml = Utilities.cleanSequences(xml);
+        //xml = Utilities.cleanSequences(xml);
         
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");

@@ -53,6 +53,21 @@ public class MiscTest
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
         String polishedXml = Utilities.cleanSequences(xml);
+    }
+    
+    @Test
+    public void testCleanNamespace()
+    {
+        logger.debug("starting testCleanNamespace");
+        String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+        
+        String polishedXml = Utilities.cleanNamespace(xml);
+        
+        String results = new MiringValidator(xml).validate();
+        results = new MiringValidator(polishedXml).validate();
+        
+        assertTrue(results.length() > 1);
+        fail();
 
     }
 
