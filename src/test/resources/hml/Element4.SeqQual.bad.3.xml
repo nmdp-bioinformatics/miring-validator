@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hml xmlns="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1 http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+     project-name="LAB" 
+     version="1.0.1">
+
+    <hmlid root="1234" extension="abcd" />
+    <reporting-center reporting-center-id="789" reporting-center-context="NMDP" />
+  
+    <sample id="123456789">
+    <collection-method>buccal swab</collection-method>
+    <typing gene-family="HLA" date="2013-12-31">
+      <allele-assignment date="2014-01-01" allele-db="db" allele-version="3">
+        <glstring uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" />
+        <glstring>
+          HLA-A*02:01:01:01
+        </glstring>
+      </allele-assignment>
+      <typing-method>
+      </typing-method>
+      <consensus-sequence date="2014-10-22">
+          <reference-database availability="public" curated="true">
+              <reference-sequence id="ref1"  start="0" end="9" name="a" accession="public"/>
+        </reference-database>
+        <consensus-sequence-block reference-sequence-id="ref1" start="0" end="9" description="friendly" expected-copy-number="1" continuity="false">
+          <sequence>
+            GCTGCTGCT
+          </sequence>
+          <variant id="0" reference-bases="T" alternate-bases="C" start="4" end="5" quality-score="90" filter="pass">
+              <variant-effect term="missense_variant" />
+          </variant>
+          <sequence-quality sequence-start="0" sequence-end="2" quality-score="1.0" />
+          <sequence-quality sequence-start="6" sequence-end="5" quality-score=".8" />
+        </consensus-sequence-block>
+      </consensus-sequence>
+    </typing>
+    </sample>
+</hml>

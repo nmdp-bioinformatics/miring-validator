@@ -38,34 +38,6 @@ public class MiringTier2Test
     private static final Logger logger = LogManager.getLogger(MiringTier2Test.class);
 
     @Test
-    public void testTemp()
-    {
-        //5.3.b and 5.3.c
-        /*String xml = Utilities.readXmlResource("/hml/Element5.variant.good.ids.xml");
-        String results = new MiringValidator(xml).validate();
-        System.out.println(results);
-        assertFalse(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
-        
-        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.1.xml");
-        results = new MiringValidator(xml).validate();
-        System.out.println(results);
-        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
-
-        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.2.xml");
-        results = new MiringValidator(xml).validate();
-        System.out.println(results);
-        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
-
-        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.3.xml");
-        results = new MiringValidator(xml).validate();
-        System.out.println(results);
-        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
-*/
-        //TODO
-
-    }
-
-    @Test
     public void testMiringElement1Tier2()
     {
         logger.debug("starting testMiringElement1Tier2");
@@ -138,15 +110,30 @@ public class MiringTier2Test
     {
         logger.debug("starting testMiringElement4Tier2");
         
-        //TODO: 
-        //4.a
-        //fail("not implemented yet.");
-        //4.b
-        //fail("not implemented yet.");
-        
-        //4.2.3.b
-        String xml = Utilities.readXmlResource("/hml/Element4.CSB.good.startend.xml");
+        //4.a and 4.b
+        String xml = Utilities.readXmlResource("/hml/Element4.SeqQual.good.xml");
         String results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "On a sequence quality node, sequence-end must be greater than sequence-start."));
+        assertFalse(Utilities.containsErrorNode(results, "On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."));
+
+        xml = Utilities.readXmlResource("/hml/Element4.SeqQual.bad.1.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "On a sequence quality node, sequence-end must be greater than sequence-start."));
+        assertTrue(Utilities.containsErrorNode(results, "On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."));
+
+        xml = Utilities.readXmlResource("/hml/Element4.SeqQual.bad.2.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "On a sequence quality node, sequence-end must be greater than sequence-start."));
+        assertTrue(Utilities.containsErrorNode(results, "On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."));
+
+        xml = Utilities.readXmlResource("/hml/Element4.SeqQual.bad.3.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "On a sequence quality node, sequence-end must be greater than sequence-start."));
+        assertFalse(Utilities.containsErrorNode(results, "On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."));
+
+        //4.2.3.b
+        xml = Utilities.readXmlResource("/hml/Element4.CSB.good.startend.xml");
+        results = new MiringValidator(xml).validate();
         assertFalse(Utilities.containsErrorNode(results, "On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute."));
         
         xml = Utilities.readXmlResource("/hml/Element4.CSB.bad.startend.xml");
@@ -207,18 +194,31 @@ public class MiringTier2Test
         //5.2.b and 5.2.d
         String xml = Utilities.readXmlResource("/hml/Element5.variant.bad.attributes.xml");
         String badResults = new MiringValidator(xml).validate();
-        System.out.println(badResults);
         assertFalse(Utilities.containsErrorNode(badResults, "The start attribute on a variant node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
         assertTrue(Utilities.containsErrorNode(badResults, "The end attribute on a variant node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
         assertTrue(Utilities.containsErrorNode(badResults, "On a variant node, end attribute should be greater than or equal to the start attribute."));
 
         xml = Utilities.readXmlResource("/hml/Element5.variant.good.attributes.xml");
         String goodResults = new MiringValidator(xml).validate();
-        System.out.println(goodResults);
         assertFalse(Utilities.containsErrorNode(goodResults, "The start attribute on a variant node should be greater than or equal to the start attribute on the corresponding reference-sequence node."));
         assertFalse(Utilities.containsErrorNode(goodResults, "The end attribute on a variant node should be less than or equal to the end attribute on the corresponding reference-sequence node."));
         assertFalse(Utilities.containsErrorNode(goodResults, "On a variant node, end attribute should be greater than or equal to the start attribute."));
 
+        //5.3.b and 5.3.c
+        xml = Utilities.readXmlResource("/hml/Element5.variant.good.ids.xml");
+        String results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
+        
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.1.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
 
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.2.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
+
+        xml = Utilities.readXmlResource("/hml/Element5.variant.bad.ids.3.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants"));
     }
 }

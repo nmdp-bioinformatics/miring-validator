@@ -3,6 +3,20 @@
 <pattern id="Miring.Element.4" xmlns="http://purl.oclc.org/dsdl/schematron">
 
     <!--
+        Rule 4.a and 4.b
+        end >= start
+      --> 
+    <rule context="hml:sequence-quality">
+    
+        <let name="csbStart" value="parent::*/@start" />
+        <let name="csbEnd" value="parent::*/@end" />
+        <let name="csbRange" value="$csbEnd - $csbStart" />
+        
+        <assert test="number(@sequence-end) > number(@sequence-start)">On a sequence quality node, sequence-end must be greater than sequence-start.</assert>
+        <assert test="@sequence-start &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
+        <assert test="@sequence-end &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
+    </rule>
+    <!--
         Rule 4.2.3.b
         end >= start
       --> 
@@ -20,7 +34,7 @@
 
         <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @start &lt;= $csbStart]">The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.</assert>
         <assert test="//hml:reference-sequence[@id = $csbRefSeqId and @end &gt;= $csbEnd]">The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.</assert>
-    
+
     <!--
         Rule 4.2.4.b
         Phasing-group attribute is deprecated.

@@ -315,6 +315,11 @@ public class SchematronValidator
             ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
             ve.setSeverity(Severity.WARNING);
         }
+        else if(errorMessage.contains("On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."))
+        {
+            ve.setMiringRule("4.b");
+            ve.setSolutionText("A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start.");
+        }
         else if(errorMessage.contains("The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute")
              || errorMessage.contains("The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute"))
         {
@@ -348,7 +353,11 @@ public class SchematronValidator
             ve.setMiringRule("5.2.d");
             ve.setSolutionText("Verify that the start and end attributes on the variant are >= and <= to the start and end attributes on the corresponding reference sequence.");
         }
-        
+        else if(errorMessage.contains("The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants."))
+        {
+            ve.setMiringRule("5.3.c");
+            ve.setSolutionText("IDs on variant nodes should start at 0, and represent every integer between 0:n-1.");
+        }
         else
         {
             ve.setMiringRule("Unhandled Miring Rule");
