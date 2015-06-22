@@ -52,7 +52,7 @@ public class SchematronValidatorTest
         
         //Schematron should find 2 errors in the demo files.  
         assertTrue(badDemoErrors.length == 2);
-        String errorReport = ReportGenerator.generateReport(badDemoErrors, Utilities.getHMLIDRoot(demoGoodXML), Utilities.getHMLIDExtension(demoGoodXML));
+        String errorReport = ReportGenerator.generateReport(badDemoErrors, Utilities.getHMLIDRoot(demoGoodXML), Utilities.getHMLIDExtension(demoGoodXML), null);
         
         assertTrue(Utilities.containsErrorNode( errorReport , "start attribute on reference-sequence nodes should be 0."));
         assertTrue(Utilities.containsErrorNode( errorReport , "end attribute should be greater than or equal to the start attribute."));

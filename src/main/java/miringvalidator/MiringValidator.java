@@ -22,6 +22,10 @@
 */
 package main.java.miringvalidator;
 
+import java.util.HashMap;
+
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -51,7 +55,13 @@ public class MiringValidator
      */
     public String validate()
     {
+        if(xml==null || xml.length() == 0)
+        {
+            return ReportGenerator.generateReport(new ValidationError[]{new ValidationError("XML is null or length 0.",Severity.FATAL)}, null, null,null);
+        }
+        
         //xml = Utilities.cleanSequences(xml);
+        HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");
@@ -82,7 +92,7 @@ public class MiringValidator
         //Make a report.
         String hmlIdRoot = Utilities.getHMLIDRoot(xml);
         String hmlIdExt = Utilities.getHMLIDExtension(xml);        
-        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt);
+        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt, properties);
         return report;
     }
 

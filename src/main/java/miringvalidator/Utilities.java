@@ -26,24 +26,34 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import main.java.miringvalidator.ValidationError.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
@@ -63,7 +73,7 @@ public class Utilities
     public static boolean containsErrorNode(String validationErrorReport, String errNodeDescription)
     {
         //check all nodes with name "description"
-        NodeList childrenNodes = xmlToDomObject(validationErrorReport).getElementsByTagName("description");
+        NodeList childrenNodes = xmlToRootElement(validationErrorReport).getElementsByTagName("description");
         for(int i = 0; i < childrenNodes.getLength(); i++)
         {
             Node invMirResult = childrenNodes.item(i);
@@ -154,20 +164,42 @@ public class Utilities
     }
 
     /**
-     * Convert XML in string form to a DOM Object.  They are more useful for parsing the XML.
+     * Get the root element of an XML file from XML in string form.  They are more useful for parsing the XML.
      *
      * @param xml A String containing xml
      * @return an org.w3c.Dom.Element which is the root of the xml document.
      */
-    public static Element xmlToDomObject(String xml)
+    public static Element xmlToRootElement(String xml)
+    {
+        try
+        {
+            Document document = xmlToDocumentObject(xml);
+            Element rootElement = document.getDocumentElement();
+            return rootElement;
+        }
+        catch(Exception e)
+        {
+            //If i was clever I'd handle these exceptions specifically
+            //throws ParserConfigurationException, SAXException, IOException
+            logger.error("Exception in Utilities.xmlToRootElement()" + e.toString());
+            return null;
+        }
+    }
+    
+    /**
+     * Convert XML in string form to a DOM Object.  
+     *
+     * @param xml A String containing xml
+     * @return an org.w3c.Dom.Element which is the root of the xml document.
+     */
+    public static Document xmlToDocumentObject(String xml)
     {
         try
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(new InputSource(new StringReader(xml)));
-            Element rootElement = document.getDocumentElement();
-            return rootElement;
+            return document;
         }
         catch(Exception e)
         {
@@ -176,6 +208,27 @@ public class Utilities
             logger.error("Exception in Utilities.xmlToDomObject()" + e.toString());
             return null;
         }
+    }
+    
+    public static String getStringFromDoc(Document doc)
+    {
+        //Generate an XML String from the Document object.
+        String xmlString = null;
+        try
+        {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            //initialize StreamResult with File object to save to file
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(doc);
+            transformer.transform(source, result);
+            xmlString = result.getWriter().toString();
+        }
+        catch(Exception e)
+        {
+            logger.error("Error generating XML String" + e);
+        }
+        return xmlString;
     }
     
     /**
@@ -228,10 +281,13 @@ public class Utilities
     private static Node getHMLIDNode(String xml)
     {
         //hmlid should be a child nodes of the root xml element.
-        NodeList childrenNodes = xmlToDomObject(xml).getChildNodes();
+        NodeList childrenNodes = xmlToRootElement(xml).getChildNodes();
         for(int i = 0; i < childrenNodes.getLength(); i++)
         {
-            String childsName = childrenNodes.item(i).getNodeName();
+            String childsFullName = childrenNodes.item(i).getNodeName();
+            //Is it qualified with a namespace?
+            String[] childsTokens = tokenizeString(childsFullName,":");
+            String childsName = (childsTokens.length==1)?childsFullName:childsTokens[1];
             if(childsName != null && childsName.equals("hmlid"))
             {
                 return childrenNodes.item(i);
@@ -395,11 +451,11 @@ public class Utilities
         return false;
     }    
     
-    public static String[] tokenizeString(String text)
+    public static String[] tokenizeString(String text, String delimiter)
     {
         try
         {
-            StringTokenizer st = new StringTokenizer(text);
+            StringTokenizer st = new StringTokenizer(text, delimiter);
             String[] messageTokens = new String[st.countTokens()];
             int counter = 0;
             while (st.hasMoreTokens()) 
@@ -416,7 +472,9 @@ public class Utilities
         }
     }
 
+
     //This method searches for <sequence> nodes, and cleans the text of any spaces or tabs.  
+    //Pretty sure I"m not using htis for anything currently.
     public static String cleanSequences(String xml)
     {
         //Sequence objects often have lots of tabs and spaces.  Im gonna remove them.
@@ -442,11 +500,112 @@ public class Utilities
 
         return xml;
     }
-
-    public static String cleanNamespace(String xml)
+    
+    
+    //Will return null if hml is the root namespace.
+    public static String getNamespaceName(String xml)
     {
-        
-
+        logger.debug("gettingNamespaceName");
+            
+        try
+        {
+            Document xmlDocument = xmlToDocumentObject(xml);
+            Element rootNode = xmlDocument.getDocumentElement();
+            
+            String xmlns = rootNode.getAttribute("xmlns");
+            
+            if(xmlns != null && xmlns.equals("http://schemas.nmdp.org/spec/hml/1.0.1"))
+            {
+                logger.debug("HML 1.0.1 is the root namepace.");
+                return null;
+            }
+            else
+            {
+                NamedNodeMap attributes = rootNode.getAttributes();
+                if(attributes != null && attributes.getLength() > 0)
+                {
+                    for(int i = 0; i < attributes.getLength(); i++)
+                    {
+                        String name = attributes.item(i).getNodeName();
+                        String value = attributes.item(i).getNodeValue();
+                        if(name != null && value != null
+                            && name.contains("xmlns:")
+                            && value.equals("http://schemas.nmdp.org/spec/hml/1.0.1"))
+                        {
+                            String nameSpace = name.substring(name.indexOf("xmlns:") + 6, name.length());
+                            logger.debug("Found the HML namespace: " + nameSpace);
+                            
+                            return nameSpace;
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            logger.error("Exception while cleaning namespaces:" + e);
+        }
         return xml;
+    }
+    
+    public static String stripNamespace(String nodeName, String namespaceName)
+    {
+        if(namespaceName==null)
+        {
+            return nodeName;
+        }
+        else if(!nodeName.contains(":"))
+        {
+            logger.error("Expected a namespace-qualified node name, with ns= " + namespaceName + ".  Instead we have= " + nodeName);
+        }
+        else
+        {
+            //ns2:reporting-center
+            String[] tokens = Utilities.tokenizeString(nodeName,":");
+            if(tokens != null && tokens.length == 2)
+            {
+                if(tokens[0].equals(namespaceName))
+                {
+                    return tokens[1];
+                }
+                else
+                {
+                    logger.error("Incorrect namespace found. expected=" + namespaceName + " nodeName = " +nodeName);
+                    return nodeName;
+                }
+            }
+            else
+            {
+                logger.error("Namespace expected and not found. expected=" + namespaceName + " nodeName = " +nodeName);
+            }
+        }
+        logger.error("Something funny happened in stripNamespace(). Returning full node name: " + nodeName);
+        return nodeName;
+    }
+    
+    public static HashMap<String,String> getPropertiesFromRootHml(String xml)
+    {
+        try
+        {
+            Element rootElement = xmlToRootElement(xml);
+            NodeList children = rootElement.getChildNodes();
+            HashMap<String,String> results = new HashMap<String,String>();
+            
+            for(int i = 0; i < children.getLength(); i++)
+            {
+                if(children.item(i).getNodeName().contains("property"))
+                {
+                    String propertyName = children.item(i).getAttributes().getNamedItem("name").getNodeValue();
+                    String propertyValue = children.item(i).getAttributes().getNamedItem("value").getNodeValue();
+                    results.put(propertyName, propertyValue);
+                }
+            }
+            return (results.size()==0)?null:results;
+        }
+        catch(Exception e)
+        {
+            logger.error("exception in getPropertiesFromRootXml" + xml);
+            return null;
+        }
     }
 }

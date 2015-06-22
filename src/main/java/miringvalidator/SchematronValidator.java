@@ -152,7 +152,7 @@ public class SchematronValidator
 
         try
         {
-            Element rootElement = Utilities.xmlToDomObject(xml);  
+            Element rootElement = Utilities.xmlToRootElement(xml);  
 
             //I guess I'm handling successful-reports and failed-asserts in the same way
             NodeList successfulReportList = rootElement.getElementsByTagName("svrl:successful-report");
