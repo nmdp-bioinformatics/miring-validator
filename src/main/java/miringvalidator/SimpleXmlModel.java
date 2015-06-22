@@ -35,7 +35,7 @@ public class SimpleXmlModel
     public SimpleXmlModel parentNode;
     private static final Logger logger = LogManager.getLogger(SimpleXmlModel.class);
     
-    public SimpleXmlModel(String nodeName, int nodeIndex/*, String attributes*/)
+    public SimpleXmlModel(String nodeName, int nodeIndex)
     {
         this(nodeName);
         this.nodeIndex = nodeIndex;
@@ -109,6 +109,7 @@ public class SimpleXmlModel
         //This is a recursive function that deallocates this object, as well as it's children.
         //That sounds rather violent when i write it down.
         //I feel like i shouldn't need to do this.
+        //Might work fine to get rid of this.
         try
         {
             nodeName = null;

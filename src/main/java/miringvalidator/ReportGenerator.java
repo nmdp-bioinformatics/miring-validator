@@ -22,20 +22,17 @@
 */
 package main.java.miringvalidator;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import main.java.miringvalidator.ValidationError.Severity;
 
@@ -57,7 +54,7 @@ public class ReportGenerator
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationError[] validationErrors, String root, String extension)
+    public static String generateReport(ValidationError[] validationErrors, String root, String extension, HashMap<String,String> properties)
     {
         validationErrors = combineSimilarErrors(validationErrors);
         try 
@@ -97,17 +94,32 @@ public class ReportGenerator
             
             rootElement.appendChild(hmlidElement);
             
-            //QUALITY SCORE
-            //No errors = 1. 
-            //No fatal errors = 2.
-            //Some fatal errors = 3.            
-            /*String quality = (validationErrors.length==0)?"1"
-                    :(!containsFatalErrors(validationErrors))?"2"
-                    :"3";
-            
-            Element qualityElement = doc.createElement("QualityScore");
-            qualityElement.appendChild(doc.createTextNode(quality));
-            rootElement.appendChild(qualityElement);*/
+            //PROPERTIES
+            if(properties != null)
+            {
+                Iterator it = properties.entrySet().iterator();
+                while (it.hasNext()) 
+                {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    String name = pair.getKey().toString();
+                    String value = pair.getValue().toString();
+
+                    it.remove();
+                    Element property = doc.createElement("property");
+                    
+                    //name
+                    Attr attr = doc.createAttribute("name");
+                    attr.setValue(name);
+                    property.setAttributeNode(attr);
+                    
+                    //name
+                    attr = doc.createAttribute("value");
+                    attr.setValue(value);
+                    property.setAttributeNode(attr);
+                    
+                    rootElement.appendChild(property);
+                }
+            }
             
             //INVALIDMIRINGRESULT ELEMENTS
             if(validationErrors != null)
@@ -118,7 +130,7 @@ public class ReportGenerator
                 }
             }
 
-            return(getStringFromDoc(doc));
+            return(Utilities.getStringFromDoc(doc));
         }
         catch (ParserConfigurationException pce) 
         {
@@ -177,8 +189,6 @@ public class ReportGenerator
         return results;
     }
 
-
-    
     private static Element generateValidationErrorNode(Document doc, ValidationError validationError)
     {
         //Change a validation error into an XML Node to put in our report.
@@ -223,24 +233,4 @@ public class ReportGenerator
         return invMiringElement;
     }
     
-    private static String getStringFromDoc(Document doc)
-    {
-        //Generate an XML String from the Document object.
-        String xmlString = null;
-        try
-        {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            //initialize StreamResult with File object to save to file
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(doc);
-            transformer.transform(source, result);
-            xmlString = result.getWriter().toString();
-        }
-        catch(Exception e)
-        {
-            logger.error("Error generating XML String" + e);
-        }
-        return xmlString;
-    }
 }

@@ -56,7 +56,7 @@ public class SchemaValidatorTest
         //Just demonstrating a weakness of the schema parser.   Fix in the future if it makes sense to.
         assertTrue(badDemoErrors.length == 1);
         
-        String errorReport = ReportGenerator.generateReport(badDemoErrors, "sampleRoot", "sampleExtension");
+        String errorReport = ReportGenerator.generateReport(badDemoErrors, "sampleRoot", "sampleExtension", null);
         assertTrue(Utilities.containsErrorNode( errorReport , "There is a missing hmlid node underneath the hml node." ));
         assertFalse(Utilities.containsErrorNode( errorReport , "There is a missing reporting-center node underneath the hml node." ));
     }

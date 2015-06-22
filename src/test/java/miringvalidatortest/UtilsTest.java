@@ -137,7 +137,7 @@ public class UtilsTest
         logger.debug("starting testXmlToDomObject");
 
         String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
-        Element xmlElement = Utilities.xmlToDomObject(demoGoodXML);
+        Element xmlElement = Utilities.xmlToRootElement(demoGoodXML);
         assertNotNull(xmlElement);
         
         boolean sampleElementFound = false;

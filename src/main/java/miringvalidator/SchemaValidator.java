@@ -47,6 +47,7 @@ public class SchemaValidator
 {
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
     public static List<ValidationError> validationErrors;
+    public static String hmlNamespace = null;
     
     /**
      * Validate xml against a schema
@@ -63,6 +64,8 @@ public class SchemaValidator
         try 
         {
             clearModel();
+            
+            hmlNamespace = Utilities.getNamespaceName(xml);
             
             URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
             logger.debug("Schema URL Resource Location = " + schemaURL);
@@ -216,7 +219,7 @@ public class SchemaValidator
             ValidationError ve = null;
             
             String errorMessage = exception.getMessage();
-            String[] exceptionTokens = Utilities.tokenizeString(errorMessage);
+            String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
@@ -272,7 +275,7 @@ public class SchemaValidator
                 String untrimmedNodeName = exceptionTokens[7];                
                 String nodeName = untrimmedNodeName.substring(1, untrimmedNodeName.indexOf("'."));
                 
-                ve = handleMissingAttribute(missingAttributeName, nodeName);
+                ve = handleMissingAttribute(missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
             }
             else
             {
@@ -440,6 +443,18 @@ public class SchemaValidator
                 {
                     solutionMessage = "accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.";
                     severity=Severity.WARNING;
+                }
+            }
+            else if(nodeName.equals("reporting-center"))
+            {
+                if(missingAttributeName.equals("reporting-center-id")
+                    || missingAttributeName.equals("reporting-center-context"))
+                {
+                    miringRuleID = "1.2.b";
+                }
+                else
+                {
+                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
                 }
             }
             else

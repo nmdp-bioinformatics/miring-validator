@@ -24,21 +24,12 @@ package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import main.java.miringvalidator.MiringValidator;
-import main.java.miringvalidator.SchematronValidator;
 import main.java.miringvalidator.Utilities;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.helpers.AttributesImpl;
 
 public class MiscTest
 {
@@ -53,7 +44,17 @@ public class MiscTest
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
         String polishedXml = Utilities.cleanSequences(xml);
-
     }
 
+    @Test
+    public void testXmlWithNamespace()
+    {
+        logger.debug("starting testXmlWithNamespace");
+        String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+
+        String results;
+        results = new MiringValidator(xml).validate();
+        
+        assertTrue(results.length() > 1);
+    }
 }

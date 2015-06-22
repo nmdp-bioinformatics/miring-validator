@@ -29,6 +29,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import main.java.miringvalidator.ValidationError.Severity;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -53,13 +55,12 @@ public class MiringValidatorService
         if(xml == null || xml.length() == 0)
         {
             logger.error("XML is Null or Empty.");
-            //TODO: Format this like an error report.
-            return "XML IS NULL OR EMPTY.";
+            return ReportGenerator.generateReport(new ValidationError[]{new ValidationError("XML is null or length 0.",Severity.FATAL)}, null, null,null);
         }
         else
         {
             logger.debug("XML Length = " + xml.length());
-            //logger.debug(xml);
+
             MiringValidator myValidator = new MiringValidator(xml);
             myValidator.validate();
 

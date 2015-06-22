@@ -23,6 +23,10 @@
 package test.java.miringvalidatortest;
 
 import static org.junit.Assert.*;
+
+import java.util.HashMap;
+
+import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.MiringValidatorService;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.Utilities;
@@ -56,12 +60,12 @@ public class ReportGeneratorTest
             ValidationError[] tier1Errors = {error1, error2};
             ValidationError[] tier2Errors = {error3, error4, error5};
             
-            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4");
+            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4", null);
             
             assertTrue(reportResults != null);
             assertTrue(reportResults.length() > 4);
 
-            Element rootElement = Utilities.xmlToDomObject(reportResults);              
+            Element rootElement = Utilities.xmlToRootElement(reportResults);              
             NodeList list = rootElement.getElementsByTagName("InvalidMiringResult");
             assertTrue(list.getLength() == 5);
             
@@ -79,13 +83,13 @@ public class ReportGeneratorTest
             ValidationError fatalError = new ValidationError("A fatal error", Severity.FATAL);
             ValidationError nonFatalError = new ValidationError("A nonFatal error", Severity.WARNING);
             
-            String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4");
-            String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4");
-            String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4");
+            String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4", null);
+            String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4", null);
+            String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null);
             
-            String score1Compliance = Utilities.xmlToDomObject(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
-            String score2Compliance = Utilities.xmlToDomObject(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
-            String score3Compliance = Utilities.xmlToDomObject(score3Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score1Compliance = Utilities.xmlToRootElement(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score2Compliance = Utilities.xmlToRootElement(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score3Compliance = Utilities.xmlToRootElement(score3Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
             
             assertEquals(score1Compliance ,"true");
             assertEquals(score2Compliance ,"true");
@@ -96,5 +100,18 @@ public class ReportGeneratorTest
             logger.error("Exception in testReportGenerator(): " + e);
             fail("Error testing Report Generator" + e);
         }
+    }
+    
+    @Test
+    public void testGetPropertiesFromRootHml()
+    {
+        logger.debug("starting testXmlWithNamespace");
+        String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+        
+        HashMap properties = Utilities.getPropertiesFromRootHml(xml);
+
+        assertTrue(properties.size() > 0);
+        assertTrue(properties.get("MessageReceived") != null 
+                && properties.get("MessageReceived").toString().length() > 1); 
     }
 }
