@@ -53,7 +53,6 @@ public class MiscTest
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
         String polishedXml = Utilities.cleanSequences(xml);
-        System.out.println(polishedXml);
 
     }
 

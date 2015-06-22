@@ -22,15 +22,16 @@
       
     <!--
         Rule 5.3.b and 5.3.c
-        IDs are non-negative integers, ranigng from 0:n-1
+        IDs are non-negative integers, ranging from 0:n-1
       -->
         <let name="varID" value="replace(number(attribute(id)),'NaN','?')" />
         <let name="prevVarID" value="replace(number(preceding-sibling::*[1]/@id),'NaN','?')" />
         <let name="nextVarID" value="replace(number(following-sibling::*[1]/@id),'NaN','?')" />
         
-        <report test="$varID = '?'">The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.111 previd=<value-of select="$prevVarID"/> id=<value-of select="$varID"/> nextid=<value-of select="$nextVarID"/></report>            
-        <assert test="$nextVarID=($varID + 1) or $nextVarID='?'" >The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.222 previd=<value-of select="$prevVarID"/> id=<value-of select="$varID"/> nextid=<value-of select="$nextVarID"/></assert>
-        <assert test="$prevVarID=($varID - 1) or $prevVarID='?'" >The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.333 previd=<value-of select="$prevVarID"/> id=<value-of select="$varID"/> nextid=<value-of select="$nextVarID"/></assert>
+        <report test="$varID = '?'">The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.</report>
+        <assert test="$nextVarID=($varID + 1) or $nextVarID='?'" >The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.</assert>
+        <assert test="$prevVarID=($varID - 1) or $prevVarID='?'" >The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.</assert>
+        <assert test="../hml:variant[@id = '0']" >The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants.</assert> -->
     </rule>
 
 </pattern>
