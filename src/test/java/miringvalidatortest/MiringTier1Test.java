@@ -38,6 +38,13 @@ public class MiringTier1Test
     private static final Logger logger = LogManager.getLogger(MiringTier1Test.class);
 
     @Test
+    public void testRule3()
+    {
+        fail();
+    }
+    
+    
+    @Test
     public void testMiringElement1Tier1()
     {
         logger.debug("starting testMiringElement1Tier1");
