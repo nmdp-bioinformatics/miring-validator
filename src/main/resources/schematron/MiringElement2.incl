@@ -20,5 +20,5 @@
 
         <assert test="//hml:consensus-sequence-block[@reference-sequence-id=$refSeqId]">A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</assert>
     </rule>
-    
+
 </pattern>
