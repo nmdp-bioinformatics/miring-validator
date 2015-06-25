@@ -34,7 +34,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -54,7 +54,7 @@ public class ReportGenerator
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationError[] validationErrors, String root, String extension, HashMap<String,String> properties)
+    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties)
     {
         validationErrors = combineSimilarErrors(validationErrors);
         try 
@@ -91,7 +91,6 @@ public class ReportGenerator
                 extAttr.setValue(extension);
                 hmlidElement.setAttributeNode(extAttr);
             }
-            
             rootElement.appendChild(hmlidElement);
             
             //PROPERTIES
@@ -121,13 +120,47 @@ public class ReportGenerator
                 }
             }
             
-            //INVALIDMIRINGRESULT ELEMENTS
-            if(validationErrors != null)
+            //MIRINGRESULT ELEMENTS            
+            ValidationResult[] fatalErrors = getErrorsBySeverity(validationErrors,Severity.FATAL);
+            ValidationResult[] miringErrors = getErrorsBySeverity(validationErrors,Severity.MIRING);
+            ValidationResult[] warnings = getErrorsBySeverity(validationErrors,Severity.WARNING);
+            ValidationResult[] info = getErrorsBySeverity(validationErrors,Severity.INFO);
+
+            if(fatalErrors != null && fatalErrors.length > 0)
             {
-                for(int i = 0; i < validationErrors.length; i++)
+                Element fatalErrorsElement = doc.createElement("FatalValidationErrors");
+                for(int i = 0; i < fatalErrors.length; i++)
                 {
-                    rootElement.appendChild(generateValidationErrorNode(doc, validationErrors[i]));
+                    fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
                 }
+                rootElement.appendChild(fatalErrorsElement);
+            }
+            if(miringErrors != null && miringErrors.length > 0)
+            {
+                Element miringErrorsElement = doc.createElement("MiringValidationErrors");
+                for(int i = 0; i < miringErrors.length; i++)
+                {
+                    miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
+                }
+                rootElement.appendChild(miringErrorsElement);
+            }
+            if(warnings != null && warnings.length > 0)
+            {
+                Element warningsElement = doc.createElement("FatalValidationErrors");
+                for(int i = 0; i < warnings.length; i++)
+                {
+                    warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
+                }
+                rootElement.appendChild(warningsElement);
+            }
+            if(info != null && info.length > 0)
+            {
+                Element infoElement = doc.createElement("FatalValidationErrors");
+                for(int i = 0; i < info.length; i++)
+                {
+                    infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
+                }
+                rootElement.appendChild(infoElement);
             }
 
             return(Utilities.getStringFromDoc(doc));
@@ -146,17 +179,37 @@ public class ReportGenerator
         return null;
     }
     
-    private static ValidationError[] combineSimilarErrors(ValidationError[] validationErrors)
+    private static ValidationResult[] getErrorsBySeverity(ValidationResult[] validationErrors, Severity severity)
+    {
+        if(validationErrors != null && validationErrors.length > 0)
+        {
+            List<ValidationResult> results = new ArrayList<ValidationResult>();
+            for(int i = 0; i < validationErrors.length; i++)
+            {
+                if(validationErrors[i].severity.equals(severity))
+                {
+                    results.add(validationErrors[i]);
+                }
+            }
+            return results.toArray(new ValidationResult[results.size()]);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private static ValidationResult[] combineSimilarErrors(ValidationResult[] validationErrors)
     {
         //Many errors are very similar to eachother.  If they have the same error text, then we should combine them.  Hopefully they have distinct xpaths.
-        List<ValidationError> newErrorList = new ArrayList<ValidationError>();
+        List<ValidationResult> newErrorList = new ArrayList<ValidationResult>();
         
         for(int i = 0; i < validationErrors.length; i++)
         {
-            ValidationError oldError = validationErrors[i];
+            ValidationResult oldError = validationErrors[i];
             //Scan existing list for an error that is a close match.
             boolean foundMatch = false;
-            for (ValidationError newError: newErrorList)
+            for (ValidationResult newError: newErrorList)
             {
                 if(oldError.miringRule.equals(newError.miringRule)
                     && oldError.errorText.equals(newError.errorText))
@@ -180,7 +233,7 @@ public class ReportGenerator
             }
         }
         
-        ValidationError[] results = new ValidationError[newErrorList.size()];
+        ValidationResult[] results = new ValidationResult[newErrorList.size()];
         for(int i = 0; i < newErrorList.size(); i++)
         {
             results[i]=newErrorList.get(i);
@@ -189,10 +242,10 @@ public class ReportGenerator
         return results;
     }
 
-    private static Element generateValidationErrorNode(Document doc, ValidationError validationError)
+    private static Element generateValidationErrorNode(Document doc, ValidationResult validationError)
     {
         //Change a validation error into an XML Node to put in our report.
-        Element invMiringElement = doc.createElement("InvalidMiringResult");
+        Element invMiringElement = doc.createElement("MiringResult");
         
         //miringElementID
         Attr miringElementAttr = doc.createAttribute("miringRuleID");

@@ -27,7 +27,7 @@ import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.SchematronValidator;
 import main.java.miringvalidator.Utilities;
-import main.java.miringvalidator.ValidationError;
+import main.java.miringvalidator.ValidationResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

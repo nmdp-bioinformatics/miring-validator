@@ -33,7 +33,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.*;
 
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -46,7 +46,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SchemaValidator
 {
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
-    public static List<ValidationError> validationErrors;
+    public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
     
     /**
@@ -56,10 +56,10 @@ public class SchemaValidator
      * @param schemaFileName the file name of the schema to compare against
      * @return an array of ValidationError objects found during validation
      */
-    public static ValidationError[] validate(String xml, String schemaFileName) 
+    public static ValidationResult[] validate(String xml, String schemaFileName) 
     {
         logger.debug("Starting a schema validation");
-        validationErrors = new ArrayList<ValidationError>();
+        validationErrors = new ArrayList<ValidationResult>();
 
         try 
         {
@@ -98,7 +98,7 @@ public class SchemaValidator
         if(validationErrors.size() > 0)
         {
             //List -> Array
-            ValidationError[] array = validationErrors.toArray(new ValidationError[validationErrors.size()]);
+            ValidationResult[] array = validationErrors.toArray(new ValidationResult[validationErrors.size()]);
             logger.debug(validationErrors.size() + " schema validation errors found");
             return array;
         }
@@ -106,7 +106,7 @@ public class SchemaValidator
         {
             logger.debug("ZERO schema validation errors found");
             //Empty.  Not null.  No problems found.
-            return new ValidationError[0];
+            return new ValidationResult[0];
         }
     }
 
@@ -216,14 +216,14 @@ public class SchemaValidator
             //When the parser finds a problem with the xml            
             //Take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
 
-            ValidationError ve = null;
+            ValidationResult ve = null;
             
             String errorMessage = exception.getMessage();
             String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
-                ve = new ValidationError("Content is not allowed in prolog.",Severity.FATAL);
+                ve = new ValidationResult("Content is not allowed in prolog.",Severity.FATAL);
                 ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
             }            
             else if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
@@ -285,7 +285,7 @@ public class SchemaValidator
                 //There are more types of errors probably. 
                 //What if I have too many of a thing?
                 logger.error("This Sax Parser Exception isn't handled gracefully :" + exception.getMessage());
-                ve = new ValidationError("Unhandled Sax Parser Error: " + exception.getMessage(), Severity.FATAL);
+                ve = new ValidationResult("Unhandled Sax Parser Error: " + exception.getMessage(), Severity.FATAL);
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("?");
             }
@@ -298,9 +298,9 @@ public class SchemaValidator
             Utilities.addValidationError(validationErrors, ve);
         }
 
-        private static ValidationError handleMissingAttribute(String missingAttributeName, String nodeName)
+        private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
         {
-            ValidationError ve;
+            ValidationResult ve;
             String miringRuleID = "Unhandled Miring Rule ID";
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
@@ -462,14 +462,14 @@ public class SchemaValidator
                 logger.error("Node Name Not Handled! : " + nodeName);
             }
             
-            ve =  new ValidationError(errorMessage,severity);
+            ve =  new ValidationResult(errorMessage,severity);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
             
             return ve;
         }
 
-        private static ValidationError handleMissingNode(String missingNodeName)
+        private static ValidationResult handleMissingNode(String missingNodeName)
         {
             String errorMessage = "Unhandled Error Message";
             String solutionMessage = "Unhandled Solution Message";
@@ -477,7 +477,7 @@ public class SchemaValidator
             String miringRuleID = "Unhandled Miring Rule ID";
             String parentNodeName = "Unhandled Parent Node Name";
             Severity severity = Severity.MIRING;
-            ValidationError ve;
+            ValidationResult ve;
             
             parentNodeName = xmlCurrentNode.nodeName;
             if(parentNodeName.isEmpty())
@@ -519,7 +519,7 @@ public class SchemaValidator
                 logger.error("MissingNodeName Not Handled: " + missingNodeName);
             }
 
-            ve =  new ValidationError(errorMessage,severity);
+            ve =  new ValidationResult(errorMessage,severity);
             ve.setSolutionText(solutionMessage);
             ve.setMiringRule(miringRuleID);
 

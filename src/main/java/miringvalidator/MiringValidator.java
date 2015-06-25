@@ -24,7 +24,7 @@ package main.java.miringvalidator;
 
 import java.util.HashMap;
 
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,8 +34,8 @@ public class MiringValidator
     private static final Logger logger = LogManager.getLogger(MiringValidator.class);
     String xml;
     String report;
-    ValidationError[] tier1ValidationErrors;
-    ValidationError[] tier2ValidationErrors;
+    ValidationResult[] tier1ValidationErrors;
+    ValidationResult[] tier2ValidationErrors;
     
     /**
      * Constructor for a MiringValidator object
@@ -57,7 +57,7 @@ public class MiringValidator
     {
         if(xml==null || xml.length() == 0)
         {
-            return ReportGenerator.generateReport(new ValidationError[]{new ValidationError("XML is null or length 0.",Severity.FATAL)}, null, null,null);
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null);
         }
         
         //xml = Utilities.cleanSequences(xml);
@@ -91,7 +91,7 @@ public class MiringValidator
 
         //Make a report.
         String hmlIdRoot = Utilities.getHMLIDRoot(xml);
-        String hmlIdExt = Utilities.getHMLIDExtension(xml);        
+        String hmlIdExt = Utilities.getHMLIDExtension(xml);
         report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt, properties);
         return report;
     }
