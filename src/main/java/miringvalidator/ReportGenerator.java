@@ -54,9 +54,11 @@ public class ReportGenerator
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties)
+    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties, String[] sampleIDs)
     {
+        validationErrors = assignSampleIDs(validationErrors,sampleIDs);
         validationErrors = combineSimilarErrors(validationErrors);
+        
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -77,19 +79,50 @@ public class ReportGenerator
             );
             rootElement.setAttributeNode(compliantAttr);
             
+            //SAMPLE IDs
+            if(sampleIDs != null && sampleIDs.length > 0)
+            {
+                int numberSampleIDs = sampleIDs.length;
+                int numberBadSamples = 0;
+                int numberGoodSamples = 0;
+                Element samplesElement = doc.createElement("samples");
+
+                
+                for(int i = 0; i < sampleIDs.length; i++)
+                {
+                    Element currentSampleElement = doc.createElement("sample");
+                    String sampleID = sampleIDs[i];
+                    currentSampleElement.setAttribute("id",sampleID);
+
+                    if(doesSampleHaveMiringErrors(sampleID, validationErrors))
+                    {
+                        currentSampleElement.setAttribute("MiringCompliant", "false");
+                        numberBadSamples++;
+                    }
+                    else
+                    {
+                        currentSampleElement.setAttribute("MiringCompliant", "true");
+                        numberGoodSamples++;
+                    }
+
+                    samplesElement.appendChild(currentSampleElement);
+                }
+                
+                samplesElement.setAttribute("SampleCount", ("" + numberSampleIDs));
+                samplesElement.setAttribute("NoncompliantSampleCount", ("" + numberBadSamples));
+                samplesElement.setAttribute("CompliantSampleCount", ("" + numberGoodSamples));
+                rootElement.appendChild(samplesElement);
+            }
+            
             //HMLID element
             Element hmlidElement = doc.createElement("hmlid");
             if(root != null && root.length()>0)
             {
-                Attr rootAttr = doc.createAttribute("root");
-                rootAttr.setValue(root);
-                hmlidElement.setAttributeNode(rootAttr);
+                hmlidElement.setAttribute("root",root);
             }
             if(extension != null && extension.length()>0)
             {
-                Attr extAttr = doc.createAttribute("extension");
-                extAttr.setValue(extension);
-                hmlidElement.setAttributeNode(extAttr);
+                hmlidElement.setAttribute("extension", extension);
             }
             rootElement.appendChild(hmlidElement);
             
@@ -105,16 +138,9 @@ public class ReportGenerator
 
                     it.remove();
                     Element property = doc.createElement("property");
-                    
-                    //name
-                    Attr attr = doc.createAttribute("name");
-                    attr.setValue(name);
-                    property.setAttributeNode(attr);
-                    
-                    //name
-                    attr = doc.createAttribute("value");
-                    attr.setValue(value);
-                    property.setAttributeNode(attr);
+
+                    property.setAttribute("name", name);
+                    property.setAttribute("value",value);
                     
                     rootElement.appendChild(property);
                 }
@@ -146,7 +172,7 @@ public class ReportGenerator
             }
             if(warnings != null && warnings.length > 0)
             {
-                Element warningsElement = doc.createElement("FatalValidationErrors");
+                Element warningsElement = doc.createElement("ValidationWarnings");
                 for(int i = 0; i < warnings.length; i++)
                 {
                     warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
@@ -155,7 +181,7 @@ public class ReportGenerator
             }
             if(info != null && info.length > 0)
             {
-                Element infoElement = doc.createElement("FatalValidationErrors");
+                Element infoElement = doc.createElement("ValidationInfo");
                 for(int i = 0; i < info.length; i++)
                 {
                     infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
@@ -179,6 +205,63 @@ public class ReportGenerator
         return null;
     }
     
+    private static boolean doesSampleHaveMiringErrors(String sampleID, ValidationResult[] validationErrors)
+    {
+        if(validationErrors != null && validationErrors.length > 0)
+        {
+            for(int i = 0; i < validationErrors.length; i++)
+            {
+                ValidationResult tempResult = validationErrors[i];
+                String currentSampleID = tempResult.getSampleID();
+                Severity currentSeverity = tempResult.getSeverity();
+                if(currentSampleID != null && currentSampleID.equals(sampleID))
+                {
+                    if(currentSeverity != null && (
+                        currentSeverity.equals(Severity.FATAL)
+                        || currentSeverity.equals(Severity.MIRING)))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static ValidationResult[] assignSampleIDs(ValidationResult[] validationErrors, String[] sampleIDs)
+    {
+        try
+        {
+            if(validationErrors != null
+                && validationErrors.length > 0 
+                && sampleIDs != null 
+                && sampleIDs.length > 0)
+            {
+                for(int i = 0; i < validationErrors.length; i++)
+                {
+                    ValidationResult currentError = validationErrors[i];
+                    List<String> xPaths = currentError.getXPaths();
+                    if(xPaths.size()!=0)
+                    {
+                        //TODO: what if there are more xPaths?
+                        //Only getting the very first xPath here.  What if there are more xPaths?  I dunno?
+                        String xPath = xPaths.get(0);
+                        String sampleID = Utilities.getSampleID(xPath,sampleIDs);
+                        if(sampleID != null && sampleID.length() > 0)
+                        {
+                            currentError.setSampleID(sampleID);
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            logger.error("Error during assignSampleIDs: " + e);
+        }
+        return validationErrors;
+    }
+
     private static ValidationResult[] getErrorsBySeverity(ValidationResult[] validationErrors, Severity severity)
     {
         if(validationErrors != null && validationErrors.length > 0)
@@ -260,6 +343,14 @@ public class ReportGenerator
             validationError.getSeverity()==Severity.INFO?"info":
                 "?");
         invMiringElement.setAttributeNode(fatalAttr);
+        
+        //sampleID
+        Attr sampleIDAttr = doc.createAttribute("sampleID");
+        if(validationError.getSampleID() != null && validationError.getSampleID().length() > 0)
+        {
+            sampleIDAttr.setValue(validationError.getSampleID());
+            invMiringElement.setAttributeNode(sampleIDAttr);
+        }
         
         //description
         Element descriptionElement = doc.createElement("description");

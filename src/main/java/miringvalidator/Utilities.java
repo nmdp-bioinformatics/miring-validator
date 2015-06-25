@@ -608,4 +608,34 @@ public class Utilities
             return null;
         }
     }
+    
+    public static String getSampleID(String xPath, String[] sampleIDs)
+    {
+        String sampleID;
+        
+        if(xPath==null || xPath.length()==0)
+        {
+           sampleID = null;
+        }
+        else
+        {
+            //Get the index of the sample, use it to lookup sample ID.
+            // .../sample[index]/...
+            int sampleLocation = xPath.indexOf("/sample[");
+            if(sampleLocation != -1)
+            {
+                String tempSampleInd = xPath.substring(sampleLocation + 8, xPath.length());
+                tempSampleInd = tempSampleInd.substring(0, tempSampleInd.indexOf("]"));
+                int sampleIndex = Integer.parseInt(tempSampleInd);
+                
+                sampleID = sampleIDs[sampleIndex-1];
+            }
+            else
+            {
+                sampleID = null;
+            }
+        }
+
+        return sampleID;
+    }
 }

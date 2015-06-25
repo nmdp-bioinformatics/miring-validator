@@ -30,10 +30,11 @@ public class ValidationResult implements Comparable
     String errorText;
     String solutionText;
     String miringRule;
+    String sampleID;
     List<String> xPaths;
     Severity severity;
 
-    public enum Severity 
+    public enum Severity
     {
         //FATAL = Cannot continue validation.  Most likely an HML/XML Structure issue
         //MIRING = A MIRING Rule Validation error. 
@@ -156,5 +157,15 @@ public class ValidationResult implements Comparable
     public void setMiringRule(String miringRule)
     {
         this.miringRule = miringRule;
+    }
+    
+    public String getSampleID()
+    {
+        return sampleID;
+    }
+    
+    public void setSampleID(String sampleID)
+    {
+        this.sampleID = sampleID;
     }
 }

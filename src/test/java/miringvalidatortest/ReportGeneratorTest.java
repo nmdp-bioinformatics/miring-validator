@@ -60,7 +60,7 @@ public class ReportGeneratorTest
             ValidationResult[] tier1Errors = {error1, error2};
             ValidationResult[] tier2Errors = {error3, error4, error5};
             
-            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4", null);
+            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4", null, null);
             
             assertTrue(reportResults != null);
             assertTrue(reportResults.length() > 4);
@@ -83,9 +83,9 @@ public class ReportGeneratorTest
             ValidationResult fatalError = new ValidationResult("A fatal error", Severity.FATAL);
             ValidationResult nonFatalError = new ValidationResult("A nonFatal error", Severity.WARNING);
             
-            String score1Report = ReportGenerator.generateReport(new ValidationResult[]{}, "testRoot", "1.2.3.4", null);
-            String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null);
-            String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null);
+            String score1Report = ReportGenerator.generateReport(new ValidationResult[]{}, "testRoot", "1.2.3.4", null, null);
+            String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null, null);
+            String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null, null);
             
             String score1Compliance = Utilities.xmlToRootElement(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
             String score2Compliance = Utilities.xmlToRootElement(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
