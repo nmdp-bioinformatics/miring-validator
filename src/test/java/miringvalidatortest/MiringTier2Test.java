@@ -38,12 +38,6 @@ public class MiringTier2Test
     private static final Logger logger = LogManager.getLogger(MiringTier2Test.class);
 
     @Test
-    public void testRule3()
-    {
-        fail();
-    }
-    
-    @Test
     public void testMiringElement1Tier2()
     {
         logger.debug("starting testMiringElement1Tier2");
@@ -101,14 +95,39 @@ public class MiringTier2Test
 
         assertTrue(Utilities.containsErrorNode(badResults, "A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."));
         assertFalse(Utilities.containsErrorNode(goodResults, "A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."));
-
     }
 
     @Test
     public void testMiringElement3Tier2()
     {
         logger.debug("starting testMiringElement3Tier2");
-        logger.debug("Nothing tested in Element 3 yet.");
+        //3.2.a glstring node should have either text or a uri.
+        String xml = Utilities.readXmlResource("/hml/Element3.glstring.empty.xml");
+        String results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertTrue(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
+
+        xml = Utilities.readXmlResource("/hml/Element3.glstring.missing.xml");
+        results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
+
+        
+        xml = Utilities.readXmlResource("/hml/Element3.glstring.text.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
+
+        
+        xml = Utilities.readXmlResource("/hml/Element3.glstring.uri.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
+
+        xml = Utilities.readXmlResource("/hml/Element3.glstring.textanduri.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertTrue(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
     }
 
     @Test
@@ -189,7 +208,6 @@ public class MiringTier2Test
         xml = Utilities.readXmlResource("/hml/Element4.CSB.not.continuous.xml");
         results = new MiringValidator(xml).validate();
         assertTrue(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node"));
-        
     }
 
     @Test

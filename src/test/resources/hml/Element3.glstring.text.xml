@@ -13,7 +13,9 @@
     <collection-method>buccal swab</collection-method>
     <typing gene-family="HLA" date="2013-12-31">
       <allele-assignment date="2014-01-01" allele-db="db" allele-version="3">
+      
         <glstring>HLA-A*02:01:01:01</glstring>
+        
       </allele-assignment>
       <typing-method>
       </typing-method>
