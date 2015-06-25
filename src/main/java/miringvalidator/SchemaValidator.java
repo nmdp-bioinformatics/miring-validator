@@ -508,6 +508,12 @@ public class SchemaValidator
                 miringRuleID = "2.1.a";
                 solutionMessage = "Every typing node must have at least one child allele-assignment node.";
             }
+            else if(missingNodeName.equals("glstring"))
+            {
+                miringRuleID = "3.1.a";
+                solutionMessage = "A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node.";
+                severity = Severity.WARNING;
+            }
             else
             {                
                 logger.error("MissingNodeName Not Handled: " + missingNodeName);

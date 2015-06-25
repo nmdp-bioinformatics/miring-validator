@@ -38,13 +38,6 @@ public class MiringTier1Test
     private static final Logger logger = LogManager.getLogger(MiringTier1Test.class);
 
     @Test
-    public void testRule3()
-    {
-        fail();
-    }
-    
-    
-    @Test
     public void testMiringElement1Tier1()
     {
         logger.debug("starting testMiringElement1Tier1");
@@ -114,7 +107,16 @@ public class MiringTier1Test
     public void testMiringElement3Tier1()
     {
         logger.debug("starting testMiringElement3Tier1");
-        logger.debug("Nothing tested in Element 3 yet.");
+        //3.1.a
+        String xml = Utilities.readXmlResource("/hml/Element3.glstring.missing.xml");
+        String results = new MiringValidator(xml).validate();
+        assertTrue(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
+        
+        xml = Utilities.readXmlResource("/hml/Element3.glstring.text.xml");
+        results = new MiringValidator(xml).validate();
+        assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
+        assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
     }
 
     @Test

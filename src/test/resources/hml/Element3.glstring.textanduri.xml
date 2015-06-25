@@ -13,8 +13,7 @@
     <collection-method>buccal swab</collection-method>
     <typing gene-family="HLA" date="2013-12-31">
       <allele-assignment date="2014-01-01" allele-db="db" allele-version="3">
-        <glstring uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" />
-        <glstring>
+        <glstring uri="http://gl.immunogenomics.org/imgt-hla/3.14.0/multilocus-unphased-genotype/8" >
           HLA-A*02:01:01:01
         </glstring>
       </allele-assignment>

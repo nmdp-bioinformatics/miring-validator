@@ -2,6 +2,18 @@
 
 <pattern id="Miring.Element.3" xmlns="http://purl.oclc.org/dsdl/schematron">
 
-<!--No rules specified, yet.-->
+    <!--
+        Rule 3.2.a
+        glstring nodes should have either a uri or a glstring text element.
+     -->
+    <rule context="hml:glstring">
+    
+        <let name="uri" value="attribute(uri)" />
+        <let name="glstringText" value="text()" />
+
+        <assert test="string-length($uri) > 1 or string-length($glstringText) > 1">A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring.</assert>
+        <report test="string-length($uri) > 1 and string-length($glstringText) > 1">A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring.</report>
+
+    </rule>
 
 </pattern>

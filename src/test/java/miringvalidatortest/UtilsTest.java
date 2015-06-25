@@ -44,7 +44,7 @@ public class UtilsTest
     private static final Logger logger = LogManager.getLogger(UtilsTest.class);
 
     @Test
-    public void testGetAttributes()
+    public void testGetAttributes() 
     {
         logger.debug("starting testGetAttributes");
 
