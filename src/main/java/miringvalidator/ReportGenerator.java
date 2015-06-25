@@ -70,7 +70,7 @@ public class ReportGenerator
             doc.appendChild(rootElement);
             
             //MIRINGCOMPLIANT ATTRIBUTE
-            Attr compliantAttr = doc.createAttribute("miringCompliant");
+            Attr compliantAttr = doc.createAttribute("MiringCompliant");
             compliantAttr.setValue(
                 (validationErrors == null)?"false"
                 :(validationErrors.length==0)?"true"
@@ -79,115 +79,13 @@ public class ReportGenerator
             );
             rootElement.setAttributeNode(compliantAttr);
             
-            //SAMPLE IDs
-            if(sampleIDs != null && sampleIDs.length > 0)
-            {
-                int numberSampleIDs = sampleIDs.length;
-                int numberBadSamples = 0;
-                int numberGoodSamples = 0;
-                Element samplesElement = doc.createElement("samples");
-
-                
-                for(int i = 0; i < sampleIDs.length; i++)
-                {
-                    Element currentSampleElement = doc.createElement("sample");
-                    String sampleID = sampleIDs[i];
-                    currentSampleElement.setAttribute("id",sampleID);
-
-                    if(doesSampleHaveMiringErrors(sampleID, validationErrors))
-                    {
-                        currentSampleElement.setAttribute("MiringCompliant", "false");
-                        numberBadSamples++;
-                    }
-                    else
-                    {
-                        currentSampleElement.setAttribute("MiringCompliant", "true");
-                        numberGoodSamples++;
-                    }
-
-                    samplesElement.appendChild(currentSampleElement);
-                }
-                
-                samplesElement.setAttribute("SampleCount", ("" + numberSampleIDs));
-                samplesElement.setAttribute("NoncompliantSampleCount", ("" + numberBadSamples));
-                samplesElement.setAttribute("CompliantSampleCount", ("" + numberGoodSamples));
-                rootElement.appendChild(samplesElement);
-            }
+            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
             
-            //HMLID element
-            Element hmlidElement = doc.createElement("hmlid");
-            if(root != null && root.length()>0)
-            {
-                hmlidElement.setAttribute("root",root);
-            }
-            if(extension != null && extension.length()>0)
-            {
-                hmlidElement.setAttribute("extension", extension);
-            }
-            rootElement.appendChild(hmlidElement);
+            addHmlidElement(root, extension, doc, rootElement);
             
-            //PROPERTIES
-            if(properties != null)
-            {
-                Iterator it = properties.entrySet().iterator();
-                while (it.hasNext()) 
-                {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    String name = pair.getKey().toString();
-                    String value = pair.getValue().toString();
-
-                    it.remove();
-                    Element property = doc.createElement("property");
-
-                    property.setAttribute("name", name);
-                    property.setAttribute("value",value);
-                    
-                    rootElement.appendChild(property);
-                }
-            }
+            addPropertyElements(properties, doc, rootElement);
             
-            //MIRINGRESULT ELEMENTS            
-            ValidationResult[] fatalErrors = getErrorsBySeverity(validationErrors,Severity.FATAL);
-            ValidationResult[] miringErrors = getErrorsBySeverity(validationErrors,Severity.MIRING);
-            ValidationResult[] warnings = getErrorsBySeverity(validationErrors,Severity.WARNING);
-            ValidationResult[] info = getErrorsBySeverity(validationErrors,Severity.INFO);
-
-            if(fatalErrors != null && fatalErrors.length > 0)
-            {
-                Element fatalErrorsElement = doc.createElement("FatalValidationErrors");
-                for(int i = 0; i < fatalErrors.length; i++)
-                {
-                    fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
-                }
-                rootElement.appendChild(fatalErrorsElement);
-            }
-            if(miringErrors != null && miringErrors.length > 0)
-            {
-                Element miringErrorsElement = doc.createElement("MiringValidationErrors");
-                for(int i = 0; i < miringErrors.length; i++)
-                {
-                    miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
-                }
-                rootElement.appendChild(miringErrorsElement);
-            }
-            if(warnings != null && warnings.length > 0)
-            {
-                Element warningsElement = doc.createElement("ValidationWarnings");
-                for(int i = 0; i < warnings.length; i++)
-                {
-                    warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
-                }
-                rootElement.appendChild(warningsElement);
-            }
-            if(info != null && info.length > 0)
-            {
-                Element infoElement = doc.createElement("ValidationInfo");
-                for(int i = 0; i < info.length; i++)
-                {
-                    infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
-                }
-                rootElement.appendChild(infoElement);
-            }
+            addValidationResultElements(validationErrors, doc, rootElement);
 
             return(Utilities.getStringFromDoc(doc));
         }
@@ -203,6 +101,126 @@ public class ReportGenerator
         //Oops, something went wrong.
         logger.error("Error during Miring Validation Report Generation.");
         return null;
+    }
+
+    private static void addHmlidElement(String root, String extension, Document doc, Element rootElement)
+    {
+        Element hmlidElement = doc.createElement("hmlid");
+        if(root != null && root.length()>0)
+        {
+            hmlidElement.setAttribute("root",root);
+        }
+        if(extension != null && extension.length()>0)
+        {
+            hmlidElement.setAttribute("extension", extension);
+        }
+        rootElement.appendChild(hmlidElement);
+    }
+
+    private static void addPropertyElements(HashMap<String, String> properties, Document doc, Element rootElement)
+    {
+        if(properties != null)
+        {
+            Iterator it = properties.entrySet().iterator();
+            while (it.hasNext()) 
+            {
+                Map.Entry pair = (Map.Entry)it.next();
+                String name = pair.getKey().toString();
+                String value = pair.getValue().toString();
+
+                it.remove();
+                Element property = doc.createElement("property");
+
+                property.setAttribute("name", name);
+                property.setAttribute("value",value);
+                
+                rootElement.appendChild(property);
+            }
+        }
+    }
+
+    private static void addSampleElements(ValidationResult[] validationErrors, String[] sampleIDs, Document doc,
+            Element rootElement)
+    {
+        if(sampleIDs != null && sampleIDs.length > 0)
+        {
+            int numberSampleIDs = sampleIDs.length;
+            int numberBadSamples = 0;
+            int numberGoodSamples = 0;
+            Element samplesElement = doc.createElement("samples");
+
+            
+            for(int i = 0; i < sampleIDs.length; i++)
+            {
+                Element currentSampleElement = doc.createElement("sample");
+                String sampleID = sampleIDs[i];
+                currentSampleElement.setAttribute("id",sampleID);
+
+                if(doesSampleHaveMiringErrors(sampleID, validationErrors))
+                {
+                    currentSampleElement.setAttribute("MiringCompliant", "false");
+                    numberBadSamples++;
+                }
+                else
+                {
+                    currentSampleElement.setAttribute("MiringCompliant", "true");
+                    numberGoodSamples++;
+                }
+
+                samplesElement.appendChild(currentSampleElement);
+            }
+            
+            samplesElement.setAttribute("SampleCount", ("" + numberSampleIDs));
+            samplesElement.setAttribute("NoncompliantSampleCount", ("" + numberBadSamples));
+            samplesElement.setAttribute("CompliantSampleCount", ("" + numberGoodSamples));
+            rootElement.appendChild(samplesElement);
+        }
+    }
+
+    private static void addValidationResultElements(ValidationResult[] validationErrors, Document doc,
+            Element rootElement)
+    {
+        ValidationResult[] fatalErrors = getErrorsBySeverity(validationErrors,Severity.FATAL);
+        ValidationResult[] miringErrors = getErrorsBySeverity(validationErrors,Severity.MIRING);
+        ValidationResult[] warnings = getErrorsBySeverity(validationErrors,Severity.WARNING);
+        ValidationResult[] info = getErrorsBySeverity(validationErrors,Severity.INFO);
+
+        if(fatalErrors != null && fatalErrors.length > 0)
+        {
+            Element fatalErrorsElement = doc.createElement("FatalValidationErrors");
+            for(int i = 0; i < fatalErrors.length; i++)
+            {
+                fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
+            }
+            rootElement.appendChild(fatalErrorsElement);
+        }
+        if(miringErrors != null && miringErrors.length > 0)
+        {
+            Element miringErrorsElement = doc.createElement("MiringValidationErrors");
+            for(int i = 0; i < miringErrors.length; i++)
+            {
+                miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
+            }
+            rootElement.appendChild(miringErrorsElement);
+        }
+        if(warnings != null && warnings.length > 0)
+        {
+            Element warningsElement = doc.createElement("ValidationWarnings");
+            for(int i = 0; i < warnings.length; i++)
+            {
+                warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
+            }
+            rootElement.appendChild(warningsElement);
+        }
+        if(info != null && info.length > 0)
+        {
+            Element infoElement = doc.createElement("ValidationInfo");
+            for(int i = 0; i < info.length; i++)
+            {
+                infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
+            }
+            rootElement.appendChild(infoElement);
+        }
     }
     
     private static boolean doesSampleHaveMiringErrors(String sampleID, ValidationResult[] validationErrors)
@@ -243,7 +261,6 @@ public class ReportGenerator
                     List<String> xPaths = currentError.getXPaths();
                     if(xPaths.size()!=0)
                     {
-                        //TODO: what if there are more xPaths?
                         //Only getting the very first xPath here.  What if there are more xPaths?  I dunno?
                         String xPath = xPaths.get(0);
                         String sampleID = Utilities.getSampleID(xPath,sampleIDs);
@@ -295,7 +312,8 @@ public class ReportGenerator
             for (ValidationResult newError: newErrorList)
             {
                 if(oldError.miringRule.equals(newError.miringRule)
-                    && oldError.errorText.equals(newError.errorText))
+                    && oldError.errorText.equals(newError.errorText)
+                    && oldError.sampleID.equals(newError.sampleID))
                 {
                     foundMatch = true;
                     //Add all the xpaths to the existing new error.

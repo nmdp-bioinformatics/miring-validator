@@ -26,8 +26,6 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
-import main.java.miringvalidator.MiringValidator;
-import main.java.miringvalidator.MiringValidatorService;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.Utilities;
 import main.java.miringvalidator.ValidationResult;
@@ -37,7 +35,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class ReportGeneratorTest
@@ -87,9 +84,9 @@ public class ReportGeneratorTest
             String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null, null);
             String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null, null);
             
-            String score1Compliance = Utilities.xmlToRootElement(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
-            String score2Compliance = Utilities.xmlToRootElement(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
-            String score3Compliance = Utilities.xmlToRootElement(score3Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
+            String score1Compliance = Utilities.xmlToRootElement(score1Report).getAttributes().getNamedItem("MiringCompliant").getNodeValue();
+            String score2Compliance = Utilities.xmlToRootElement(score2Report).getAttributes().getNamedItem("MiringCompliant").getNodeValue();
+            String score3Compliance = Utilities.xmlToRootElement(score3Report).getAttributes().getNamedItem("MiringCompliant").getNodeValue();
             
             assertEquals(score1Compliance ,"true");
             assertEquals(score2Compliance ,"true");
@@ -108,7 +105,7 @@ public class ReportGeneratorTest
         logger.debug("starting testXmlWithNamespace");
         String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
         
-        HashMap properties = Utilities.getPropertiesFromRootHml(xml);
+        HashMap<String, String> properties = Utilities.getPropertiesFromRootHml(xml);
 
         assertTrue(properties.size() > 0);
         assertTrue(properties.get("MessageReceived") != null 
