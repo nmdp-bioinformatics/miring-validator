@@ -27,7 +27,7 @@ import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.SchemaValidator;
 import main.java.miringvalidator.Utilities;
-import main.java.miringvalidator.ValidationError;
+import main.java.miringvalidator.ValidationResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,8 +45,8 @@ public class SchemaValidatorTest
         String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
         String demoBadXML = Utilities.readXmlResource("/hml/demobad.xml");
 
-        ValidationError[] goodDemoErrors = SchemaValidator.validate(demoGoodXML,"/schema/demo.xsd");
-        ValidationError[] badDemoErrors = SchemaValidator.validate(demoBadXML,"/schema/demo.xsd");
+        ValidationResult[] goodDemoErrors = SchemaValidator.validate(demoGoodXML,"/schema/demo.xsd");
+        ValidationResult[] badDemoErrors = SchemaValidator.validate(demoBadXML,"/schema/demo.xsd");
         
         assertTrue(goodDemoErrors.length == 0);
         

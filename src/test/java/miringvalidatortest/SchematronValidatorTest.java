@@ -27,7 +27,7 @@ import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.SchemaValidator;
 import main.java.miringvalidator.SchematronValidator;
 import main.java.miringvalidator.Utilities;
-import main.java.miringvalidator.ValidationError;
+import main.java.miringvalidator.ValidationResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,8 +45,8 @@ public class SchematronValidatorTest
         String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
         String demoBadXML = Utilities.readXmlResource("/hml/demobad.xml");
 
-        ValidationError[] goodDemoErrors = SchematronValidator.validate(demoGoodXML,new String[]{"/schematron/demo.sch"});
-        ValidationError[] badDemoErrors = SchematronValidator.validate(demoBadXML,new String[]{"/schematron/demo.sch"});
+        ValidationResult[] goodDemoErrors = SchematronValidator.validate(demoGoodXML,new String[]{"/schematron/demo.sch"});
+        ValidationResult[] badDemoErrors = SchematronValidator.validate(demoBadXML,new String[]{"/schematron/demo.sch"});
         
         assertTrue(goodDemoErrors.length == 0);
         

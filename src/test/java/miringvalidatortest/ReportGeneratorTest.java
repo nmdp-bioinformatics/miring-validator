@@ -30,8 +30,8 @@ import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.MiringValidatorService;
 import main.java.miringvalidator.ReportGenerator;
 import main.java.miringvalidator.Utilities;
-import main.java.miringvalidator.ValidationError;
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -51,14 +51,14 @@ public class ReportGeneratorTest
 
         try
         {
-            ValidationError error1 = new ValidationError("This is a big problem 1.", Severity.MIRING);
-            ValidationError error2 = new ValidationError("This is a big problem 2.", Severity.MIRING);
-            ValidationError error3 = new ValidationError("This is a big problem 3.", Severity.MIRING);
-            ValidationError error4 = new ValidationError("This is a big problem 4.", Severity.MIRING);
-            ValidationError error5 = new ValidationError("This is a big problem 5.", Severity.MIRING);
+            ValidationResult error1 = new ValidationResult("This is a big problem 1.", Severity.MIRING);
+            ValidationResult error2 = new ValidationResult("This is a big problem 2.", Severity.MIRING);
+            ValidationResult error3 = new ValidationResult("This is a big problem 3.", Severity.MIRING);
+            ValidationResult error4 = new ValidationResult("This is a big problem 4.", Severity.MIRING);
+            ValidationResult error5 = new ValidationResult("This is a big problem 5.", Severity.MIRING);
             
-            ValidationError[] tier1Errors = {error1, error2};
-            ValidationError[] tier2Errors = {error3, error4, error5};
+            ValidationResult[] tier1Errors = {error1, error2};
+            ValidationResult[] tier2Errors = {error3, error4, error5};
             
             String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4", null);
             
@@ -66,7 +66,7 @@ public class ReportGeneratorTest
             assertTrue(reportResults.length() > 4);
 
             Element rootElement = Utilities.xmlToRootElement(reportResults);              
-            NodeList list = rootElement.getElementsByTagName("InvalidMiringResult");
+            NodeList list = rootElement.getElementsByTagName("MiringResult");
             assertTrue(list.getLength() == 5);
             
             assertTrue(Utilities.containsErrorNode(reportResults, "This is a big problem 1."));
@@ -80,12 +80,12 @@ public class ReportGeneratorTest
             assertTrue(hmlIDExtension.equals("1.2.3.4"));
             
             //Test the qualityscore of a report.              
-            ValidationError fatalError = new ValidationError("A fatal error", Severity.FATAL);
-            ValidationError nonFatalError = new ValidationError("A nonFatal error", Severity.WARNING);
+            ValidationResult fatalError = new ValidationResult("A fatal error", Severity.FATAL);
+            ValidationResult nonFatalError = new ValidationResult("A nonFatal error", Severity.WARNING);
             
-            String score1Report = ReportGenerator.generateReport(new ValidationError[]{}, "testRoot", "1.2.3.4", null);
-            String score2Report = ReportGenerator.generateReport(new ValidationError[]{nonFatalError}, "testRoot", "1.2.3.4", null);
-            String score3Report = ReportGenerator.generateReport(new ValidationError[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null);
+            String score1Report = ReportGenerator.generateReport(new ValidationResult[]{}, "testRoot", "1.2.3.4", null);
+            String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null);
+            String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null);
             
             String score1Compliance = Utilities.xmlToRootElement(score1Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();
             String score2Compliance = Utilities.xmlToRootElement(score2Report).getAttributes().getNamedItem("miringCompliant").getNodeValue();

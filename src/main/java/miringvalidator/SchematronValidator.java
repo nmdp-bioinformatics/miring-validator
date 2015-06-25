@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -57,9 +57,9 @@ public class SchematronValidator
      * @param schemaFileNames an array of Strings containing the names of the schema file resources to validate against
      * @return an array of ValidationError objects found during validation
      */
-    public static ValidationError[] validate(String xml, String[] schemaFileNames)
+    public static ValidationResult[] validate(String xml, String[] schemaFileNames)
     {
-        ValidationError[] results = new ValidationError[0];
+        ValidationResult[] results = new ValidationResult[0];
         try
         {
             logger.debug("Opening jar file: " + jarFileName);
@@ -82,7 +82,7 @@ public class SchematronValidator
                 String resultString = myBaos.toString();
 
                 //Create MIRING specific validation errors
-                ValidationError[] currentResultErrors = getValidationErrorsFromSchematronReport(resultString);
+                ValidationResult[] currentResultErrors = getValidationErrorsFromSchematronReport(resultString);
                 logger.debug(currentResultErrors.length + " schema validation errors found");
 
                 //Add any errors to the tier2 results.
@@ -146,9 +146,9 @@ public class SchematronValidator
      * @param xml a String containing a probatron ValidationReport 
      * @return an array of ValidationError objects generated from the probatron ValidationReport report.
      */
-    private static ValidationError[] getValidationErrorsFromSchematronReport(String xml)
+    private static ValidationResult[] getValidationErrorsFromSchematronReport(String xml)
     {
-        List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+        List<ValidationResult> validationErrors = new ArrayList<ValidationResult>();
 
         try
         {
@@ -220,7 +220,7 @@ public class SchematronValidator
                         }
                     }
 
-                    ValidationError validationError = generateValidationError(errorText, locationText);
+                    ValidationResult validationError = generateValidationError(errorText, locationText);
                     Utilities.addValidationError(validationErrors, validationError);
                 }
             }
@@ -228,7 +228,7 @@ public class SchematronValidator
         catch(Exception e)
         {
             logger.error("Error forming DOM from schematron results: " + e);
-            validationErrors.add(new ValidationError(
+            validationErrors.add(new ValidationResult(
                 "Unhandled Schematron validation exception: " + e, Severity.FATAL
             ));
             
@@ -237,13 +237,13 @@ public class SchematronValidator
         if(validationErrors.size() > 0)
         {
             //List -> Array
-            ValidationError[] array = validationErrors.toArray(new ValidationError[validationErrors.size()]);
+            ValidationResult[] array = validationErrors.toArray(new ValidationResult[validationErrors.size()]);
             return array;
         }
         else
         {
             //Empty.  Not null.  No problems found.
-            return new ValidationError[0];
+            return new ValidationResult[0];
         }
     }
 
@@ -271,9 +271,9 @@ public class SchematronValidator
      * @param testText text containing the actual test that probatron ran to generate this error
      * @return a ValidationError object describing the miring validation problem
      */
-    private static ValidationError generateValidationError(String errorMessage, String locationText)
+    private static ValidationResult generateValidationError(String errorMessage, String locationText)
     {
-        ValidationError ve = new ValidationError(errorMessage,Severity.MIRING);
+        ValidationResult ve = new ValidationResult(errorMessage,Severity.MIRING);
         
         if(locationText != null)
         {

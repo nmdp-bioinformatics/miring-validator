@@ -25,7 +25,7 @@ package main.java.miringvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ValidationError implements Comparable
+public class ValidationResult implements Comparable
 {
     String errorText;
     String solutionText;
@@ -48,7 +48,7 @@ public class ValidationError implements Comparable
      * @param errorText Text containing a description of the error.
      * @param fatal is the error considered fatal?  Should we reject the Miring HML?
      */
-    public ValidationError(String errorText, Severity severity)
+    public ValidationResult(String errorText, Severity severity)
     {
         this.errorText = errorText;
         this.severity = severity;
@@ -60,7 +60,7 @@ public class ValidationError implements Comparable
     @Override
     public boolean equals(Object otherObject) 
     {
-        ValidationError otherError = (ValidationError) otherObject;
+        ValidationResult otherError = (ValidationResult) otherObject;
         if(
             this.errorText.equals(otherError.errorText)
             && this.severity == otherError.severity
@@ -84,11 +84,11 @@ public class ValidationError implements Comparable
         //So we can sort the errors by miringRule.
         //If they have the same rule(or no rule) sort by description.
         int miringRuleIDCompare = this.getMiringRule().compareTo(
-                ((ValidationError)(o)).getMiringRule() );
+                ((ValidationResult)(o)).getMiringRule() );
         
         if(miringRuleIDCompare == 0)
         {
-            return this.getErrorText().compareTo(((ValidationError)(o)).getErrorText());
+            return this.getErrorText().compareTo(((ValidationResult)(o)).getErrorText());
         }
         else
         {

@@ -46,7 +46,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import main.java.miringvalidator.ValidationError.Severity;
+import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -302,7 +302,7 @@ public class Utilities
      * @param validationErrors A list of ValidationError objects that you would like to add to.
      * @param ve a ValidationError to add to the list.
      */
-    public static void addValidationError(List<ValidationError> validationErrors, ValidationError ve)
+    public static void addValidationError(List<ValidationResult> validationErrors, ValidationResult ve)
     {
         //Don't add duplicate errors, they don't help.
         if(!validationErrors.contains(ve))
@@ -322,7 +322,7 @@ public class Utilities
      * @param secondErrorArray An Array of ValidationError objects
      * @return A combined and sorted Array of ValidationError objects
      */
-    public static ValidationError[] combineArrays(ValidationError[] firstErrorArray, ValidationError[] secondErrorArray)
+    public static ValidationResult[] combineArrays(ValidationResult[] firstErrorArray, ValidationResult[] secondErrorArray)
     {
         //Super clever way of handling nulls.
         if(firstErrorArray == null)
@@ -334,7 +334,7 @@ public class Utilities
             return firstErrorArray;
         }
 
-        ValidationError[] combinedErrors = new ValidationError[firstErrorArray.length + secondErrorArray.length];
+        ValidationResult[] combinedErrors = new ValidationResult[firstErrorArray.length + secondErrorArray.length];
         
         for(int i = 0; i < firstErrorArray.length; i++)
         {
@@ -416,7 +416,7 @@ public class Utilities
      * @param errors an array of ValidationError objects
      * @return is this report miring compliant?
      */
-    public static boolean isMiringCompliant(ValidationError[] errors)
+    public static boolean isMiringCompliant(ValidationResult[] errors)
     {
         //Does this list contain any fatal errors?
         for(int i = 0; i < errors.length; i++)
@@ -435,7 +435,7 @@ public class Utilities
      * @param errors an array of ValidationError objects
      * @return true if this report has at least one fatal error
      */
-    public static boolean hasFatalErrors(ValidationError[] errors)
+    public static boolean hasFatalErrors(ValidationResult[] errors)
     {
         //Does this list contain any fatal errors?
         for(int i = 0; i < errors.length; i++)
