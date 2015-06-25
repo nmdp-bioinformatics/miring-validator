@@ -12,7 +12,7 @@
         <let name="csbEnd" value="parent::*/@end" />
         <let name="csbRange" value="$csbEnd - $csbStart" />
         
-        <assert test="number(@sequence-end) > number(@sequence-start)">On a sequence quality node, sequence-end must be greater than sequence-start.</assert>
+        <report test="boolean(@sequence-start) and boolean(@sequence-end) and (number(@sequence-start) >= number(@sequence-end))">On a sequence quality node, sequence-end must be greater than sequence-start.</report>
         <assert test="@sequence-start &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
         <assert test="@sequence-end &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
     </rule>
@@ -21,7 +21,8 @@
         end >= start
       --> 
     <rule context="hml:consensus-sequence-block">
-        <assert test="number(@end) >= number(@start)">On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute.</assert>
+        <!-- <assert test="number(@end) >= number(@start)">On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute.</assert>-->
+        <report test="boolean(@start) and boolean(@end) and (number(@start) > number(@end))">On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute.</report>
 
     <!--
         Rule 4.2.3.d
@@ -60,7 +61,7 @@
     <rule context="//hml:consensus-sequence-block/hml:sequence">
         <let name="seq" value="replace(normalize-space(.),' ','')" />
         <let name="seqLength" value="string-length($seq)" />
-        <assert test="..[@end - @start = $seqLength]">For every consensus-sequence-block node, the child sequence node must have a length of (end - start).  The sequence has a length of <value-of select="$seqLength"/>. start=<value-of select="../@start"/>. end=<value-of select="../@end"/> </assert>
+        <assert test="..[@end - @start = $seqLength]">For every consensus-sequence-block node, the child sequence node must have a length of (end - start).</assert>
     </rule>
 
 </pattern>

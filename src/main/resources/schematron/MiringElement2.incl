@@ -5,9 +5,10 @@
     <!-- 
         Rule 2.2.c
         end >= start
+        Only report if there are actually @start and @end attributes.
      -->
     <rule context="hml:reference-sequence">
-        <assert test="number(@end) >= number(@start)">On a reference sequence node, end attribute should be greater than or equal to the start attribute.</assert>
+        <report test="(number(@start) > number(@end)) and boolean(@start) and boolean(@end)">On a reference sequence node, end attribute should be greater than or equal to the start attribute.</report>
 
     <!--
         Rule 2.2.1.c
