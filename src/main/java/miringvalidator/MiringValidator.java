@@ -36,6 +36,8 @@ public class MiringValidator
     String report;
     ValidationResult[] tier1ValidationErrors;
     ValidationResult[] tier2ValidationErrors;
+    String[] sampleIDs;
+    
     
     /**
      * Constructor for a MiringValidator object
@@ -57,7 +59,8 @@ public class MiringValidator
     {
         if(xml==null || xml.length() == 0)
         {
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null);
+            logger.error("XML is null or length 0.");
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null,null);
         }
         
         //xml = Utilities.cleanSequences(xml);
@@ -66,6 +69,7 @@ public class MiringValidator
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");
         tier1ValidationErrors = SchemaValidator.validate(xml, "/schema/MiringTier1.xsd");
+        sampleIDs = SchemaValidator.sampleIDs.toArray(new String[SchemaValidator.sampleIDs.size()]);
         
         //Tier 2
         //Skip it if we already know it is bad.  Maybe?  Do we want to schematron automatically?
@@ -92,7 +96,7 @@ public class MiringValidator
         //Make a report.
         String hmlIdRoot = Utilities.getHMLIDRoot(xml);
         String hmlIdExt = Utilities.getHMLIDExtension(xml);
-        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt, properties);
+        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt, properties, sampleIDs);
         return report;
     }
 

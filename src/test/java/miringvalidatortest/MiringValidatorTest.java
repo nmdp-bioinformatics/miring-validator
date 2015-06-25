@@ -48,7 +48,7 @@ public class MiringValidatorTest
         
         String goodValidatorResults = goodValidator.validate();
         String badValidatorResults = badValidator.validate();
-        
+
         assertFalse(Utilities.containsErrorNode(goodValidatorResults, "There is a missing hmlid node underneath the hml node."));
         assertTrue(Utilities.containsErrorNode(badValidatorResults, "There is a missing hmlid node underneath the hml node."));
         

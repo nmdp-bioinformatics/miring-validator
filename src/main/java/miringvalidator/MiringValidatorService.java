@@ -55,7 +55,7 @@ public class MiringValidatorService
         if(xml == null || xml.length() == 0)
         {
             logger.error("XML is Null or Empty.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null);
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null,null);
         }
         else
         {

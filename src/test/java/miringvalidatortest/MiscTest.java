@@ -54,6 +54,7 @@ public class MiscTest
 
         String results;
         results = new MiringValidator(xml).validate();
+        System.out.println(results);
         
         assertTrue(results.length() > 1);
     }

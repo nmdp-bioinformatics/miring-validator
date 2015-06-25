@@ -48,6 +48,7 @@ public class SchemaValidator
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
+    public static List<String> sampleIDs;
     
     /**
      * Validate xml against a schema
@@ -60,6 +61,7 @@ public class SchemaValidator
     {
         logger.debug("Starting a schema validation");
         validationErrors = new ArrayList<ValidationResult>();
+        sampleIDs = new ArrayList<String>();
 
         try 
         {
@@ -147,6 +149,12 @@ public class SchemaValidator
             
             try
             {
+                if(localName.equals("sample"))
+                {
+                    String sampleID = attributes.getValue("id");
+                    sampleIDs.add(sampleID);
+                }
+                
                 if(xmlRootNode==null)
                 {
                     //This is the new root node.
@@ -297,6 +305,8 @@ public class SchemaValidator
             }
             Utilities.addValidationError(validationErrors, ve);
         }
+
+
 
         private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
         {
