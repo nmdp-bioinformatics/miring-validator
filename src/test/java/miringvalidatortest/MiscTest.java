@@ -54,8 +54,23 @@ public class MiscTest
 
         String results;
         results = new MiringValidator(xml).validate();
-        System.out.println(results);
         
+        assertTrue(results.length() > 1);
+    }
+    
+    @Test
+    public void testXmlWithTextAfterwards()
+    {
+        logger.debug("starting testXmlWithTextAfterwards");
+        
+        String xml = Utilities.readXmlResource("/hml/HMLwithoutTextAfter.txt");
+        String results = new MiringValidator(xml).validate();
+        System.out.println(results);
+        assertTrue(results.length() > 1);
+
+        xml = Utilities.readXmlResource("/hml/HMLwithoutTextAfter.txt");
+        results = new MiringValidator(xml).validate();
+        System.out.println(results);
         assertTrue(results.length() > 1);
     }
 }
