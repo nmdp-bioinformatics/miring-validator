@@ -45,6 +45,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
@@ -475,7 +478,7 @@ public class Utilities
 
     //This method searches for <sequence> nodes, and cleans the text of any spaces or tabs.  
     //Pretty sure I"m not using htis for anything currently.
-    public static String cleanSequences(String xml)
+    /*public static String cleanSequences(String xml)
     {
         //Sequence objects often have lots of tabs and spaces.  Im gonna remove them.
         int indexBegin = xml.indexOf("<sequence>");
@@ -499,7 +502,7 @@ public class Utilities
         }
 
         return xml;
-    }
+    }*/
     
     
     //Will return null if hml is the root namespace.
@@ -638,4 +641,29 @@ public class Utilities
 
         return sampleID;
     }
+
+    /*public static String trimPrologText(String xml)
+    {
+        try
+        {
+            Document doc = Utilities.xmlToDocumentObject(xml);
+            XPathFactory xpathFactory = XPathFactory.newInstance();
+            XPathExpression xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");  
+            NodeList emptyTextNodes = (NodeList)xpathExp.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < emptyTextNodes.getLength(); i++) 
+            {
+                Node emptyTextNode = emptyTextNodes.item(i);
+                emptyTextNode.getParentNode().removeChild(emptyTextNode);
+            }
+
+            String newXML = Utilities.getStringFromDoc(doc);
+            return newXML;
+        }
+        catch(Exception e)
+        {
+            logger.error("Error during trimPrologText: " + e);
+            return xml;
+        }
+    }*/
 }

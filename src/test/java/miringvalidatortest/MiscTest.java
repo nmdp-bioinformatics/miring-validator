@@ -43,7 +43,7 @@ public class MiscTest
         
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
-        String polishedXml = Utilities.cleanSequences(xml);
+        //String polishedXml = Utilities.cleanSequences(xml);
     }
 
     @Test
@@ -65,12 +65,12 @@ public class MiscTest
         
         String xml = Utilities.readXmlResource("/hml/HMLwithoutTextAfter.txt");
         String results = new MiringValidator(xml).validate();
-        System.out.println(results);
+        //System.out.println(results);
         assertTrue(results.length() > 1);
 
-        xml = Utilities.readXmlResource("/hml/HMLwithoutTextAfter.txt");
+        xml = Utilities.readXmlResource("/hml/HMLwithTextAfter.txt");
         results = new MiringValidator(xml).validate();
-        System.out.println(results);
+        //System.out.println(results);
         assertTrue(results.length() > 1);
     }
 }
