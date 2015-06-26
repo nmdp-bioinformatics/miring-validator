@@ -64,6 +64,8 @@ public class MiringValidator
         }
         
         //xml = Utilities.cleanSequences(xml);
+        //xml = Utilities.trimPrologText(xml);
+        
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         
         //Tier 1

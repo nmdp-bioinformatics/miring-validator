@@ -2,28 +2,89 @@
   <xs:element name="MiringReport">
     <xs:complexType>
       <xs:sequence>
+        <xs:element name="samples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sample" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="MiringCompliant" use="optional"/>
+                      <xs:attribute type="xs:string" name="id" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:byte" name="CompliantSampleCount"/>
+            <xs:attribute type="xs:byte" name="NoncompliantSampleCount"/>
+            <xs:attribute type="xs:byte" name="SampleCount"/>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="hmlid">
           <xs:complexType>
             <xs:simpleContent>
               <xs:extension base="xs:string">
                 <xs:attribute type="xs:string" name="extension"/>
-                <xs:attribute type="xs:short" name="root"/>
+                <xs:attribute type="xs:string" name="root"/>
               </xs:extension>
             </xs:simpleContent>
           </xs:complexType>
         </xs:element>
-        <xs:element type="xs:byte" name="QualityScore"/>
-        <xs:element name="InvalidMiringresult">
+        <xs:element name="FatalValidationErrors">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="description"/>
-              <xs:element type="xs:string" name="solution"/>
+              <xs:element name="MiringResult">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description"/>
+                    <xs:element type="xs:string" name="solution"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="miringRuleID"/>
+                  <xs:attribute type="xs:string" name="severity"/>
+                </xs:complexType>
+              </xs:element>
             </xs:sequence>
-            <xs:attribute type="xs:string" name="fatal"/>
-            <xs:attribute type="xs:string" name="miringElementID"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="MiringValidationErrors">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MiringResult" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description"/>
+                    <xs:element type="xs:string" name="solution"/>
+                    <xs:element type="xs:string" name="xpath" maxOccurs="unbounded" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="miringRuleID" use="optional"/>
+                  <xs:attribute type="xs:string" name="severity" use="optional"/>
+                  <xs:attribute type="xs:string" name="sampleID" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ValidationWarnings">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MiringResult" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description"/>
+                    <xs:element type="xs:string" name="solution"/>
+                    <xs:element type="xs:string" name="xpath" maxOccurs="unbounded" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="miringRuleID" use="optional"/>
+                  <xs:attribute type="xs:string" name="sampleID" use="optional"/>
+                  <xs:attribute type="xs:string" name="severity" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
+      <xs:attribute type="xs:string" name="MiringCompliant"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>
