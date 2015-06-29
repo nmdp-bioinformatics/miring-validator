@@ -25,7 +25,10 @@ package test.java.miringvalidatortest;
 import static org.junit.Assert.*;
 
 import main.java.miringvalidator.MiringValidator;
+import main.java.miringvalidator.ReportGenerator;
+import main.java.miringvalidator.SchemaValidator;
 import main.java.miringvalidator.Utilities;
+import main.java.miringvalidator.ValidationResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,6 +39,15 @@ public class MiscTest
     private static final Logger logger = LogManager.getLogger(MiscTest.class);
 
     @Test
+    public void testReportSchema()
+    {
+        String xml = Utilities.readXmlResource("/hml/ExampleResultReport.xml");        
+        ValidationResult[] errors = SchemaValidator.validate(xml,"miringreport.xsd");        
+        String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
+        System.out.println(errorReport);
+    }
+    
+    @Test
     public void testTidyXml()
     {
         logger.debug("starting testTidy");
@@ -44,6 +56,17 @@ public class MiscTest
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
         //String polishedXml = Utilities.cleanSequences(xml);
+    }    
+    
+    @Test
+    public void testInvalidProlog()
+    {
+        logger.debug("Starting a testInvalidProlog");
+        
+        String xml = Utilities.readXmlResource("/hml/invalid.prolog.xml.txt");
+        MiringValidator validator = new MiringValidator(xml);
+        String results = validator.validate();
+        assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
     }
 
     @Test
