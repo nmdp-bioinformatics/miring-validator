@@ -47,16 +47,19 @@ public class MiscTest
         System.out.println(errorReport);
     }
     
+    /*
+     Don't think I need this test.  
     @Test
     public void testTidyXml()
     {
         logger.debug("starting testTidy");
         String xml = Utilities.readXmlResource("/hml/HML.Bigger.Sample.xml");
+        assertTrue(xml.length() > 1);
         
         String results = new MiringValidator(xml).validate();
         assertTrue(results.length() > 1);
         //String polishedXml = Utilities.cleanSequences(xml);
-    }    
+    }*/
     
     @Test
     public void testInvalidProlog()
