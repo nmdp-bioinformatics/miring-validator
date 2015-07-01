@@ -72,6 +72,8 @@ public class SchemaValidator
         try 
         {
             clearModel();
+            
+            missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingNodeTemplate.xml"));
             missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingAttributeTemplate.xml"));
             
             hmlNamespace = Utilities.getNamespaceName(xml);
@@ -118,7 +120,6 @@ public class SchemaValidator
             return new ValidationResult[0];
         }
     }
-
 
     private static void clearModel()
     {
@@ -318,7 +319,7 @@ public class SchemaValidator
         {
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
-            ValidationResult ve =  new ValidationResult(errorMessage,Severity.FATAL);
+            ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             try
             {
@@ -377,63 +378,69 @@ public class SchemaValidator
 
         private static ValidationResult handleMissingNode(String missingNodeName)
         {
-            String errorMessage = "Unhandled Error Message";
-            String solutionMessage = "Unhandled Solution Message";
-            String moreInformation = "";
-            String miringRuleID = "Unhandled Miring Rule ID";
-            String parentNodeName = "Unhandled Parent Node Name";
-            Severity severity = Severity.MIRING;
-            ValidationResult ve;
-            
+            String parentNodeName = "Unhandled ParentNodeName";
+
             parentNodeName = xmlCurrentNode.nodeName;
             if(parentNodeName.isEmpty())
             {
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
 
-            //Default error message and solution.  Might replace this later depending on node.
-            errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";            
+            ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
-            if(missingNodeName.equals("hmlid"))
+            try
             {
-                miringRuleID = "1.1.a";
+                boolean matchFound = false;
+                NodeList ruleNodes = missingNodeTemplates.getElementsByTagName("Rule");
+                for(int i = 0; i < ruleNodes.getLength(); i++)
+                {
+                    Node ruleNode = ruleNodes.item(i);
+                    NamedNodeMap ruleAttributes = ruleNode.getAttributes();
+                    
+                    Node templateNodeNameNode = ruleAttributes.getNamedItem("nodeName");
+                    String templateNodeName = templateNodeNameNode!=null?templateNodeNameNode.getNodeValue():null;
+                    
+                    if(missingNodeName.equals(templateNodeName))
+                    {
+                        matchFound = true;
+                        
+                        Node miringRuleNode = ruleAttributes.getNamedItem("miringRuleID");
+                        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
+                        
+                        Node severityNode = ruleAttributes.getNamedItem("severity");
+                        String templateSeverity = severityNode!=null?severityNode.getNodeValue():"";
+                        
+                        Node solutionNode = ruleAttributes.getNamedItem("solutionText");
+                        String templateSolution = solutionNode!=null?solutionNode.getNodeValue():null;
+                        
+                        Severity severity = 
+                            templateSeverity.equals("fatal")?Severity.FATAL:
+                            templateSeverity.equals("miring")?Severity.MIRING:
+                            templateSeverity.equals("warning")?Severity.WARNING:
+                            templateSeverity.equals("info")?Severity.INFO:
+                            Severity.FATAL;
+                        
+                        ve =  new ValidationResult(errorMessage,severity);
+                        ve.setSolutionText(templateSolution==null ? solutionMessage : solutionMessage + " " + templateSolution);
+                        ve.setMiringRule(miringRule);
+                        
+                        break;
+                    }
+                }
+                if(!matchFound)
+                {
+                    throw new Exception("Missing node name not handled!: " + missingNodeName);
+                }
             }
-            else if(missingNodeName.equals("reporting-center"))
+            catch(Exception e)
             {
-                miringRuleID = "1.2.a";
+                logger.error("Exception during handleMissingNode: " + e);
             }
-            else if(missingNodeName.equals("raw-reads"))
-            {
-                miringRuleID = "1.5.a";
-                solutionMessage = "Every sbt-ngs node must have at least one child raw-reads node.";
-            }
-            else if(missingNodeName.equals("allele-assignment"))
-            {
-                miringRuleID = "2.1.a";
-                solutionMessage = "Every typing node must have at least one child allele-assignment node.";
-            }
-            else if(missingNodeName.equals("glstring"))
-            {
-                miringRuleID = "3.1.a";
-                solutionMessage = "A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node.";
-                severity = Severity.WARNING;
-            }
-            else
-            {                
-                logger.error("MissingNodeName Not Handled: " + missingNodeName);
-            }
-
-            ve =  new ValidationResult(errorMessage,severity);
-            ve.setSolutionText(solutionMessage);
-            ve.setMiringRule(miringRuleID);
-
-            ve.addMoreInformation(moreInformation);
 
             return ve;
         }
-
-
     }
 }

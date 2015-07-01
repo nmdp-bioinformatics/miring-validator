@@ -47,7 +47,7 @@ public class MiscTest
         assertTrue(errors.length == 0 );
         String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
         assertTrue(errorReport.length() > 0 );
-        System.out.println(errorReport);
+       // System.out.println(errorReport);
 
     }
 
