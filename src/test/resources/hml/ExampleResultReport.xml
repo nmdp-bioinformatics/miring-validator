@@ -22,7 +22,18 @@
 
  -->
  
-<MiringReport MiringCompliant="false">
+<MiringReport MiringCompliant="false"
+   xmlns="http://schemas.nmdp.org/miringreport"  
+
+   >
+<!-- 
+      schemaLocation="http://schemas.nmdp.org/miringreport ../schemas/miringreport.xsd"
+   xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
+   hml:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1 http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+
+-->
+   
+   
    <hmlid extension="20150220.hml101.54.64" root="2.16.840.1.113883.3.1470"/>
    <samples CompliantSampleCount="0" NoncompliantSampleCount="3" SampleCount="3">
       <sample MiringCompliant="false" id="1244-0040-9"/>
@@ -552,7 +563,7 @@
          <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
       </MiringResult>
    </ValidationWarnings>
-   <ValidationInfo>
+   <ValidationInfo> 
       <MiringResult miringRuleID="1.1.c" severity="info">
          <description>The hmlid root is formatted like an OID.</description>
          <solution>No solution needed.  This is a good thing.</solution>

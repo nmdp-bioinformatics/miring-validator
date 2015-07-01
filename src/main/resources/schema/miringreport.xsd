@@ -23,12 +23,14 @@
  -->
 
 <xs:schema 
-  attributeFormDefault="unqualified" 
-  elementFormDefault="qualified" 
+  xmlns="http://schemas.nmdp.org/miringreport"
+  targetNamespace="http://schemas.nmdp.org/miringreport"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1">
+  xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1"  
+  attributeFormDefault="unqualified" 
+  elementFormDefault="qualified" >
   
-  <xs:import namespace="http://schemas.nmdp.org/spec/hml/1.0.1" schemaLocation="hml-1.0.1.xsd" />
+  <xs:import namespace="http://schemas.nmdp.org/spec/hml/1.0.1" schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd" />
   
   <xs:element name="MiringReport">
     <xs:complexType>

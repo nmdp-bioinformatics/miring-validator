@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -71,6 +70,24 @@ public class ReportGenerator
             Element rootElement = doc.createElement("MiringReport");
             doc.appendChild(rootElement);
             
+            //NAMESPACES
+            /*URL namespaceURL = new URL("http://www.w3.org/2001/XMLSchema-instance");
+            String namespace = "xmlns:xsi="+namespaceURL.toString();
+            Element messages = doc.createElementNS(namespace, "messages");
+            doc.appendChild(messages);*/
+            //doc.createElementNS("http://schemas.nmdp.org/miringreport", "xmlns");
+            
+            //doc.createElementNS("http://schemas.nmdp.org/miringreport ../schemas/miringreport.xsd", "schemaLocation");
+            //doc.createElementNS("http://www.w3.org/2001/XMLSchema-instance", "xmlns:xsi");
+            //doc.createElementNS("http://www.w3.org/2001/XMLSchema-instance", "xmlns:xsi");
+            
+            /*
+             * xmlns="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1 http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+             */
+
             //MIRINGCOMPLIANT ATTRIBUTE
             Attr compliantAttr = doc.createAttribute("MiringCompliant");
             compliantAttr.setValue(
