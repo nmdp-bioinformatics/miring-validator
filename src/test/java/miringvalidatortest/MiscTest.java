@@ -46,23 +46,11 @@ public class MiscTest
         ValidationResult[] errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
         assertTrue(errors.length == 0 );
         String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
-        System.out.println(errorReport);
+        assertTrue(errorReport.length() > 0 );
+       // System.out.println(errorReport);
+
     }
-    
-    /*
-     Don't think I need this test.  
-    @Test
-    public void testTidyXml()
-    {
-        logger.debug("starting testTidy");
-        String xml = Utilities.readXmlResource("/hml/HML.Bigger.Sample.xml");
-        assertTrue(xml.length() > 1);
-        
-        String results = new MiringValidator(xml).validate();
-        assertTrue(results.length() > 1);
-        //String polishedXml = Utilities.cleanSequences(xml);
-    }*/
-    
+
     @Test
     public void testInvalidProlog()
     {
@@ -74,18 +62,25 @@ public class MiscTest
         assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
     }
 
+    /*
+     * TODO: Get a test for XML Custom Namespace.  Need to craft an HML file.
     @Test
     public void testXmlWithNamespace()
     {
         logger.debug("starting testXmlWithNamespace");
         String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+        assertTrue(xml.length()>0);
 
         String results;
         results = new MiringValidator(xml).validate();
         
         assertTrue(results.length() > 1);
-    }
+    }*/
     
+    
+    /*
+     * TODO: Make a test for xml with text afterwards.
+     
     @Test
     public void testXmlWithTextAfterwards()
     {
@@ -100,5 +95,5 @@ public class MiscTest
         results = new MiringValidator(xml).validate();
         //System.out.println(results);
         assertTrue(results.length() > 1);
-    }
+    }*/
 }

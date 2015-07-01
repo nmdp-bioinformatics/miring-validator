@@ -644,6 +644,8 @@ public class Utilities
         return sampleID;
     }
 
+
+
     /*public static String trimPrologText(String xml)
     {
         try

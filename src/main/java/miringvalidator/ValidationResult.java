@@ -96,19 +96,7 @@ public class ValidationResult implements Comparable
             return miringRuleIDCompare;
         }
     }
-     
-    public void addMoreInformation(String moreInformation)
-    {
-        if(this.errorText ==null)
-        {
-            this.errorText = moreInformation;
-        }
-        else
-        {
-            this.errorText = this.errorText + " " + moreInformation;
-        }
-    }
-    
+
     public String getErrorText()
     {
         return errorText;
