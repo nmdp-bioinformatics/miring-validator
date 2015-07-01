@@ -2,7 +2,7 @@
 <!-- 
 
     MiringValidator  Semantic Validator for MIRING compliant HML
-    Copyright (c) 2014-2015 National Marrow Donor Program (NMDP)
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
 
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Lesser General Public License as published
@@ -35,7 +35,7 @@
         function(response)
         {
             //alert("This is called if there was a successful request.");
-            var resultXml = new XMLSerializer().serializeToString(response.documentElement);
+            var resultXml = new XMLSerializer().serializeToString(response);
             resultXml = decodeURIComponent(resultXml);
             //alert(String(resultXml));
             document.getElementById("resultsText").value = resultXml;
