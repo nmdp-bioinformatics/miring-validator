@@ -63,9 +63,11 @@ public class ReportGenerator
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-             
-            //MIRINGREPORT ROOT
+
+            //DOCUMENT
             Document doc = docBuilder.newDocument();
+            
+            //MIRINGREPORT ROOT
             Element rootElement = doc.createElement("MiringReport");
             doc.appendChild(rootElement);
             
@@ -79,9 +81,9 @@ public class ReportGenerator
             );
             rootElement.setAttributeNode(compliantAttr);
             
-            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
-            
             addHmlidElement(root, extension, doc, rootElement);
+            
+            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
             
             addPropertyElements(properties, doc, rootElement);
             
