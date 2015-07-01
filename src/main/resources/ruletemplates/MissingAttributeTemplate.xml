@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+    MiringValidator  Semantic Validator for MIRING compliant HML
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
+
+    This library is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation; either version 3 of the License, or (at
+    your option) any later version.
+
+    This library is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; with out even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library;  if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.
+
+    > http://www.gnu.org/licenses/lgpl.html
+
+ -->
+ 
+<RuleTemplate>
+
+  <Rule nodeName="variant" attributeName="id" miringRuleID="5.3.a" severity="miring" />
+  <Rule nodeName="variant" attributeName="reference-bases" miringRuleID="5.4.a" severity="miring" />
+  <Rule nodeName="variant" attributeName="alternate-bases" miringRuleID="5.5.a" severity="miring" />
+  <Rule nodeName="variant" attributeName="quality-score" miringRuleID="5.6.a" severity="miring" />"
+  <Rule nodeName="variant" attributeName="filter" miringRuleID="5.7.a" severity="miring" />
+  
+  <Rule nodeName="allele-assignment" attributeName="allele-db" miringRuleID="2.1.b" severity="miring" />
+  <Rule nodeName="allele-assignment" attributeName="allele-version" miringRuleID="2.1.c" severity="miring" />
+  
+  <Rule nodeName="raw-reads" attributeName="availability" miringRuleID="1.5.b" severity="miring" />
+  
+  <Rule nodeName="sbt-ngs" attributeName="test-id" miringRuleID="1.3.a" severity="miring" solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+  <Rule nodeName="sbt-ngs" attributeName="test-id-source" miringRuleID="1.3.a" severity="miring" solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+  
+  <Rule nodeName="reference-database" attributeName="curated" miringRuleID="2.3.b" severity="miring" />
+  
+  <Rule nodeName="consensus-sequence-block" attributeName="description" miringRuleID="4.2.a" severity="miring" />
+  <Rule nodeName="consensus-sequence-block" attributeName="reference-sequence-id" miringRuleID="4.2.2.a" severity="miring" />
+  <Rule nodeName="consensus-sequence-block" attributeName="start" miringRuleID="4.2.3.a" severity="miring" />
+  <Rule nodeName="consensus-sequence-block" attributeName="end" miringRuleID="4.2.3.a" severity="miring" />
+  <Rule nodeName="consensus-sequence-block" attributeName="phase-set" miringRuleID="4.2.4.a" severity="warning" solutionMessage="Phasing information is not strictly required, this is just a warning." />
+  <Rule nodeName="consensus-sequence-block" attributeName="expected-copy-number" miringRuleID="4.2.5.a" severity="miring" />
+  <Rule nodeName="consensus-sequence-block" attributeName="continuity" miringRuleID="4.2.5.a" severity="miring" />
+  
+  <Rule nodeName="reference-sequence" attributeName="id" miringRuleID="2.2.b" severity="miring" />
+  <Rule nodeName="reference-sequence" attributeName="name" miringRuleID="2.2.b" severity="miring" />
+  <Rule nodeName="reference-sequence" attributeName="start" miringRuleID="2.2.b" severity="miring" />
+  <Rule nodeName="reference-sequence" attributeName="end" miringRuleID="2.2.b" severity="miring" />
+  <Rule nodeName="reference-sequence" attributeName="accession" miringRuleID="2.2.b" severity="warning" solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+  <Rule nodeName="reference-sequence" attributeName="uri" miringRuleID="2.2.b" severity="warning" solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+
+  <Rule nodeName="reporting-center" attributeName="reporting-center-id" miringRuleID="1.2.b" severity="miring" />
+  <Rule nodeName="reporting-center" attributeName="reporting-center-context" miringRuleID="1.2.b" severity="miring" />
+
+</RuleTemplate>
+
+

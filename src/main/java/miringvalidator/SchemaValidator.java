@@ -37,6 +37,10 @@ import main.java.miringvalidator.ValidationResult.Severity;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -49,6 +53,8 @@ public class SchemaValidator
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
     public static List<String> sampleIDs;
+    public static Document missingNodeTemplates = null;
+    public static Document missingAttributeTemplates = null;
     
     /**
      * Validate xml against a schema
@@ -66,6 +72,9 @@ public class SchemaValidator
         try 
         {
             clearModel();
+            
+            missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingNodeTemplate.xml"));
+            missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingAttributeTemplate.xml"));
             
             hmlNamespace = Utilities.getNamespaceName(xml);
             
@@ -86,7 +95,7 @@ public class SchemaValidator
             parser.parse(new InputSource(new StringReader(xml)), handler);
             
             clearModel();
-        } 
+        }
         catch (SAXException e) 
         {
             //We shouldn't get exceptions out here.  They should have been handled by the MiringValidationContentHandler
@@ -306,238 +315,132 @@ public class SchemaValidator
             Utilities.addValidationError(validationErrors, ve);
         }
 
-
-
         private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
         {
-            ValidationResult ve;
-            String miringRuleID = "Unhandled Miring Rule ID";
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
-            Severity severity = Severity.MIRING;
+            ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
-            //Specific logic for various MIRING rules
-            //I think I have access to lots more information than what I'm putting here.
-            //Look into the parent node, we can probably get it's attributes to be useful here.
-            //moreInformation = moreInformation + (any useful information we can find)
-            //I could make a getMiringRuleID Method.  Yeah that would be smart.  Use Case Statements.
-            //TODO: Make that getMiringRuleID method.
-            if(nodeName.equals("variant"))
+            try
             {
-                if(missingAttributeName.equals("id"))
+                boolean matchFound = false;
+                NodeList ruleNodes = missingAttributeTemplates.getElementsByTagName("Rule");
+                for(int i = 0; i < ruleNodes.getLength(); i++)
                 {
-                    miringRuleID = "5.3.a";
+                    Node ruleNode = ruleNodes.item(i);
+                    NamedNodeMap ruleAttributes = ruleNode.getAttributes();
+                    
+                    Node templateNodeNameNode = ruleAttributes.getNamedItem("nodeName");
+                    String templateNodeName = templateNodeNameNode!=null?templateNodeNameNode.getNodeValue():null;
+                    
+                    Node templateAttributeNameNode = ruleAttributes.getNamedItem("attributeName");
+                    String templateAttributeName = templateAttributeNameNode!=null?templateAttributeNameNode.getNodeValue():null;
+                    
+                    if(missingAttributeName.equals(templateAttributeName)
+                        && nodeName.equals(templateNodeName))
+                    {
+                        matchFound = true;
+                        
+                        Node miringRuleNode = ruleAttributes.getNamedItem("miringRuleID");
+                        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
+                        
+                        Node severityNode = ruleAttributes.getNamedItem("severity");
+                        String templateSeverity = severityNode!=null?severityNode.getNodeValue():"";
+                        
+                        Node solutionNode = ruleAttributes.getNamedItem("solutionText");
+                        String templateSolution = solutionNode!=null?solutionNode.getNodeValue():null;
+                        
+                        Severity severity = 
+                            templateSeverity.equals("fatal")?Severity.FATAL:
+                            templateSeverity.equals("miring")?Severity.MIRING:
+                            templateSeverity.equals("warning")?Severity.WARNING:
+                            templateSeverity.equals("info")?Severity.INFO:
+                            Severity.FATAL;
+                        
+                        ve =  new ValidationResult(errorMessage,severity);
+                        ve.setSolutionText(templateSolution==null ? solutionMessage : solutionMessage + " " + templateSolution);
+                        ve.setMiringRule(miringRule);
+                        
+                        break;
+                    }
                 }
-                else if(missingAttributeName.equals("reference-bases"))
+                if(!matchFound)
                 {
-                    miringRuleID = "5.4.a";
-                }
-                else if(missingAttributeName.equals("alternate-bases"))
-                {
-                    miringRuleID = "5.5.a";
-                }
-                else if(missingAttributeName.equals("quality-score"))
-                {
-                    miringRuleID = "5.6.a";
-                }
-                else if(missingAttributeName.equals("filter"))
-                {
-                    miringRuleID = "5.7.a";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
+                    throw new Exception("Missing attribute name not handled!: " + nodeName + ":" + missingAttributeName);
                 }
             }
-            else if(nodeName.equals("allele-assignment"))
+            catch(Exception e)
             {
-                if(missingAttributeName.equals("allele-db"))
-                {
-                    miringRuleID = "2.1.b";
-                }
-                else if(missingAttributeName.equals("allele-version"))
-                {
-                    miringRuleID = "2.1.c";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
+                logger.error("Exception during handleMissingAttribute: " + e);
             }
-            else if(nodeName.equals("raw-reads"))
-            {
-                if(missingAttributeName.equals("availability"))
-                {
-                    miringRuleID = "1.5.b";
-                    errorMessage = errorMessage + ("  availability attribute can be one of: public, private, or permission.  ");
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-            }
-            else if(nodeName.equals("sbt-ngs"))
-            {
-                if(missingAttributeName.equals("test-id") || missingAttributeName.equals("test-id-source"))
-                {
-                    miringRuleID = "1.3.a";
-                    errorMessage = errorMessage + ("test-id and test-id-source should refer to a valid NCBI-GRT procedure.  ");
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-            }            
-            else if(nodeName.equals("reference-database"))
-            {
-                if(missingAttributeName.equals("curated"))
-                {
-                    miringRuleID = "2.3.b";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-            }
-            else if(nodeName.equals("consensus-sequence-block"))
-            {
-                if(missingAttributeName.equals("description"))
-                {
-                    miringRuleID = "4.2.a";
-                }
-                else if(missingAttributeName.equals("reference-sequence-id"))
-                {
-                    miringRuleID = "4.2.2.a";
-                }
-                else if(missingAttributeName.equals("start")
-                    || missingAttributeName.equals("end"))
-                {
-                    miringRuleID = "4.2.3.a";
-                }
-                else if(missingAttributeName.equals("phase-set"))
-                {
-                    miringRuleID = "4.2.4.a";
-                    solutionMessage = "Phasing information is not strictly required, this is just a warning.";
-                    severity=Severity.WARNING;
-                }
-                else if(missingAttributeName.equals("expected-copy-number"))
-                {
-                    miringRuleID = "4.2.5.a";
-                }
-                else if(missingAttributeName.equals("continuity"))
-                {
-                    miringRuleID = "4.2.7.a";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-            }
-            else if(nodeName.equals("reference-sequence"))
-            {
-                if(missingAttributeName.equals("id")
-                    || missingAttributeName.equals("name")
-                    || missingAttributeName.equals("start")
-                    || missingAttributeName.equals("end")
-                    || missingAttributeName.equals("accession")
-                    || missingAttributeName.equals("uri"))
-                {
-                    miringRuleID = "2.2.b";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-                
-                if(missingAttributeName.equals("accession") || missingAttributeName.equals("uri"))
-                {
-                    solutionMessage = "accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.";
-                    severity=Severity.WARNING;
-                }
-            }
-            else if(nodeName.equals("reporting-center"))
-            {
-                if(missingAttributeName.equals("reporting-center-id")
-                    || missingAttributeName.equals("reporting-center-context"))
-                {
-                    miringRuleID = "1.2.b";
-                }
-                else
-                {
-                    logger.error("Missing attribute name not handled! : " + missingAttributeName);
-                }
-            }
-            else
-            {
-                logger.error("Node Name Not Handled! : " + nodeName);
-            }
-            
-            ve =  new ValidationResult(errorMessage,severity);
-            ve.setSolutionText(solutionMessage);
-            ve.setMiringRule(miringRuleID);
-            
             return ve;
         }
 
         private static ValidationResult handleMissingNode(String missingNodeName)
         {
-            String errorMessage = "Unhandled Error Message";
-            String solutionMessage = "Unhandled Solution Message";
-            String moreInformation = "";
-            String miringRuleID = "Unhandled Miring Rule ID";
-            String parentNodeName = "Unhandled Parent Node Name";
-            Severity severity = Severity.MIRING;
-            ValidationResult ve;
-            
+            String parentNodeName = "Unhandled ParentNodeName";
+
             parentNodeName = xmlCurrentNode.nodeName;
             if(parentNodeName.isEmpty())
             {
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
 
-            //Default error message and solution.  Might replace this later depending on node.
-            errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";            
+            ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
-            if(missingNodeName.equals("hmlid"))
+            try
             {
-                miringRuleID = "1.1.a";
+                boolean matchFound = false;
+                NodeList ruleNodes = missingNodeTemplates.getElementsByTagName("Rule");
+                for(int i = 0; i < ruleNodes.getLength(); i++)
+                {
+                    Node ruleNode = ruleNodes.item(i);
+                    NamedNodeMap ruleAttributes = ruleNode.getAttributes();
+                    
+                    Node templateNodeNameNode = ruleAttributes.getNamedItem("nodeName");
+                    String templateNodeName = templateNodeNameNode!=null?templateNodeNameNode.getNodeValue():null;
+                    
+                    if(missingNodeName.equals(templateNodeName))
+                    {
+                        matchFound = true;
+                        
+                        Node miringRuleNode = ruleAttributes.getNamedItem("miringRuleID");
+                        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
+                        
+                        Node severityNode = ruleAttributes.getNamedItem("severity");
+                        String templateSeverity = severityNode!=null?severityNode.getNodeValue():"";
+                        
+                        Node solutionNode = ruleAttributes.getNamedItem("solutionText");
+                        String templateSolution = solutionNode!=null?solutionNode.getNodeValue():null;
+                        
+                        Severity severity = 
+                            templateSeverity.equals("fatal")?Severity.FATAL:
+                            templateSeverity.equals("miring")?Severity.MIRING:
+                            templateSeverity.equals("warning")?Severity.WARNING:
+                            templateSeverity.equals("info")?Severity.INFO:
+                            Severity.FATAL;
+                        
+                        ve =  new ValidationResult(errorMessage,severity);
+                        ve.setSolutionText(templateSolution==null ? solutionMessage : solutionMessage + " " + templateSolution);
+                        ve.setMiringRule(miringRule);
+                        
+                        break;
+                    }
+                }
+                if(!matchFound)
+                {
+                    throw new Exception("Missing node name not handled!: " + missingNodeName);
+                }
             }
-            else if(missingNodeName.equals("reporting-center"))
+            catch(Exception e)
             {
-                miringRuleID = "1.2.a";
+                logger.error("Exception during handleMissingNode: " + e);
             }
-            else if(missingNodeName.equals("raw-reads"))
-            {
-                miringRuleID = "1.5.a";
-                solutionMessage = "Every sbt-ngs node must have at least one child raw-reads node.";
-            }
-            else if(missingNodeName.equals("allele-assignment"))
-            {
-                miringRuleID = "2.1.a";
-                solutionMessage = "Every typing node must have at least one child allele-assignment node.";
-            }
-            else if(missingNodeName.equals("glstring"))
-            {
-                miringRuleID = "3.1.a";
-                solutionMessage = "A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node.";
-                severity = Severity.WARNING;
-            }
-            else
-            {                
-                logger.error("MissingNodeName Not Handled: " + missingNodeName);
-            }
-
-            ve =  new ValidationResult(errorMessage,severity);
-            ve.setSolutionText(solutionMessage);
-            ve.setMiringRule(miringRuleID);
-
-            ve.addMoreInformation(moreInformation);
 
             return ve;
         }
-
-
     }
 }
