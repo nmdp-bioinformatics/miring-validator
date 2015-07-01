@@ -23,53 +23,533 @@
  -->
  
 <MiringReport MiringCompliant="false">
-   <hmlid extension="abcd" root="1234"/>
-   <samples CompliantSampleCount="0" NoncompliantSampleCount="1" SampleCount="1">
-      <sample MiringCompliant="false" id="123456789"/>
+   <hmlid extension="20150220.hml101.54.64" root="2.16.840.1.113883.3.1470"/>
+   <samples CompliantSampleCount="0" NoncompliantSampleCount="3" SampleCount="3">
+      <sample MiringCompliant="false" id="1244-0040-9"/>
+      <sample MiringCompliant="false" id="1284-7136-4"/>
+      <sample MiringCompliant="false" id="1431-7653-5"/>
    </samples>
+   <property name="GeneratedBy" value="org.nmdp.b2b.hml.service.HMLGatewayService"/>
+   <property name="SampleCount" value="3"/>
+   <property name="MessageReceived" value="2015-06-18 17:16:03.0"/>
+   <property name="UUID" value="4c1bb591-7b7f-4e24-9cc3-85d424e0d5aa"/>
    <MiringValidationErrors>
-      <MiringResult miringRuleID="4.2.3.e" sampleID="123456789" severity="miring">
+      <MiringResult miringRuleID="1.2.b" severity="miring">
+         <description>The node reporting-center is missing a reporting-center-context attribute.</description>
+         <solution>Please add a reporting-center-context attribute to the reporting-center node.</solution>
+         <xpath>/hml[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.5.a" sampleID="1244-0040-9" severity="miring">
+         <description>There is a missing raw-reads node underneath the typing-method node. </description>
+         <solution>Every sbt-ngs node must have at least one child raw-reads node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[2]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/typing-method[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.5.a" sampleID="1284-7136-4" severity="miring">
+         <description>There is a missing raw-reads node underneath the typing-method node. </description>
+         <solution>Every sbt-ngs node must have at least one child raw-reads node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[2]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/typing-method[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.5.a" sampleID="1431-7653-5" severity="miring">
+         <description>There is a missing raw-reads node underneath the typing-method node. </description>
+         <solution>Every sbt-ngs node must have at least one child raw-reads node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[2]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/typing-method[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/typing-method[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1244-0040-9" severity="miring">
+         <description>The node reference-sequence is missing a end attribute.</description>
+         <solution>Please add a end attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1284-7136-4" severity="miring">
+         <description>The node reference-sequence is missing a end attribute.</description>
+         <solution>Please add a end attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1431-7653-5" severity="miring">
+         <description>The node reference-sequence is missing a end attribute.</description>
+         <solution>Please add a end attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1244-0040-9" severity="miring">
+         <description>The node reference-sequence is missing a name attribute.</description>
+         <solution>Please add a name attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1284-7136-4" severity="miring">
+         <description>The node reference-sequence is missing a name attribute.</description>
+         <solution>Please add a name attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1431-7653-5" severity="miring">
+         <description>The node reference-sequence is missing a name attribute.</description>
+         <solution>Please add a name attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1244-0040-9" severity="miring">
+         <description>The node reference-sequence is missing a start attribute.</description>
+         <solution>Please add a start attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1284-7136-4" severity="miring">
+         <description>The node reference-sequence is missing a start attribute.</description>
+         <solution>Please add a start attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1431-7653-5" severity="miring">
+         <description>The node reference-sequence is missing a start attribute.</description>
+         <solution>Please add a start attribute to the reference-sequence node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.3.b" sampleID="1244-0040-9" severity="miring">
+         <description>The node reference-database is missing a curated attribute.</description>
+         <solution>Please add a curated attribute to the reference-database node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.3.b" sampleID="1284-7136-4" severity="miring">
+         <description>The node reference-database is missing a curated attribute.</description>
+         <solution>Please add a curated attribute to the reference-database node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.3.b" sampleID="1431-7653-5" severity="miring">
+         <description>The node reference-database is missing a curated attribute.</description>
+         <solution>Please add a curated attribute to the reference-database node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1244-0040-9" severity="miring">
+         <description>The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1284-7136-4" severity="miring">
+         <description>The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[7]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[8]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1431-7653-5" severity="miring">
+         <description>The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1244-0040-9" severity="miring">
+         <description>The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1284-7136-4" severity="miring">
+         <description>The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[7]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[8]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.d" sampleID="1431-7653-5" severity="miring">
+         <description>The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node.</description>
+         <solution>Verify that the start and end attributes on the consensus-sequence-block are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.e" sampleID="1244-0040-9" severity="miring">
          <description>For every consensus-sequence-block node, the child sequence node must have a length of (end - start).</description>
          <solution>Please check the sequence length against the start and end attributes.</solution>
          <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="4.2.5.a" sampleID="123456789" severity="miring">
+      <MiringResult miringRuleID="4.2.3.e" sampleID="1284-7136-4" severity="miring">
+         <description>For every consensus-sequence-block node, the child sequence node must have a length of (end - start).</description>
+         <solution>Please check the sequence length against the start and end attributes.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[5]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[6]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[7]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[8]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.3.e" sampleID="1431-7653-5" severity="miring">
+         <description>For every consensus-sequence-block node, the child sequence node must have a length of (end - start).</description>
+         <solution>Please check the sequence length against the start and end attributes.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[3]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[4]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[5]/sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[6]/sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.5.a" sampleID="1244-0040-9" severity="miring">
          <description>The node consensus-sequence-block is missing a expected-copy-number attribute.</description>
          <solution>Please add a expected-copy-number attribute to the consensus-sequence-block node.</solution>
          <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="4.2.7.a" sampleID="123456789" severity="miring">
+      <MiringResult miringRuleID="4.2.5.a" sampleID="1284-7136-4" severity="miring">
+         <description>The node consensus-sequence-block is missing a expected-copy-number attribute.</description>
+         <solution>Please add a expected-copy-number attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.5.a" sampleID="1431-7653-5" severity="miring">
+         <description>The node consensus-sequence-block is missing a expected-copy-number attribute.</description>
+         <solution>Please add a expected-copy-number attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.7.a" sampleID="1244-0040-9" severity="miring">
          <description>The node consensus-sequence-block is missing a continuity attribute.</description>
          <solution>Please add a continuity attribute to the consensus-sequence-block node.</solution>
          <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="4.b" sampleID="123456789" severity="miring">
-         <description>On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</description>
-         <solution>A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start.</solution>
-         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]/sequence-quality[1]</xpath>
+      <MiringResult miringRuleID="4.2.7.a" sampleID="1284-7136-4" severity="miring">
+         <description>The node consensus-sequence-block is missing a continuity attribute.</description>
+         <solution>Please add a continuity attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="5.2.d" sampleID="123456789" severity="miring">
-         <description>The end attribute on a variant node should be less than or equal to the end attribute on the corresponding reference-sequence node.</description>
-         <solution>Verify that the start and end attributes on the variant are &gt;= and &lt;= to the start and end attributes on the corresponding reference sequence.</solution>
-         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]/variant[1]</xpath>
+      <MiringResult miringRuleID="4.2.7.a" sampleID="1431-7653-5" severity="miring">
+         <description>The node consensus-sequence-block is missing a continuity attribute.</description>
+         <solution>Please add a continuity attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.a" sampleID="1244-0040-9" severity="miring">
+         <description>The node consensus-sequence-block is missing a description attribute.</description>
+         <solution>Please add a description attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.a" sampleID="1284-7136-4" severity="miring">
+         <description>The node consensus-sequence-block is missing a description attribute.</description>
+         <solution>Please add a description attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.a" sampleID="1431-7653-5" severity="miring">
+         <description>The node consensus-sequence-block is missing a description attribute.</description>
+         <solution>Please add a description attribute to the consensus-sequence-block node.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]</xpath>
       </MiringResult>
    </MiringValidationErrors>
    <ValidationWarnings>
-      <MiringResult miringRuleID="2.2.1.c" sampleID="123456789" severity="warning">
-         <description>A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute.</description>
-         <solution>This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.</solution>
-         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[2]/reference-sequence[1]</xpath>
+      <MiringResult miringRuleID="2.2.b" sampleID="1244-0040-9" severity="warning">
+         <description>The node reference-sequence is missing a accession attribute.</description>
+         <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="2.2.b" sampleID="123456789" severity="warning">
+      <MiringResult miringRuleID="2.2.b" sampleID="1284-7136-4" severity="warning">
+         <description>The node reference-sequence is missing a accession attribute.</description>
+         <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1431-7653-5" severity="warning">
+         <description>The node reference-sequence is missing a accession attribute.</description>
+         <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1244-0040-9" severity="warning">
          <description>The node reference-sequence is missing a uri attribute.</description>
          <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
          <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
-         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/reference-database[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
       </MiringResult>
-      <MiringResult miringRuleID="4.2.4.a" sampleID="123456789" severity="warning">
+      <MiringResult miringRuleID="2.2.b" sampleID="1284-7136-4" severity="warning">
+         <description>The node reference-sequence is missing a uri attribute.</description>
+         <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="2.2.b" sampleID="1431-7653-5" severity="warning">
+         <description>The node reference-sequence is missing a uri attribute.</description>
+         <solution>accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/reference-database[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/reference-database[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.a" sampleID="1244-0040-9" severity="warning">
          <description>The node consensus-sequence-block is missing a phase-set attribute.</description>
          <solution>Phasing information is not strictly required, this is just a warning.</solution>
          <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.a" sampleID="1284-7136-4" severity="warning">
+         <description>The node consensus-sequence-block is missing a phase-set attribute.</description>
+         <solution>Phasing information is not strictly required, this is just a warning.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.a" sampleID="1431-7653-5" severity="warning">
+         <description>The node consensus-sequence-block is missing a phase-set attribute.</description>
+         <solution>Phasing information is not strictly required, this is just a warning.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.b" sampleID="1244-0040-9" severity="warning">
+         <description>On a consensus-sequence-block node, the phasing-group attribute is deprecated.</description>
+         <solution>Please use phase-set instead.</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.b" sampleID="1284-7136-4" severity="warning">
+         <description>On a consensus-sequence-block node, the phasing-group attribute is deprecated.</description>
+         <solution>Please use phase-set instead.</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[7]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/consensus-sequence[1]/consensus-sequence-block[8]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="4.2.4.b" sampleID="1431-7653-5" severity="warning">
+         <description>On a consensus-sequence-block node, the phasing-group attribute is deprecated.</description>
+         <solution>Please use phase-set instead.</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[1]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[2]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[3]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[4]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[5]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/consensus-sequence[1]/consensus-sequence-block[6]</xpath>
       </MiringResult>
    </ValidationWarnings>
    <ValidationInfo>
@@ -77,6 +557,60 @@
          <description>The hmlid root is formatted like an OID.</description>
          <solution>No solution needed.  This is a good thing.</solution>
          <xpath>/hml[1]/hmlid[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1244-0040-9" severity="info">
+         <description>On a sbt-ngs node, test-id is not formatted like a GTR test ID.</description>
+         <solution>Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1284-7136-4" severity="info">
+         <description>On a sbt-ngs node, test-id is not formatted like a GTR test ID.</description>
+         <solution>Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1431-7653-5" severity="info">
+         <description>On a sbt-ngs node, test-id is not formatted like a GTR test ID.</description>
+         <solution>Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1244-0040-9" severity="info">
+         <description>On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'.</description>
+         <solution>Other options are allowed. It isn't necessary to only use NCBI-GTR'</solution>
+         <xpath>/hml[1]/sample[1]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[1]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1284-7136-4" severity="info">
+         <description>On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'.</description>
+         <solution>Other options are allowed. It isn't necessary to only use NCBI-GTR'</solution>
+         <xpath>/hml[1]/sample[2]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[2]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
+      </MiringResult>
+      <MiringResult miringRuleID="1.3.b" sampleID="1431-7653-5" severity="info">
+         <description>On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'.</description>
+         <solution>Other options are allowed. It isn't necessary to only use NCBI-GTR'</solution>
+         <xpath>/hml[1]/sample[3]/typing[1]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[2]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[3]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[4]/typing-method[1]/sbt-ngs[1]</xpath>
+         <xpath>/hml[1]/sample[3]/typing[5]/typing-method[1]/sbt-ngs[1]</xpath>
       </MiringResult>
    </ValidationInfo>
 </MiringReport>

@@ -43,11 +43,10 @@
         <xs:element name="ValidationInfo" type="miringresults" minOccurs="0" maxOccurs="1" />
 
       </xs:sequence>
-      <xs:attribute type="xs:boolean" name="MiringCompliant"/>
+      <xs:attribute type="xs:boolean" name="MiringCompliant" use="required"/>
 
     </xs:complexType>
   </xs:element>
-  
   
   <!-- MIRINGRESULTS -->
   <xs:complexType name="miringresults">
@@ -58,7 +57,7 @@
       <xs:element name="MiringResult" type="miringresult" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <!-- MIRINGRESULT -->
   <xs:complexType name="miringresult">
     <xs:annotation><xs:documentation>
