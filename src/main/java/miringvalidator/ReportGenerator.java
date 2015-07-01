@@ -1,7 +1,7 @@
 /*
 
     MiringValidator  Semantic Validator for MIRING compliant HML
-    Copyright (c) 2014-2015 National Marrow Donor Program (NMDP)
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
 
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Lesser General Public License as published
@@ -63,9 +63,11 @@ public class ReportGenerator
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-             
-            //MIRINGREPORT ROOT
+
+            //DOCUMENT
             Document doc = docBuilder.newDocument();
+            
+            //MIRINGREPORT ROOT
             Element rootElement = doc.createElement("MiringReport");
             doc.appendChild(rootElement);
             
@@ -79,9 +81,9 @@ public class ReportGenerator
             );
             rootElement.setAttributeNode(compliantAttr);
             
-            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
-            
             addHmlidElement(root, extension, doc, rootElement);
+            
+            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
             
             addPropertyElements(properties, doc, rootElement);
             

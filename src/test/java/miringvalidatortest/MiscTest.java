@@ -1,7 +1,7 @@
 /*
 
     MiringValidator  Semantic Validator for MIRING compliant HML
-    Copyright (c) 2014-2015 National Marrow Donor Program (NMDP)
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
 
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Lesser General Public License as published
@@ -41,8 +41,10 @@ public class MiscTest
     @Test
     public void testReportSchema()
     {
-        String xml = Utilities.readXmlResource("/hml/ExampleResultReport.xml");        
-        ValidationResult[] errors = SchemaValidator.validate(xml,"miringreport.xsd");        
+        String xml = Utilities.readXmlResource("/hml/ExampleResultReport.xml");
+        assertTrue(xml.length() > 1);
+        ValidationResult[] errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
+        assertTrue(errors.length == 0 );
         String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
         System.out.println(errorReport);
     }

@@ -1,7 +1,7 @@
 /*
 
     MiringValidator  Semantic Validator for MIRING compliant HML
-    Copyright (c) 2014-2015 National Marrow Donor Program (NMDP)
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
 
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Lesser General Public License as published
@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 
@@ -221,7 +222,8 @@ public class Utilities
         {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            //initialize StreamResult with File object to save to file
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
             StreamResult result = new StreamResult(new StringWriter());
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
