@@ -86,7 +86,7 @@ public class SchemaValidator
             parser.parse(new InputSource(new StringReader(xml)), handler);
             
             clearModel();
-        } 
+        }
         catch (SAXException e) 
         {
             //We shouldn't get exceptions out here.  They should have been handled by the MiringValidationContentHandler
