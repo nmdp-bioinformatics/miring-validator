@@ -22,7 +22,8 @@
 
  -->
  
-<RuleTemplate>
+<RuleTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
   <Rule nodeName="reporting-center" 
     attributeName="reporting-center-id" 
@@ -38,13 +39,13 @@
     attributeName="test-id" 
     miringRuleID="1.3.a" 
     severity="miring" 
-    solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solutionText="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
     
   <Rule nodeName="sbt-ngs" 
     attributeName="test-id-source" 
     miringRuleID="1.3.a" 
     severity="miring" 
-    solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solutionText="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
     
   <Rule nodeName="raw-reads" 
     attributeName="availability" 
@@ -85,13 +86,13 @@
     attributeName="accession" 
     miringRuleID="2.2.b" 
     severity="warning" 
-    solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+    solutionText="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
     
   <Rule nodeName="reference-sequence" 
     attributeName="uri" 
     miringRuleID="2.2.b" 
     severity="warning" 
-    solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+    solutionText="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
 
   <Rule nodeName="reference-database" 
     attributeName="curated" 
@@ -122,7 +123,7 @@
     attributeName="phase-set" 
     miringRuleID="4.2.4.a" 
     severity="warning" 
-    solutionMessage="Phasing information is not strictly required, this is just a warning." />
+    solutionText="Phasing information is not strictly required, this is just a warning." />
     
   <Rule nodeName="consensus-sequence-block" 
     attributeName="expected-copy-number" 
@@ -152,7 +153,7 @@
   <Rule nodeName="variant" 
     attributeName="quality-score" 
     miringRuleID="5.6.a" 
-    severity="miring" />"
+    severity="miring" />
     
   <Rule nodeName="variant" 
     attributeName="filter" 

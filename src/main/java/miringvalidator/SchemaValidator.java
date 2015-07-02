@@ -73,7 +73,7 @@ public class SchemaValidator
 
         try 
         {
-            clearModel();
+            MiringValidationContentHandler.clearModel();
             
             missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingNodeTemplate.xml"));
             missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingAttributeTemplate.xml"));
@@ -96,18 +96,14 @@ public class SchemaValidator
             //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
             parser.parse(new InputSource(new StringReader(xml)), handler);
             
-            clearModel();
-        }
-        catch (SAXException e) 
-        {
-            //We shouldn't get exceptions out here.  They should have been handled by the MiringValidationContentHandler
-            logger.error("SaxException Error: " + e.getLocalizedMessage());
+            MiringValidationContentHandler.clearModel();
         }
         catch (Exception e)
         {
             logger.error("Exception during schema validation: " + e);
         }
         
+        //Return results
         if(validationErrors.size() > 0)
         {
             //List -> Array
@@ -123,25 +119,8 @@ public class SchemaValidator
         }
     }
 
-    private static void clearModel()
-    {
-        //Just in case these are still hanging out somewhere
-        //Having some memory problems and want to make sure these aren't hanging out.
-        if(MiringValidationContentHandler.xmlRootNode != null)
-        {
-            MiringValidationContentHandler.xmlRootNode.deAllocate(1);
-            MiringValidationContentHandler.xmlRootNode = null;
-        }
-        
-        if(MiringValidationContentHandler.xmlCurrentNode != null)
-        {
-            MiringValidationContentHandler.xmlCurrentNode.deAllocate(1);
-            MiringValidationContentHandler.xmlCurrentNode = null;
-        }
-
-        MiringValidationContentHandler.nodeCount = 0;
-    }
-
+    //This is a subclass of DefaultHandler, which is full of do-nothing methods
+    //that we can override.  I'm taking advantage of startElement as well as error methods
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
         //xmlRootNode represents the root node of the xml document.
@@ -323,7 +302,7 @@ public class SchemaValidator
         private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
         {
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
-            String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
+            String solutionText = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
@@ -355,7 +334,7 @@ public class SchemaValidator
                             Severity.FATAL;
                         
                         ve =  new ValidationResult(errorMessage,severity);
-                        ve.setSolutionText(templateSolution==null ? solutionMessage : solutionMessage + " " + templateSolution);
+                        ve.setSolutionText(templateSolution==null ? solutionText : solutionText + " " + templateSolution);
                         ve.setMiringRule(miringRule);
                         
                         break;
@@ -384,7 +363,7 @@ public class SchemaValidator
             }
 
             String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionMessage = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";            
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";            
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
@@ -413,7 +392,7 @@ public class SchemaValidator
                             Severity.FATAL;
                         
                         ve =  new ValidationResult(errorMessage,severity);
-                        ve.setSolutionText(templateSolution==null ? solutionMessage : solutionMessage + " " + templateSolution);
+                        ve.setSolutionText(templateSolution==null ? solutionText : solutionText + " " + templateSolution);
                         ve.setMiringRule(miringRule);
                         
                         break;
@@ -431,6 +410,24 @@ public class SchemaValidator
 
             return ve;
         }
-    }
+    
+        private static void clearModel()
+        {
+            //Just in case these are still hanging out somewhere
+            //Having some memory problems and want to make sure these aren't hanging out.
+            if(xmlRootNode != null)
+            {
+                xmlRootNode.deAllocate(1);
+                xmlRootNode = null;
+            }
+            
+            if(xmlCurrentNode != null)
+            {
+                xmlCurrentNode.deAllocate(1);
+                xmlCurrentNode = null;
+            }
 
+            nodeCount = 0;
+        }
+    }
 }

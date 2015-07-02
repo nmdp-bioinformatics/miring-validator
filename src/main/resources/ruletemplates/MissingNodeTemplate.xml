@@ -22,7 +22,8 @@
 
  -->
  
-<RuleTemplate>
+<RuleTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
   <Rule nodeName="hmlid" 
     miringRuleID="1.1.a" 
@@ -35,17 +36,17 @@
   <Rule nodeName="raw-reads" 
     miringRuleID="1.5.a" 
     severity="miring" 
-    solutionMessage="Every sbt-ngs node must have at least one child raw-reads node." />
+    solutionText="Every sbt-ngs node must have at least one child raw-reads node." />
     
   <Rule nodeName="allele-assignment" 
     miringRuleID="2.1.a" 
     severity="miring" 
-    solutionMessage="Every typing node must have at least one child allele-assignment node." />
+    solutionText="Every typing node must have at least one child allele-assignment node." />
     
   <Rule nodeName="glstring" 
     miringRuleID="3.1.a" 
     severity="warning" 
-    solutionMessage="A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node." />
+    solutionText="A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node." />
 
 </RuleTemplate>
 

@@ -22,7 +22,8 @@
 
  -->
  
-<RuleTemplate>
+<RuleTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
   <Rule errorMessage="The hmlid root is formatted like an OID." 
     miringRuleID="1.1.c" 
