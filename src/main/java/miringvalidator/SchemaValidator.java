@@ -26,7 +26,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
@@ -53,6 +52,9 @@ public class SchemaValidator
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
     public static List<String> sampleIDs;
+    //missingNodeTemplates and missingAttributeTemplates are loaded from xml template files.
+    //They define what information (rule id, and additional info, etc.) is included in error messages
+    //Included info can be specified on a per-rule basis
     public static Document missingNodeTemplates = null;
     public static Document missingAttributeTemplates = null;
     
@@ -144,8 +146,7 @@ public class SchemaValidator
     {    
         //xmlRootNode represents the root node of the xml document.
         //A skeleton representation of the document is being built as parsing happens
-        //This model is used to generate an xpath on the report
-        
+        //This SimpleXmlModel is used to generate an xpath on the report
         public static SimpleXmlModel xmlRootNode;
         public static SimpleXmlModel xmlCurrentNode;
         public static int nodeCount = 0;
@@ -160,6 +161,7 @@ public class SchemaValidator
             {
                 if(localName.equals("sample"))
                 {
+                    //Every time we start analyzing a sample, store it's ID, for reporting purposes
                     String sampleID = attributes.getValue("id");
                     sampleIDs.add(sampleID);
                 }
@@ -230,8 +232,8 @@ public class SchemaValidator
         private static void handleParserException(SAXException exception)
         {
             //I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
-            //When the parser finds a problem with the xml            
-            //Take the SAX parser exception, tokenize it, and build ValidationError objects based on the errors.
+            //When the parser finds a problem with the xml
+            //Take the SAX parser exception, tokenize it, and build a Miring-specific ValidationError object based on the errors.
 
             ValidationResult ve = null;
             
@@ -251,7 +253,9 @@ public class SchemaValidator
                 // cvc-complex-type.2.4.a: Invalid content was found starting with element 'reporting-center'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
                 // cvc-complex-type.2.4.b: The content of element 'sbt-ngs' is not complete. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":raw-reads}' is expected.
                 // for 2.4.b, it's interesting that it says the content of element 'sbt-ngs'.  That's the real parent of the node where it's missing.  Perhaps I can use that info, maybe it's useless.
-
+                // Format seems better defined here:  https://wiki.xmldation.com/Support/Validator/cvc-complex-type-2-4-a
+                // If I'm getting wrong node names, better look into the format of this error.
+                
                 // The missing node name ("hmlid", "reporting-center", etc.) will be the last word between the '{' and '}'. 
                 // Find their indices.
                 int minInd = -1, maxInd = -1;
@@ -287,9 +291,10 @@ public class SchemaValidator
                 //This cvc-complex-type is called if there is an attribute missing from a node
                 //It looks like this:
                 // cvc-complex-type.4: Attribute 'quality-score' must appear on element 'variant'.
+                // https://wiki.xmldation.com/Support/Validator/cvc-complex-type-4
                 
                 String missingAttributeName = exceptionTokens[2].replace("'", "");
-                String untrimmedNodeName = exceptionTokens[7];                
+                String untrimmedNodeName = exceptionTokens[7];
                 String nodeName = untrimmedNodeName.substring(1, untrimmedNodeName.indexOf("'."));
                 
                 ve = handleMissingAttribute(missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
@@ -321,34 +326,26 @@ public class SchemaValidator
             String solutionMessage = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
+            //Specific logic for various MIRING errors
             try
             {
                 boolean matchFound = false;
                 NodeList ruleNodes = missingAttributeTemplates.getElementsByTagName("Rule");
                 for(int i = 0; i < ruleNodes.getLength(); i++)
                 {
-                    Node ruleNode = ruleNodes.item(i);
-                    NamedNodeMap ruleAttributes = ruleNode.getAttributes();
-                    
-                    Node templateNodeNameNode = ruleAttributes.getNamedItem("nodeName");
-                    String templateNodeName = templateNodeNameNode!=null?templateNodeNameNode.getNodeValue():null;
-                    
-                    Node templateAttributeNameNode = ruleAttributes.getNamedItem("attributeName");
-                    String templateAttributeName = templateAttributeNameNode!=null?templateAttributeNameNode.getNodeValue():null;
+                    NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
+
+                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "nodeName");
+                    String templateAttributeName = Utilities.getAttribute(ruleAttributes, "attributeName");
                     
                     if(missingAttributeName.equals(templateAttributeName)
                         && nodeName.equals(templateNodeName))
                     {
                         matchFound = true;
                         
-                        Node miringRuleNode = ruleAttributes.getNamedItem("miringRuleID");
-                        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
-                        
-                        Node severityNode = ruleAttributes.getNamedItem("severity");
-                        String templateSeverity = severityNode!=null?severityNode.getNodeValue():"";
-                        
-                        Node solutionNode = ruleAttributes.getNamedItem("solutionText");
-                        String templateSolution = solutionNode!=null?solutionNode.getNodeValue():null;
+                        String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
+                        String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
+                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
                         
                         Severity severity = 
                             templateSeverity.equals("fatal")?Severity.FATAL:
@@ -397,25 +394,17 @@ public class SchemaValidator
                 NodeList ruleNodes = missingNodeTemplates.getElementsByTagName("Rule");
                 for(int i = 0; i < ruleNodes.getLength(); i++)
                 {
-                    Node ruleNode = ruleNodes.item(i);
-                    NamedNodeMap ruleAttributes = ruleNode.getAttributes();
+                    NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
                     
-                    Node templateNodeNameNode = ruleAttributes.getNamedItem("nodeName");
-                    String templateNodeName = templateNodeNameNode!=null?templateNodeNameNode.getNodeValue():null;
-                    
+                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "nodeName");                    
                     if(missingNodeName.equals(templateNodeName))
                     {
                         matchFound = true;
                         
-                        Node miringRuleNode = ruleAttributes.getNamedItem("miringRuleID");
-                        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
+                        String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
+                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
                         
-                        Node severityNode = ruleAttributes.getNamedItem("severity");
-                        String templateSeverity = severityNode!=null?severityNode.getNodeValue():"";
-                        
-                        Node solutionNode = ruleAttributes.getNamedItem("solutionText");
-                        String templateSolution = solutionNode!=null?solutionNode.getNodeValue():null;
-                        
+                        String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
                         Severity severity = 
                             templateSeverity.equals("fatal")?Severity.FATAL:
                             templateSeverity.equals("miring")?Severity.MIRING:
@@ -443,4 +432,5 @@ public class SchemaValidator
             return ve;
         }
     }
+
 }
