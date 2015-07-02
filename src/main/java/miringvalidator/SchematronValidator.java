@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class SchematronValidator
@@ -49,6 +50,7 @@ public class SchematronValidator
     static ClassLoader loadedProbatronClasses;
     static String jarFileName = "/jar/probatron.jar";
     static String namespaceText = "{http://schemas.nmdp.org/spec/hml/1.0.1}";
+    public static Document schematronRuleTemplate = null;
 
     /**
      * Perform a schematron validation for an xml string against an array of schemaFileName strings.
@@ -60,12 +62,15 @@ public class SchematronValidator
     public static ValidationResult[] validate(String xml, String[] schemaFileNames)
     {
         ValidationResult[] results = new ValidationResult[0];
+        
+        
         try
         {
             logger.debug("Opening jar file: " + jarFileName);
             URL jarURL = SchematronValidator.class.getResource(jarFileName);
             URI jarURI = jarURL.toURI();
-            loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
+            loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));            
+            schematronRuleTemplate = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/SchematronRuleTemplate.xml"));
             
             for(int i = 0; i < schemaFileNames.length; i++)
             {
@@ -107,6 +112,7 @@ public class SchematronValidator
      */
     private static Object doValidation(String xml, String schemaLocation) 
     {
+        //We're using some reflection here, so I have to be vague about what kind of objects were dealing with
         //vr is an org.probatron.ValidationReport
         Object vr = null;
         //theSchema is an org.probatron.SchematronSchema
@@ -154,10 +160,10 @@ public class SchematronValidator
         {
             Element rootElement = Utilities.xmlToRootElement(xml);  
 
-            //I guess I'm handling successful-reports and failed-asserts in the same way
+            //I guess I'm handling successful-reports and failed-asserts in the same way.
             NodeList successfulReportList = rootElement.getElementsByTagName("svrl:successful-report");
             NodeList failedAssertList = rootElement.getElementsByTagName("svrl:failed-assert");
-            Node[] combinedList = combineNodeLists(successfulReportList, failedAssertList);
+            Node[] combinedList = Utilities.combineNodeLists(successfulReportList, failedAssertList);
             
             if (combinedList != null) 
             {
@@ -166,11 +172,9 @@ public class SchematronValidator
                 <svrl:successful-report 
                     test="matches( @root, $regExpOID )"
                     location="/{http://schemas.nmdp.org/spec/hml/1.0.1}hml[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}hmlid[1]">
-                    
                     <svrl:text>
                         The hmlid root is formatted like an OID. 
                     </svrl:text>
-                    
                 </svrl:successful-report>
                 
                 OR
@@ -178,7 +182,6 @@ public class SchematronValidator
                 <svrl:failed-assert 
                     test="number(@start) = '0'"
                     location="/{http://schemas.nmdp.org/spec/hml/1.0.1}hml[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}sample[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}typing[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}consensus-sequence[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}reference-database[1]/{http://schemas.nmdp.org/spec/hml/1.0.1}reference-sequence[1]">
-     
                     <svrl:text>
                         start attribute on reference-sequence nodes should be 0.
                     </svrl:text>
@@ -198,8 +201,7 @@ public class SchematronValidator
                     //Not sure if we'll use that information at all
                     attributes = currAttributes.getNamedItem("test").getNodeValue();
                     
-                    //locationText contains information about exactly where in the HML file we found the problem
-                    //I believe it is or contains an xpath.  We're gonna put that on the report.
+                    //locationText is an xpath.  We're gonna put that on the report.
                     //Probably need to skim out the namespaces, because they clutter things badly, and because who cares?
                     locationText = currAttributes.getNamedItem("location").getNodeValue();
                     
@@ -228,10 +230,7 @@ public class SchematronValidator
         catch(Exception e)
         {
             logger.error("Error forming DOM from schematron results: " + e);
-            validationErrors.add(new ValidationResult(
-                "Unhandled Schematron validation exception: " + e, Severity.FATAL
-            ));
-            
+            validationErrors.add(new ValidationResult("Unhandled Schematron validation exception: " + e, Severity.FATAL));
         }
 
         if(validationErrors.size() > 0)
@@ -247,21 +246,6 @@ public class SchematronValidator
         }
     }
 
-    private static Node[] combineNodeLists(NodeList successfulReportList, NodeList failedAssertList)
-    {
-        Node[] newList = new Node[successfulReportList.getLength() + failedAssertList.getLength()];
-        
-        for(int i = 0; i < successfulReportList.getLength(); i++)
-        {
-            newList[i] = successfulReportList.item(i);
-        }
-        for(int i = 0; i < failedAssertList.getLength(); i++)
-        {
-            newList[i + successfulReportList.getLength()] = failedAssertList.item(i);
-        }
-        return newList;
-    }
-
     /**
      * Generate a single ValidationError object
      * Lots of Miring logic happens here.
@@ -275,95 +259,54 @@ public class SchematronValidator
     {
         ValidationResult ve = new ValidationResult(errorMessage,Severity.MIRING);
         
-        if(locationText != null)
+        //Specific logic for various MIRING errors
+        try
         {
-            ve.addXPath(stripNamespace(locationText));
+            boolean matchFound = false;
+            NodeList ruleNodes = schematronRuleTemplate.getElementsByTagName("Rule");
+            for(int i = 0; i < ruleNodes.getLength(); i++)
+            {
+                NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
+
+                String templateErrorMessage = Utilities.getAttribute(ruleAttributes, "errorMessage");
+                
+                if(errorMessage.contains(templateErrorMessage))
+                {
+                    matchFound = true;
+                    
+                    String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
+                    String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
+                    String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
+                    
+                    Severity severity = 
+                        templateSeverity.equals("fatal")?Severity.FATAL:
+                        templateSeverity.equals("miring")?Severity.MIRING:
+                        templateSeverity.equals("warning")?Severity.WARNING:
+                        templateSeverity.equals("info")?Severity.INFO:
+                        Severity.FATAL;
+                    
+                    ve =  new ValidationResult(errorMessage,severity);
+                    ve.setSolutionText(templateSolution);
+                    ve.setMiringRule(miringRule);
+                    
+                    if(locationText != null)
+                    {
+                        ve.addXPath(stripNamespace(locationText));
+                    }
+                    
+                    break;
+                }
+            }
+            if(!matchFound)
+            {
+                throw new Exception("No Rule template found !: " + errorMessage);
+            }
         }
-        
-        if(errorMessage.contains("The hmlid root is formatted like an OID."))
+        catch(Exception e)
         {
-            ve.setMiringRule("1.1.c");
-            ve.setSolutionText("No solution needed.  This is a good thing.");
-            ve.setSeverity(Severity.INFO);
+            logger.error("Exception during generateValidationError: " + e);
         }
-        else if(errorMessage.contains("The hmlid root is not formatted like an OID."))
-        {
-            ve.setMiringRule("1.1.c");
-            ve.setSolutionText("Please format the hmlid node's root attribute like an OID:  11.234.55555.65");
-            ve.setSeverity(Severity.INFO);
-        }
-        else if(errorMessage.contains("On a sbt-ngs node, test-id is not formatted like a GTR test ID."))
-        {
-            ve.setMiringRule("1.3.b");
-            ve.setSolutionText("Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0");
-            ve.setSeverity(Severity.INFO);
-        }
-        else if(errorMessage.contains("On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'."))
-        {
-            ve.setMiringRule("1.3.b");
-            ve.setSolutionText("Other options are allowed. It isn't necessary to only use NCBI-GTR'");
-            ve.setSeverity(Severity.INFO);
-        }
-        else if(errorMessage.contains("On a reference sequence node, end attribute should be greater than or equal to the start attribute."))
-        {
-            ve.setMiringRule("2.2.c");
-            ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
-        }
-        else if(errorMessage.contains("A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute."))
-        {
-            ve.setMiringRule("2.2.1.c");
-            ve.setSolutionText("This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true.");
-            ve.setSeverity(Severity.WARNING);
-        }
-        else if(errorMessage.contains("On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive."))
-        {
-            ve.setMiringRule("4.b");
-            ve.setSolutionText("A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start.");
-        }
-        else if(errorMessage.contains("The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute")
-             || errorMessage.contains("The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute"))
-        {
-            ve.setMiringRule("4.2.3.d");
-            ve.setSolutionText("Verify that the start and end attributes on the consensus-sequence-block are >= and <= to the start and end attributes on the corresponding reference sequence.");
-        }
-        else if(errorMessage.contains("For every consensus-sequence-block node, the child sequence node must have a length of (end - start)."))
-        {
-            ve.setMiringRule("4.2.3.e");
-            ve.setSolutionText("Please check the sequence length against the start and end attributes.");
-        }
-        else if(errorMessage.contains("On a consensus-sequence-block node, the phasing-group attribute is deprecated."))
-        {
-            ve.setMiringRule("4.2.4.b");
-            ve.setSolutionText("Please use phase-set instead.");
-            ve.setSeverity(Severity.WARNING);
-        }
-        else if(errorMessage.contains("A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous"))
-        {
-            ve.setMiringRule("4.2.7.b");
-            ve.setSolutionText("Any consensus-sequence-block node with continuity=\"true\" is expected to be continuous with the previous sibling node.  Start=End(previous).  The previous node will have the same reference-sequence-id and phase-set, if applicable.");
-        }
-        else if(errorMessage.contains("On a variant node, end attribute should be greater than or equal to the start attribute"))
-        {
-            ve.setMiringRule("5.2.b");
-            ve.setSolutionText("The end attribute should be greater than or equal to the start attribute.");
-        }
-        else if(errorMessage.contains("The start attribute on a variant node should be greater than or equal to the start attribute")
-                || errorMessage.contains("The end attribute on a variant node should be less than or equal to the end attribute"))
-        {
-            ve.setMiringRule("5.2.d");
-            ve.setSolutionText("Verify that the start and end attributes on the variant are >= and <= to the start and end attributes on the corresponding reference sequence.");
-        }
-        else if(errorMessage.contains("The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants."))
-        {
-            ve.setMiringRule("5.3.c");
-            ve.setSolutionText("IDs on variant nodes should start at 0, and represent every integer between 0:n-1.");
-        }
-        else
-        {
-            ve.setMiringRule("Unhandled Miring Rule");
-            ve.setSolutionText("Unhandled Solution Text");
-        }
-        
+
         return ve;
     }
 

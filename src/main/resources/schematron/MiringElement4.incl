@@ -44,7 +44,6 @@
         end >= start
       --> 
     <rule context="hml:consensus-sequence-block">
-        <!-- <assert test="number(@end) >= number(@start)">On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute.</assert>-->
         <report test="boolean(@start) and boolean(@end) and (number(@start) > number(@end))">On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute.</report>
 
     <!--
@@ -73,7 +72,7 @@
         <let name="csbRefSeqID" value="attribute(reference-sequence-id)" />
         <let name="csbPhaseSet" value="attribute(phase-set)" />
         <let name="csbPreviousEnd" value="preceding-sibling::*[@reference-sequence-id=$csbRefSeqID and @phase-set=$csbPhaseSet][1]/@end" />
-        <report test="$csbCont='true' and $csbStart!=$csbPreviousEnd and $csbPreviousEnd!='' ">A consensus-sequence-block with attribute continuity="true" does not appear to be continuous with it's previous sibling consensus-sequence-block node, matched by reference-sequence-id and phase-set.</report>
+        <report test="$csbCont='true' and $csbStart!=$csbPreviousEnd and $csbPreviousEnd!='' ">A consensus-sequence-block with attribute continuity=true does not appear to be continuous with it's previous sibling consensus-sequence-block node, matched by reference-sequence-id and phase-set.</report>
     </rule>
 
     <!--

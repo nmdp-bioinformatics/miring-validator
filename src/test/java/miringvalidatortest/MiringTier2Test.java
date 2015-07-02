@@ -203,11 +203,11 @@ public class MiringTier2Test
         //4.2.7.b
         xml = Utilities.readXmlResource("/hml/Element4.CSB.continuous.xml");
         results = new MiringValidator(xml).validate();
-        assertFalse(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node"));
+        assertFalse(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=true does not appear to be continuous with it's previous sibling consensus-sequence-block node"));
         
         xml = Utilities.readXmlResource("/hml/Element4.CSB.not.continuous.xml");
         results = new MiringValidator(xml).validate();
-        assertTrue(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=\"true\" does not appear to be continuous with it's previous sibling consensus-sequence-block node"));
+        assertTrue(Utilities.containsErrorNode(results, "A consensus-sequence-block with attribute continuity=true does not appear to be continuous with it's previous sibling consensus-sequence-block node"));
     }
 
     @Test
