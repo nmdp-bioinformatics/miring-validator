@@ -643,8 +643,28 @@ public class Utilities
 
         return sampleID;
     }
+    
+    public static Node[] combineNodeLists(NodeList successfulReportList, NodeList failedAssertList)
+    {
+        Node[] newList = new Node[successfulReportList.getLength() + failedAssertList.getLength()];
+        
+        for(int i = 0; i < successfulReportList.getLength(); i++)
+        {
+            newList[i] = successfulReportList.item(i);
+        }
+        for(int i = 0; i < failedAssertList.getLength(); i++)
+        {
+            newList[i + successfulReportList.getLength()] = failedAssertList.item(i);
+        }
+        return newList;
+    }
 
-
+    public static String getAttribute(NamedNodeMap ruleAttributes, String attributeName)
+    {
+        Node miringRuleNode = ruleAttributes.getNamedItem(attributeName);
+        String miringRule = miringRuleNode!=null?miringRuleNode.getNodeValue():null;
+        return miringRule;
+    }
 
     /*public static String trimPrologText(String xml)
     {
