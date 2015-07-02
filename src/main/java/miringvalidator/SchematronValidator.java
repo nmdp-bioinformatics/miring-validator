@@ -263,20 +263,20 @@ public class SchematronValidator
         try
         {
             boolean matchFound = false;
-            NodeList ruleNodes = schematronRuleTemplate.getElementsByTagName("Rule");
+            NodeList ruleNodes = schematronRuleTemplate.getElementsByTagName("rule");
             for(int i = 0; i < ruleNodes.getLength(); i++)
             {
                 NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
 
-                String templateErrorMessage = Utilities.getAttribute(ruleAttributes, "errorMessage");
+                String templateErrorMessage = Utilities.getAttribute(ruleAttributes, "error-text");
                 
                 if(errorMessage.contains(templateErrorMessage))
                 {
                     matchFound = true;
                     
-                    String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
+                    String miringRule = Utilities.getAttribute(ruleAttributes, "miring-rule-id");
                     String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
-                    String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
+                    String templateSolution = Utilities.getAttribute(ruleAttributes, "solution-text");
                     
                     Severity severity = 
                         templateSeverity.equals("fatal")?Severity.FATAL:

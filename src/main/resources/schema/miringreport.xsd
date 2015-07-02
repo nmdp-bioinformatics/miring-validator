@@ -23,45 +23,47 @@
  -->
 
 <xs:schema 
-  xmlns="http://schemas.nmdp.org/miringreport"
-  targetNamespace="http://schemas.nmdp.org/miringreport"
+  targetNamespace="http://schemas.nmdp.org/spec/miringreport"
+  xmlns:mr="http://schemas.nmdp.org/spec/miringreport"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1"  
+  xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1"
   attributeFormDefault="unqualified" 
-  elementFormDefault="qualified" >
+  elementFormDefault="qualified" 
+  >
   
   <xs:import namespace="http://schemas.nmdp.org/spec/hml/1.0.1" schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd" />
   
-  <xs:element name="MiringReport">
+  <xs:element name="miring-report">
+  
     <xs:complexType>
+    
       <xs:sequence>
 
+        <xs:element type="xs:string" name="miring-compliant" minOccurs="1" maxOccurs="1" />
         <xs:element name="hmlid" type="hml:hmlid" minOccurs="0" maxOccurs="1" />
-        <xs:element name="samples" type="samples" minOccurs="0" maxOccurs="1" />
+        <xs:element name="samples" type="mr:samples" minOccurs="0" maxOccurs="1" />
         <xs:element name="property" type="hml:property" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="FatalValidationErrors" type="miringresults" minOccurs="0" maxOccurs="1" />
-        <xs:element name="MiringValidationErrors" type="miringresults" minOccurs="0" maxOccurs="1" />
-        <xs:element name="ValidationWarnings" type="miringresults" minOccurs="0" maxOccurs="1" />
-        <xs:element name="ValidationInfo" type="miringresults" minOccurs="0" maxOccurs="1" />
+        <xs:element name="fatal-validation-errors" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="miring-validation-errors" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="validation-warnings" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="validation-info" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
 
       </xs:sequence>
-      <xs:attribute type="xs:boolean" name="MiringCompliant" use="required"/>
-
     </xs:complexType>
   </xs:element>
   
-  <!-- MIRINGRESULTS -->
-  <xs:complexType name="miringresults">
+  <!-- MIRING-RESULTS -->
+  <xs:complexType name="miring-results">
     <xs:annotation><xs:documentation>
         A set of Miring Results
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="MiringResult" type="miringresult" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="miring-result" type="mr:miring-result" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
-  <!-- MIRINGRESULT -->
-  <xs:complexType name="miringresult">
+  <!-- MIRING-RESULT -->
+  <xs:complexType name="miring-result">
     <xs:annotation><xs:documentation>
         A Miring Result
     </xs:documentation></xs:annotation>
@@ -70,8 +72,8 @@
         <xs:element type="xs:string" name="solution" minOccurs="0" maxOccurs="1"/>
         <xs:element type="xs:string" name="xpath" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute type="xs:string" name="miringRuleID" use="required"/>
-    <xs:attribute type="xs:string" name="sampleID" use="optional"/>
+    <xs:attribute type="xs:string" name="miring-rule-id" use="required"/>
+    <xs:attribute type="xs:string" name="sample-id" use="optional"/>
     <xs:attribute type="xs:string" name="severity" use="required"/>
   </xs:complexType>
 
@@ -81,11 +83,11 @@
         A set of Samples
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="sample" type="sample" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="sample" type="mr:sample" maxOccurs="unbounded" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute type="xs:byte" name="SampleCount" use="required"/>
-    <xs:attribute type="xs:byte" name="CompliantSampleCount" use="required"/>
-    <xs:attribute type="xs:byte" name="NoncompliantSampleCount" use="required"/>
+    <xs:attribute type="xs:byte" name="sample-count" use="required"/>
+    <xs:attribute type="xs:byte" name="compliant-sample-count" use="required"/>
+    <xs:attribute type="xs:byte" name="noncompliant-sample-count" use="required"/>
   </xs:complexType>
 
   <!-- SAMPLE -->
@@ -95,7 +97,7 @@
     </xs:documentation></xs:annotation>
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute type="xs:boolean" name="MiringCompliant" use="required"/>
+        <xs:attribute type="xs:boolean" name="miring-compliant" use="required"/>
         <xs:attribute name="id" use="optional">
           <xs:simpleType>
              <xs:restriction base="xs:string" >

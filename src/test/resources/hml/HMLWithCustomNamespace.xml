@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- 
+
+    MiringValidator  Semantic Validator for MIRING compliant HML
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
+
+    This library is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation; either version 3 of the License, or (at
+    your option) any later version.
+
+    This library is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; with out even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library;  if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.
+
+    > http://www.gnu.org/licenses/lgpl.html
+
+ -->
+
+<ns2:hml version="1.0.1" project-name="ABDR" 
+    xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1  http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd" 
+    xmlns:ns2="http://schemas.nmdp.org/spec/hml/1.0.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    
+    <ns2:property name="Property1" value="Property1Value"/>
+    <ns2:property name="Property2" value="Property2Value"/>
+    <ns2:hmlid root="2.16.840" extension="20150220"/>
+    <ns2:reporting-center reporting-center-id="123"/>
+    <ns2:sample id="1244-444-7" center-code="005">
+        <ns2:collection-method>BUCCAL SWAB</ns2:collection-method>
+        <ns2:typing gene-family="HLA" date="2015-01-13">
+            <ns2:allele-assignment date="2015-01-13" allele-db="IMGT/HLA" allele-version="3.17.0">
+                <ns2:glstring>
+                   HLA-A*02:20:01+HLA-A*03:01:01:01
+                </ns2:glstring>
+            </ns2:allele-assignment>
+            <ns2:typing-method>
+                <ns2:sbt-ngs locus="HLA-A" test-id="123" test-id-source="LOLOL">
+                    <ns2:raw-reads uri="filename.fastq.gz" format="fastq" paired="true" pooled="true" availability="private" adapter-trimmed="true" quality-trimmed="false"/>
+                </ns2:sbt-ngs>
+            </ns2:typing-method>
+            <ns2:consensus-sequence date="2015-01-13">
+                <ns2:reference-database availability="public">
+                    <ns2:reference-sequence id="Ref111"/>
+                </ns2:reference-database>
+                <ns2:consensus-sequence-block reference-sequence-id="Ref111" start="1" end="5" strand="+" phasing-group="1">                    <ns2:sequence>
+                              TAAC
+                         </ns2:sequence>
+                </ns2:consensus-sequence-block>
+            </ns2:consensus-sequence>
+        </ns2:typing>
+
+    </ns2:sample>
+</ns2:hml>

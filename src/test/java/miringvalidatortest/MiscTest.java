@@ -62,20 +62,20 @@ public class MiscTest
         assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
     }
 
-    /*
-     * TODO: Get a test for XML Custom Namespace.  Need to craft an HML file.
+
     @Test
     public void testXmlWithNamespace()
     {
         logger.debug("starting testXmlWithNamespace");
-        String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+        String xml = Utilities.readXmlResource("/hml/HMLWithCustomNamespace.xml");
         assertTrue(xml.length()>0);
 
         String results;
         results = new MiringValidator(xml).validate();
+        System.out.println(results);
         
         assertTrue(results.length() > 1);
-    }*/
+    }
     
     
     /*
