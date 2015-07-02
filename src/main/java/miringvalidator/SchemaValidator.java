@@ -309,22 +309,22 @@ public class SchemaValidator
             try
             {
                 boolean matchFound = false;
-                NodeList ruleNodes = missingAttributeTemplates.getElementsByTagName("Rule");
+                NodeList ruleNodes = missingAttributeTemplates.getElementsByTagName("rule");
                 for(int i = 0; i < ruleNodes.getLength(); i++)
                 {
                     NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
 
-                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "nodeName");
-                    String templateAttributeName = Utilities.getAttribute(ruleAttributes, "attributeName");
+                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "node-name");
+                    String templateAttributeName = Utilities.getAttribute(ruleAttributes, "attribute-name");
                     
                     if(missingAttributeName.equals(templateAttributeName)
                         && nodeName.equals(templateNodeName))
                     {
                         matchFound = true;
                         
-                        String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
+                        String miringRule = Utilities.getAttribute(ruleAttributes, "miring-rule-id");
                         String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
-                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
+                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solution-text");
                         
                         Severity severity = 
                             templateSeverity.equals("fatal")?Severity.FATAL:
@@ -363,25 +363,25 @@ public class SchemaValidator
             }
 
             String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";            
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
             try
             {
                 boolean matchFound = false;
-                NodeList ruleNodes = missingNodeTemplates.getElementsByTagName("Rule");
+                NodeList ruleNodes = missingNodeTemplates.getElementsByTagName("rule");
                 for(int i = 0; i < ruleNodes.getLength(); i++)
                 {
                     NamedNodeMap ruleAttributes = ruleNodes.item(i).getAttributes();
                     
-                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "nodeName");                    
+                    String templateNodeName = Utilities.getAttribute(ruleAttributes, "node-name");
                     if(missingNodeName.equals(templateNodeName))
                     {
                         matchFound = true;
                         
-                        String miringRule = Utilities.getAttribute(ruleAttributes, "miringRuleID");
-                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solutionText");
+                        String miringRule = Utilities.getAttribute(ruleAttributes, "miring-rule-id");
+                        String templateSolution = Utilities.getAttribute(ruleAttributes, "solution-text");
                         
                         String templateSeverity = Utilities.getAttribute(ruleAttributes, "severity");
                         Severity severity = 

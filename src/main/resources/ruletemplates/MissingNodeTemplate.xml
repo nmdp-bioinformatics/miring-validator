@@ -22,32 +22,32 @@
 
  -->
  
-<RuleTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<rule-template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
-  <Rule nodeName="hmlid" 
-    miringRuleID="1.1.a" 
+  <rule node-name="hmlid" 
+    miring-rule-id="1.1.a" 
     severity="miring" />  
     
-  <Rule nodeName="reporting-center" 
-    miringRuleID="1.2.a" 
+  <rule node-name="reporting-center" 
+    miring-rule-id="1.2.a" 
     severity="miring" /> 
 
-  <Rule nodeName="raw-reads" 
-    miringRuleID="1.5.a" 
+  <rule node-name="raw-reads" 
+    miring-rule-id="1.5.a" 
     severity="miring" 
-    solutionText="Every sbt-ngs node must have at least one child raw-reads node." />
+    solution-text="Every sbt-ngs node must have at least one child raw-reads node." />
     
-  <Rule nodeName="allele-assignment" 
-    miringRuleID="2.1.a" 
+  <rule node-name="allele-assignment" 
+    miring-rule-id="2.1.a" 
     severity="miring" 
-    solutionText="Every typing node must have at least one child allele-assignment node." />
+    solution-text="Every typing node must have at least one child allele-assignment node." />
     
-  <Rule nodeName="glstring" 
-    miringRuleID="3.1.a" 
+  <rule node-name="glstring" 
+    miring-rule-id="3.1.a" 
     severity="warning" 
-    solutionText="A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node." />
+    solution-text="A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node." />
 
-</RuleTemplate>
+</rule-template>
 
 

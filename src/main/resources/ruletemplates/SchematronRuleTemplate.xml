@@ -22,89 +22,89 @@
 
  -->
  
-<RuleTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<rule-template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
-  <Rule errorMessage="The hmlid root is formatted like an OID." 
-    miringRuleID="1.1.c" 
-    solutionText="No solution needed.  This is a good thing." 
+  <rule error-text="The hmlid root is formatted like an OID." 
+    miring-rule-id="1.1.c" 
+    solution-text="No solution needed.  This is a good thing." 
     severity="info" />
     
-  <Rule errorMessage="The hmlid root is not formatted like an OID." 
-    miringRuleID="1.1.c" 
-    solutionText="Please format the hmlid node's root attribute like an OID:  11.234.55555.65" 
+  <rule error-text="The hmlid root is not formatted like an OID." 
+    miring-rule-id="1.1.c" 
+    solution-text="Please format the hmlid node's root attribute like an OID:  11.234.55555.65" 
     severity="info" />
 
-  <Rule errorMessage="On a sbt-ngs node, test-id is not formatted like a GTR test ID." 
-    miringRuleID="1.3.b" 
-    solutionText="Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0" 
+  <rule error-text="On a sbt-ngs node, test-id is not formatted like a GTR test ID." 
+    miring-rule-id="1.3.b" 
+    solution-text="Other test formats are allowed. It isn't necessary to only use a GTR test ID: GTR000000000.0" 
     severity="info" />
 
-  <Rule errorMessage="On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'." 
-    miringRuleID="1.3.b" 
-    solutionText="Other options are allowed. It isn't necessary to only use NCBI-GTR'" 
+  <rule error-text="On a sbt-ngs node, the test-id-source is not explicitly 'NCBI-GTR'." 
+    miring-rule-id="1.3.b" 
+    solution-text="Other options are allowed. It isn't necessary to only use NCBI-GTR'" 
     severity="info" />
 
-  <Rule errorMessage="On a reference sequence node, end attribute should be greater than or equal to the start attribute." 
-    miringRuleID="2.2.c" 
-    solutionText="The end attribute should be greater than or equal to the start attribute." 
+  <rule error-text="On a reference sequence node, end attribute should be greater than or equal to the start attribute." 
+    miring-rule-id="2.2.c" 
+    solution-text="The end attribute should be greater than or equal to the start attribute." 
     severity="miring" />
 
-  <Rule errorMessage="A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute." 
-    miringRuleID="2.2.1.c" 
-    solutionText="This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true." 
+  <rule error-text="A reference-sequence node has an id attribute with no corresponding consensus-sequence-block id attribute." 
+    miring-rule-id="2.2.1.c" 
+    solution-text="This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true." 
     severity="warning" />
     
-  <Rule errorMessage="On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive." 
-    miringRuleID="4.b" 
-    solutionText="A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start." 
+  <rule error-text="On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive." 
+    miring-rule-id="4.b" 
+    solution-text="A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start." 
     severity="miring" />
 
-  <Rule errorMessage="The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute" 
-    miringRuleID="4.2.3.d" 
-    solutionText="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
+  <rule error-text="The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute" 
+    miring-rule-id="4.2.3.d" 
+    solution-text="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
     severity="miring" />
     
-  <Rule errorMessage="The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute" 
-    miringRuleID="4.2.3.d" 
-    solutionText="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
+  <rule error-text="The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute" 
+    miring-rule-id="4.2.3.d" 
+    solution-text="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
     severity="miring" />
     
-  <Rule errorMessage="For every consensus-sequence-block node, the child sequence node must have a length of (end - start)." 
-    miringRuleID="4.2.3.e" 
-    solutionText="Please check the sequence length against the start and end attributes."
+  <rule error-text="For every consensus-sequence-block node, the child sequence node must have a length of (end - start)." 
+    miring-rule-id="4.2.3.e" 
+    solution-text="Please check the sequence length against the start and end attributes."
     severity="miring" />
 
-  <Rule errorMessage="On a consensus-sequence-block node, the phasing-group attribute is deprecated." 
-    miringRuleID="4.2.4.b" 
-    solutionText="Please use phase-set instead." 
+  <rule error-text="On a consensus-sequence-block node, the phasing-group attribute is deprecated." 
+    miring-rule-id="4.2.4.b" 
+    solution-text="Please use phase-set instead." 
     severity="warning" />
     
-  <Rule errorMessage="A consensus-sequence-block with attribute continuity=true does not appear to be continuous" 
-    miringRuleID="4.2.7.b" 
-    solutionText="Any consensus-sequence-block node with continuity=true is expected to be continuous with the previous sibling node.  Start=End(previous).  The previous node will have the same reference-sequence-id and phase-set, if applicable." 
+  <rule error-text="A consensus-sequence-block with attribute continuity=true does not appear to be continuous" 
+    miring-rule-id="4.2.7.b" 
+    solution-text="Any consensus-sequence-block node with continuity=true is expected to be continuous with the previous sibling node.  Start=End(previous).  The previous node will have the same reference-sequence-id and phase-set, if applicable." 
     severity="miring" />
     
-  <Rule errorMessage="On a variant node, end attribute should be greater than or equal to the start attribute" 
-    miringRuleID="5.2.b" 
-    solutionText="The end attribute should be greater than or equal to the start attribute." 
+  <rule error-text="On a variant node, end attribute should be greater than or equal to the start attribute" 
+    miring-rule-id="5.2.b" 
+    solution-text="The end attribute should be greater than or equal to the start attribute." 
     severity="miring" />
     
-  <Rule errorMessage="The start attribute on a variant node should be greater than or equal to the start attribute"
-    miringRuleID="5.2.d"
-    solutionText="Verify that variant:start is greater than or equal to the start, and variant:end is less than or equal to the end attribute on the corresponding reference-sequence." 
+  <rule error-text="The start attribute on a variant node should be greater than or equal to the start attribute"
+    miring-rule-id="5.2.d"
+    solution-text="Verify that variant:start is greater than or equal to the start, and variant:end is less than or equal to the end attribute on the corresponding reference-sequence." 
     severity="miring" />
     
-  <Rule errorMessage="The end attribute on a variant node should be less than or equal to the end attribute"
-    miringRuleID="5.2.d"
-    solutionText="Verify that variant:start is greater than or equal to the start, and variant:end is less than or equal to the end attribute on the corresponding reference-sequence." 
+  <rule error-text="The end attribute on a variant node should be less than or equal to the end attribute"
+    miring-rule-id="5.2.d"
+    solution-text="Verify that variant:start is greater than or equal to the start, and variant:end is less than or equal to the end attribute on the corresponding reference-sequence." 
     severity="miring" />
     
-  <Rule errorMessage="The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants." 
-    miringRuleID="5.3.c" 
-    solutionText="IDs on variant nodes should start at 0, and represent every integer between 0:n-1." 
+  <rule error-text="The variant nodes under a single consensus-sequence-block must have id attributes that are integers ranging from 0:n-1, where n is the number of variants." 
+    miring-rule-id="5.3.c" 
+    solution-text="IDs on variant nodes should start at 0, and represent every integer between 0:n-1." 
     severity="miring" />
 
-</RuleTemplate>
+</rule-template>
 
 
