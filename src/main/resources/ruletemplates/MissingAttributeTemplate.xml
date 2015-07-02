@@ -22,143 +22,144 @@
 
  -->
  
-<RuleTemplate>
+<rule-template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../schema/RuleTemplate.xsd">
 
-  <Rule nodeName="reporting-center" 
-    attributeName="reporting-center-id" 
-    miringRuleID="1.2.b" 
+  <rule node-name="reporting-center" 
+    attribute-name="reporting-center-id" 
+    miring-rule-id="1.2.b" 
     severity="miring" />
     
-  <Rule nodeName="reporting-center" 
-    attributeName="reporting-center-context" 
-    miringRuleID="1.2.b" 
+  <rule node-name="reporting-center" 
+    attribute-name="reporting-center-context" 
+    miring-rule-id="1.2.b" 
     severity="miring" />
     
-  <Rule nodeName="sbt-ngs" 
-    attributeName="test-id" 
-    miringRuleID="1.3.a" 
+  <rule node-name="sbt-ngs" 
+    attribute-name="test-id" 
+    miring-rule-id="1.3.a" 
     severity="miring" 
-    solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
     
-  <Rule nodeName="sbt-ngs" 
-    attributeName="test-id-source" 
-    miringRuleID="1.3.a" 
+  <rule node-name="sbt-ngs" 
+    attribute-name="test-id-source" 
+    miring-rule-id="1.3.a" 
     severity="miring" 
-    solutionMessage="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
     
-  <Rule nodeName="raw-reads" 
-    attributeName="availability" 
-    miringRuleID="1.5.b" 
+  <rule node-name="raw-reads" 
+    attribute-name="availability" 
+    miring-rule-id="1.5.b" 
     severity="miring" />
   
-  <Rule nodeName="allele-assignment" 
-    attributeName="allele-db" 
-    miringRuleID="2.1.b" 
+  <rule node-name="allele-assignment" 
+    attribute-name="allele-db" 
+    miring-rule-id="2.1.b" 
     severity="miring" />
     
-  <Rule nodeName="allele-assignment" 
-    attributeName="allele-version" 
-    miringRuleID="2.1.c" 
+  <rule node-name="allele-assignment" 
+    attribute-name="allele-version" 
+    miring-rule-id="2.1.c" 
     severity="miring" />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="id" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="id" 
+    miring-rule-id="2.2.b" 
     severity="miring" />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="name" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="name" 
+    miring-rule-id="2.2.b" 
     severity="miring" />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="start" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="start" 
+    miring-rule-id="2.2.b" 
     severity="miring" />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="end" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="end" 
+    miring-rule-id="2.2.b" 
     severity="miring" />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="accession" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="accession" 
+    miring-rule-id="2.2.b" 
     severity="warning" 
-    solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+    solution-text="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
     
-  <Rule nodeName="reference-sequence" 
-    attributeName="uri" 
-    miringRuleID="2.2.b" 
+  <rule node-name="reference-sequence" 
+    attribute-name="uri" 
+    miring-rule-id="2.2.b" 
     severity="warning" 
-    solutionMessage="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
+    solution-text="accession and uri attributes are expected for unambiguous identification of the publicly hosted reference sequence.  Include them if they are available." />
 
-  <Rule nodeName="reference-database" 
-    attributeName="curated" 
-    miringRuleID="2.3.b" 
+  <rule node-name="reference-database" 
+    attribute-name="curated" 
+    miring-rule-id="2.3.b" 
     severity="miring" />
   
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="description" 
-    miringRuleID="4.2.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="description" 
+    miring-rule-id="4.2.a" 
     severity="miring" />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="reference-sequence-id" 
-    miringRuleID="4.2.2.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="reference-sequence-id" 
+    miring-rule-id="4.2.2.a" 
     severity="miring" />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="start" 
-    miringRuleID="4.2.3.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="start" 
+    miring-rule-id="4.2.3.a" 
     severity="miring" />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="end" 
-    miringRuleID="4.2.3.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="end" 
+    miring-rule-id="4.2.3.a" 
     severity="miring" />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="phase-set" 
-    miringRuleID="4.2.4.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="phase-set" 
+    miring-rule-id="4.2.4.a" 
     severity="warning" 
-    solutionMessage="Phasing information is not strictly required, this is just a warning." />
+    solution-text="Phasing information is not strictly required, this is just a warning." />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="expected-copy-number" 
-    miringRuleID="4.2.5.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="expected-copy-number" 
+    miring-rule-id="4.2.5.a" 
     severity="miring" />
     
-  <Rule nodeName="consensus-sequence-block" 
-    attributeName="continuity" 
-    miringRuleID="4.2.5.a" 
+  <rule node-name="consensus-sequence-block" 
+    attribute-name="continuity" 
+    miring-rule-id="4.2.5.a" 
     severity="miring" />
     
-  <Rule nodeName="variant" 
-    attributeName="id" 
-    miringRuleID="5.3.a" 
+  <rule node-name="variant" 
+    attribute-name="id" 
+    miring-rule-id="5.3.a" 
     severity="miring" />
     
-  <Rule nodeName="variant" 
-    attributeName="reference-bases" 
-    miringRuleID="5.4.a" 
+  <rule node-name="variant" 
+    attribute-name="reference-bases" 
+    miring-rule-id="5.4.a" 
     severity="miring" />
     
-  <Rule nodeName="variant" 
-    attributeName="alternate-bases" 
-    miringRuleID="5.5.a" 
+  <rule node-name="variant" 
+    attribute-name="alternate-bases" 
+    miring-rule-id="5.5.a" 
     severity="miring" />
     
-  <Rule nodeName="variant" 
-    attributeName="quality-score" 
-    miringRuleID="5.6.a" 
-    severity="miring" />"
+  <rule node-name="variant" 
+    attribute-name="quality-score" 
+    miring-rule-id="5.6.a" 
+    severity="miring" />
     
-  <Rule nodeName="variant" 
-    attributeName="filter" 
-    miringRuleID="5.7.a" 
+  <rule node-name="variant" 
+    attribute-name="filter" 
+    miring-rule-id="5.7.a" 
     severity="miring" />
 
-</RuleTemplate>
+</rule-template>
 
 

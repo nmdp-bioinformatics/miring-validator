@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 
+
+    MiringValidator  Semantic Validator for MIRING compliant HML
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
+
+    This library is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation; either version 3 of the License, or (at
+    your option) any later version.
+
+    This library is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; with out even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library;  if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.
+
+    > http://www.gnu.org/licenses/lgpl.html
+
+ -->
+ 
+<xs:schema attributeFormDefault="unqualified" 
+  elementFormDefault="qualified" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="rule-template">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="rule" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="miring-rule-id" use="required"/>
+                <xs:attribute type="xs:string" name="severity"       use="required"/>
+                <xs:attribute type="xs:string" name="error-text"  use="optional"/>
+                <xs:attribute type="xs:string" name="solution-text"  use="optional"/>
+                <xs:attribute type="xs:string" name="node-name"      use="optional"/>
+                <xs:attribute type="xs:string" name="attribute-name" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

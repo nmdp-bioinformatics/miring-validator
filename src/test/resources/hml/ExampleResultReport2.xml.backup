@@ -25,7 +25,8 @@
 <miring-report xmlns="http://schemas.nmdp.org/spec/miringreport"
    xmlns:mr="http://schemas.nmdp.org/spec/miringreport"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd">
+   xsi:schemaLocation="http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd"
+>
 
    <miring-compliant>false</miring-compliant>
    <hmlid extension="20150220.hml101.54.64" root="2.16.840.1.113883.3.1470"/>

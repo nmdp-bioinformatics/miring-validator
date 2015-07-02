@@ -61,16 +61,32 @@ public class ReportGenerator
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            /*docFactory.setNamespaceAware(true);   
+            docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
+            docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource", "../../../main/resources/schema/miringrpeort.xsd");*/
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
             //DOCUMENT
             Document doc = docBuilder.newDocument();
             
+            
             //MIRINGREPORT ROOT
-            Element rootElement = doc.createElement("MiringReport");
+            //Element rootElement = doc.createElement("miring-report");
+            Element rootElement = doc.createElementNS("http://schemas.nmdp.org/spec/miringreport","miring-report");
             doc.appendChild(rootElement);
             
             //NAMESPACES
+            //Element namespaceElement = doc.createElementNS("xmlns", "http://schemas.nmdp.org/spec/miringreport");
+            //element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:acme", "http://www.acme.com/schemas");
+            
+            //rootElement.setAttribute("xmlns", "http://schemas.nmdp.org/spec/miringreport");
+            
+            
+            rootElement.setAttribute("xmlns:mr", "http://schemas.nmdp.org/spec/miringreport");
+            rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            rootElement.setAttribute("xsi:schemaLocation", "http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd");
+            
+            
             /*URL namespaceURL = new URL("http://www.w3.org/2001/XMLSchema-instance");
             String namespace = "xmlns:xsi="+namespaceURL.toString();
             Element messages = doc.createElementNS(namespace, "messages");
@@ -82,21 +98,13 @@ public class ReportGenerator
             //doc.createElementNS("http://www.w3.org/2001/XMLSchema-instance", "xmlns:xsi");
             
             /*
-             * xmlns="http://schemas.nmdp.org/spec/hml/1.0.1" 
-     xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-     xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1 http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+             * <miring-report xmlns="http://schemas.nmdp.org/spec/miringreport"
+   xmlns:mr="http://schemas.nmdp.org/spec/miringreport"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd">
              */
 
-            //MIRINGCOMPLIANT ATTRIBUTE
-            Attr compliantAttr = doc.createAttribute("MiringCompliant");
-            compliantAttr.setValue(
-                (validationErrors == null)?"false"
-                :(validationErrors.length==0)?"true"
-                :(Utilities.isMiringCompliant(validationErrors))?"true"
-                :"false"
-            );
-            rootElement.setAttributeNode(compliantAttr);
+            addMiringCompliantNode(validationErrors, doc, rootElement);
             
             addHmlidElement(root, extension, doc, rootElement);
             
@@ -120,6 +128,19 @@ public class ReportGenerator
         //Oops, something went wrong.
         logger.error("Error during Miring Validation Report Generation.");
         return null;
+    }
+
+    private static void addMiringCompliantNode(ValidationResult[] validationErrors, Document doc, Element rootElement)
+    {
+        Element compliantElement = doc.createElement("miring-compliant");
+        compliantElement.setTextContent(
+            (validationErrors == null)?"false"
+            :(validationErrors.length==0)?"true"
+            :(Utilities.isMiringCompliant(validationErrors))?"true"
+            :"false"
+        );
+
+        rootElement.appendChild(compliantElement);
     }
 
     private static void addHmlidElement(String root, String extension, Document doc, Element rootElement)
@@ -177,21 +198,21 @@ public class ReportGenerator
 
                 if(doesSampleHaveMiringErrors(sampleID, validationErrors))
                 {
-                    currentSampleElement.setAttribute("MiringCompliant", "false");
+                    currentSampleElement.setAttribute("miring-compliant", "false");
                     numberBadSamples++;
                 }
                 else
                 {
-                    currentSampleElement.setAttribute("MiringCompliant", "true");
+                    currentSampleElement.setAttribute("miring-compliant", "true");
                     numberGoodSamples++;
                 }
 
                 samplesElement.appendChild(currentSampleElement);
             }
             
-            samplesElement.setAttribute("SampleCount", ("" + numberSampleIDs));
-            samplesElement.setAttribute("NoncompliantSampleCount", ("" + numberBadSamples));
-            samplesElement.setAttribute("CompliantSampleCount", ("" + numberGoodSamples));
+            samplesElement.setAttribute("sample-count", ("" + numberSampleIDs));
+            samplesElement.setAttribute("noncompliant-sample-count", ("" + numberBadSamples));
+            samplesElement.setAttribute("compliant-sample-count", ("" + numberGoodSamples));
             rootElement.appendChild(samplesElement);
         }
     }
@@ -206,7 +227,7 @@ public class ReportGenerator
 
         if(fatalErrors != null && fatalErrors.length > 0)
         {
-            Element fatalErrorsElement = doc.createElement("FatalValidationErrors");
+            Element fatalErrorsElement = doc.createElement("fatal-validation-errors");
             for(int i = 0; i < fatalErrors.length; i++)
             {
                 fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
@@ -215,7 +236,7 @@ public class ReportGenerator
         }
         if(miringErrors != null && miringErrors.length > 0)
         {
-            Element miringErrorsElement = doc.createElement("MiringValidationErrors");
+            Element miringErrorsElement = doc.createElement("miring-validation-errors");
             for(int i = 0; i < miringErrors.length; i++)
             {
                 miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
@@ -224,7 +245,7 @@ public class ReportGenerator
         }
         if(warnings != null && warnings.length > 0)
         {
-            Element warningsElement = doc.createElement("ValidationWarnings");
+            Element warningsElement = doc.createElement("validation-warnings");
             for(int i = 0; i < warnings.length; i++)
             {
                 warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
@@ -233,7 +254,7 @@ public class ReportGenerator
         }
         if(info != null && info.length > 0)
         {
-            Element infoElement = doc.createElement("ValidationInfo");
+            Element infoElement = doc.createElement("validation-info");
             for(int i = 0; i < info.length; i++)
             {
                 infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
@@ -365,10 +386,10 @@ public class ReportGenerator
     private static Element generateValidationErrorNode(Document doc, ValidationResult validationError)
     {
         //Change a validation error into an XML Node to put in our report.
-        Element invMiringElement = doc.createElement("MiringResult");
+        Element invMiringElement = doc.createElement("miring-result");
         
         //miringElementID
-        Attr miringElementAttr = doc.createAttribute("miringRuleID");
+        Attr miringElementAttr = doc.createAttribute("miring-rule-id");
         miringElementAttr.setValue(validationError.getMiringRule());
         invMiringElement.setAttributeNode(miringElementAttr);
         
@@ -382,7 +403,7 @@ public class ReportGenerator
         invMiringElement.setAttributeNode(fatalAttr);
         
         //sampleID
-        Attr sampleIDAttr = doc.createAttribute("sampleID");
+        Attr sampleIDAttr = doc.createAttribute("sample-id");
         if(validationError.getSampleID() != null && validationError.getSampleID().length() > 0)
         {
             sampleIDAttr.setValue(validationError.getSampleID());
