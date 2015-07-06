@@ -51,7 +51,7 @@ public class SchemaValidator
     private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
-    public static List<String> sampleIDs;
+    public static List<Sample> samples;
     //missingNodeTemplates and missingAttributeTemplates are loaded from xml template files.
     //They define what information (rule id, and additional info, etc.) is included in error messages
     //Included info can be specified on a per-rule basis
@@ -69,7 +69,7 @@ public class SchemaValidator
     {
         logger.debug("Starting a schema validation");
         validationErrors = new ArrayList<ValidationResult>();
-        sampleIDs = new ArrayList<String>();
+        samples = new ArrayList<Sample>();
 
         try 
         {
@@ -142,7 +142,8 @@ public class SchemaValidator
                 {
                     //Every time we start analyzing a sample, store it's ID, for reporting purposes
                     String sampleID = attributes.getValue("id");
-                    sampleIDs.add(sampleID);
+                    String centerCode = attributes.getValue("center-code");
+                    samples.add(new Sample(sampleID,centerCode));
                 }
                 
                 if(xmlRootNode==null)

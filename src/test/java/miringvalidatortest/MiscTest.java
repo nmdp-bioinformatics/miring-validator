@@ -40,15 +40,37 @@ public class MiscTest
 
     @Test
     public void testReportSchema()
-    {
+    {        
+        //Try against a report I have on file
         String xml = Utilities.readXmlResource("/hml/ExampleResultReport.xml");
+        //System.out.println("Validating these results against the report schema:");
+        //System.out.println(xml);
         assertTrue(xml.length() > 1);
         ValidationResult[] errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
         assertTrue(errors.length == 0 );
         String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
         assertTrue(errorReport.length() > 0 );
-       // System.out.println(errorReport);
+        //System.out.println("Report Schema Results:");
+        //System.out.println(errorReport);
+        
 
+        //Try against a generated report
+        String hml = Utilities.readXmlResource("/hml/HMLWithCustomNamespace.xml");
+        assertTrue(hml.length()>0);
+
+        String results = new MiringValidator(hml).validate();
+        
+        //System.out.println("Validating these results against the report schema:");
+        //System.out.println(results);        
+
+        xml = results;
+        assertTrue(xml.length() > 1);
+        errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
+        assertTrue(errors.length == 0 );
+        errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
+        assertTrue(errorReport.length() > 0 );
+        //System.out.println("Report Schema Results:");
+        //System.out.println(errorReport);
     }
 
     @Test
@@ -72,10 +94,12 @@ public class MiscTest
 
         String results;
         results = new MiringValidator(xml).validate();
-        System.out.println(results);
+        //System.out.println(results);
         
         assertTrue(results.length() > 1);
     }
+    
+    //TODO: Make a test for running my curl command.   Might not work because server is supposed to be running.  Only one way to find out.
     
     
     /*
