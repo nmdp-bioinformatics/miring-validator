@@ -22,8 +22,11 @@
 */
 package main.java.miringvalidator;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +48,8 @@ public class ReportGenerator
 {
     private static final Logger logger = LogManager.getLogger(ReportGenerator.class);
     
+    public static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    
     /**
      * Generate a Miring Results Report
      *
@@ -53,7 +58,7 @@ public class ReportGenerator
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties, String[] sampleIDs)
+    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties, Sample[] sampleIDs)
     {
         validationErrors = assignSampleIDs(validationErrors,sampleIDs);
         validationErrors = combineSimilarErrors(validationErrors);
@@ -66,24 +71,25 @@ public class ReportGenerator
             //DOCUMENT
             Document doc = docBuilder.newDocument();
             
-            
             //MIRINGREPORT ROOT
             Element rootElement = doc.createElement("miring-report");
+            String currentDate = (dateFormat.format(new Date()));
+            rootElement.setAttribute("timestamp", currentDate);
             doc.appendChild(rootElement);
             
             //NAMESPACES
             rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
             rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "../../../main/resources/schema/miringreport.xsd");
 
-            addMiringCompliantNode(validationErrors, doc, rootElement);
+            addMiringCompliantNode(validationErrors, doc);
             
-            addHmlidElement(root, extension, doc, rootElement);
+            addHmlidElement(root, extension, doc);
             
-            addSampleElements(validationErrors, sampleIDs, doc, rootElement);
+            addSampleElements(validationErrors, sampleIDs, doc);
             
-            addPropertyElements(properties, doc, rootElement);
+            addPropertyElements(properties, doc);
             
-            addValidationResultElements(validationErrors, doc, rootElement);
+            addValidationResultElements(validationErrors, doc);
 
             return(Utilities.getStringFromDoc(doc));
         }
@@ -101,7 +107,7 @@ public class ReportGenerator
         return null;
     }
 
-    private static void addMiringCompliantNode(ValidationResult[] validationErrors, Document doc, Element rootElement)
+    private static void addMiringCompliantNode(ValidationResult[] validationErrors, Document doc)
     {
         Element compliantElement = doc.createElement("miring-compliant");
         compliantElement.setTextContent(
@@ -111,10 +117,10 @@ public class ReportGenerator
             :"false"
         );
 
-        rootElement.appendChild(compliantElement);
+        doc.getDocumentElement().appendChild(compliantElement);
     }
 
-    private static void addHmlidElement(String root, String extension, Document doc, Element rootElement)
+    private static void addHmlidElement(String root, String extension, Document doc)
     {
         Element hmlidElement = doc.createElement("hmlid");
         if(root != null && root.length()>0)
@@ -125,10 +131,10 @@ public class ReportGenerator
         {
             hmlidElement.setAttribute("extension", extension);
         }
-        rootElement.appendChild(hmlidElement);
+        doc.getDocumentElement().appendChild(hmlidElement);
     }
 
-    private static void addPropertyElements(HashMap<String, String> properties, Document doc, Element rootElement)
+    private static void addPropertyElements(HashMap<String, String> properties, Document doc)
     {
         if(properties != null)
         {
@@ -145,13 +151,12 @@ public class ReportGenerator
                 property.setAttribute("name", name);
                 property.setAttribute("value",value);
                 
-                rootElement.appendChild(property);
+                doc.getDocumentElement().appendChild(property);
             }
         }
     }
 
-    private static void addSampleElements(ValidationResult[] validationErrors, String[] sampleIDs, Document doc,
-            Element rootElement)
+    private static void addSampleElements(ValidationResult[] validationErrors, Sample[] sampleIDs, Document doc)
     {
         if(sampleIDs != null && sampleIDs.length > 0)
         {
@@ -160,12 +165,17 @@ public class ReportGenerator
             int numberGoodSamples = 0;
             Element samplesElement = doc.createElement("samples");
 
-            
             for(int i = 0; i < sampleIDs.length; i++)
             {
                 Element currentSampleElement = doc.createElement("sample");
-                String sampleID = sampleIDs[i];
+                String sampleID = sampleIDs[i].id;
+                String centerCode = sampleIDs[i].centerCode;
+                
                 currentSampleElement.setAttribute("id",sampleID);
+                if(!(centerCode==null) && !(centerCode.isEmpty()))
+                {
+                    currentSampleElement.setAttribute("center-code",centerCode);
+                }
 
                 if(doesSampleHaveMiringErrors(sampleID, validationErrors))
                 {
@@ -184,12 +194,12 @@ public class ReportGenerator
             samplesElement.setAttribute("sample-count", ("" + numberSampleIDs));
             samplesElement.setAttribute("noncompliant-sample-count", ("" + numberBadSamples));
             samplesElement.setAttribute("compliant-sample-count", ("" + numberGoodSamples));
-            rootElement.appendChild(samplesElement);
+            
+            doc.getDocumentElement().appendChild(samplesElement);
         }
     }
 
-    private static void addValidationResultElements(ValidationResult[] validationErrors, Document doc,
-            Element rootElement)
+    private static void addValidationResultElements(ValidationResult[] validationErrors, Document doc)
     {
         ValidationResult[] fatalErrors = getErrorsBySeverity(validationErrors,Severity.FATAL);
         ValidationResult[] miringErrors = getErrorsBySeverity(validationErrors,Severity.MIRING);
@@ -203,7 +213,7 @@ public class ReportGenerator
             {
                 fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
             }
-            rootElement.appendChild(fatalErrorsElement);
+            doc.getDocumentElement().appendChild(fatalErrorsElement);
         }
         if(miringErrors != null && miringErrors.length > 0)
         {
@@ -212,7 +222,7 @@ public class ReportGenerator
             {
                 miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
             }
-            rootElement.appendChild(miringErrorsElement);
+            doc.getDocumentElement().appendChild(miringErrorsElement);
         }
         if(warnings != null && warnings.length > 0)
         {
@@ -221,7 +231,7 @@ public class ReportGenerator
             {
                 warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
             }
-            rootElement.appendChild(warningsElement);
+            doc.getDocumentElement().appendChild(warningsElement);
         }
         if(info != null && info.length > 0)
         {
@@ -230,7 +240,7 @@ public class ReportGenerator
             {
                 infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
             }
-            rootElement.appendChild(infoElement);
+            doc.getDocumentElement().appendChild(infoElement);
         }
     }
     
@@ -257,7 +267,7 @@ public class ReportGenerator
         return false;
     }
 
-    private static ValidationResult[] assignSampleIDs(ValidationResult[] validationErrors, String[] sampleIDs)
+    private static ValidationResult[] assignSampleIDs(ValidationResult[] validationErrors, Sample[] sampleIDs)
     {
         try
         {

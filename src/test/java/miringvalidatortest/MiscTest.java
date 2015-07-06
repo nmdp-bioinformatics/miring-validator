@@ -99,6 +99,8 @@ public class MiscTest
         assertTrue(results.length() > 1);
     }
     
+    //TODO: Make a test for running my curl command.   Might not work because server is supposed to be running.  Only one way to find out.
+    
     
     /*
      * TODO: Make a test for xml with text afterwards.

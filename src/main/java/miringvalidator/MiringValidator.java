@@ -36,7 +36,7 @@ public class MiringValidator
     String report;
     ValidationResult[] tier1ValidationErrors;
     ValidationResult[] tier2ValidationErrors;
-    String[] sampleIDs;
+    Sample[] sampleIDs;
     
     
     /**
@@ -71,7 +71,7 @@ public class MiringValidator
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");
         tier1ValidationErrors = SchemaValidator.validate(xml, "/schema/MiringTier1.xsd");
-        sampleIDs = SchemaValidator.sampleIDs.toArray(new String[SchemaValidator.sampleIDs.size()]);
+        sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
         
         //Tier 2
         //Skip it if we already know it is bad.  Maybe?  Do we want to schematron automatically?

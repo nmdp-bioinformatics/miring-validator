@@ -614,7 +614,7 @@ public class Utilities
         }
     }
     
-    public static String getSampleID(String xPath, String[] sampleIDs)
+    public static String getSampleID(String xPath, Sample[] sampleIDs)
     {
         String sampleID;
         
@@ -633,7 +633,7 @@ public class Utilities
                 tempSampleInd = tempSampleInd.substring(0, tempSampleInd.indexOf("]"));
                 int sampleIndex = Integer.parseInt(tempSampleInd);
                 
-                sampleID = sampleIDs[sampleIndex-1];
+                sampleID = sampleIDs[sampleIndex-1].id;
             }
             else
             {
