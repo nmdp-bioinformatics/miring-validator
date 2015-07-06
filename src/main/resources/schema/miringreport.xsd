@@ -22,9 +22,7 @@
 
  -->
 
-<xs:schema 
-  targetNamespace="http://schemas.nmdp.org/spec/miringreport"
-  xmlns:mr="http://schemas.nmdp.org/spec/miringreport"
+<xs:schema
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1"
   attributeFormDefault="unqualified" 
@@ -41,12 +39,12 @@
 
         <xs:element type="xs:string" name="miring-compliant" minOccurs="1" maxOccurs="1" />
         <xs:element name="hmlid" type="hml:hmlid" minOccurs="0" maxOccurs="1" />
-        <xs:element name="samples" type="mr:samples" minOccurs="0" maxOccurs="1" />
+        <xs:element name="samples" type="samples" minOccurs="0" maxOccurs="1" />
         <xs:element name="property" type="hml:property" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="fatal-validation-errors" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
-        <xs:element name="miring-validation-errors" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
-        <xs:element name="validation-warnings" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
-        <xs:element name="validation-info" type="mr:miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="fatal-validation-errors" type="miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="miring-validation-errors" type="miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="validation-warnings" type="miring-results" minOccurs="0" maxOccurs="1" />
+        <xs:element name="validation-info" type="miring-results" minOccurs="0" maxOccurs="1" />
 
       </xs:sequence>
     </xs:complexType>
@@ -58,7 +56,7 @@
         A set of Miring Results
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="miring-result" type="mr:miring-result" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="miring-result" type="miring-result" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
@@ -83,7 +81,7 @@
         A set of Samples
     </xs:documentation></xs:annotation>
     <xs:sequence>
-      <xs:element name="sample" type="mr:sample" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="sample" type="sample" maxOccurs="unbounded" minOccurs="0" />
     </xs:sequence>
     <xs:attribute type="xs:byte" name="sample-count" use="required"/>
     <xs:attribute type="xs:byte" name="compliant-sample-count" use="required"/>
