@@ -26,34 +26,71 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:hml="http://schemas.nmdp.org/spec/hml/1.0.1"
   attributeFormDefault="unqualified" 
-  elementFormDefault="qualified" 
-  >
+  elementFormDefault="qualified" >
   
   <xs:import namespace="http://schemas.nmdp.org/spec/hml/1.0.1" schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd" />
   
+  <!-- MIRING-REPORT document root -->
   <xs:element name="miring-report">
-  
     <xs:complexType>
+      <xs:annotation><xs:documentation> 
+    
+        Represents a single result from the MIRING Validation.  
+        A miring ID and severity are required, along with a description of the error.  
+        Solution, xpath, and sample-id are supplementary information for resolving the MIRING problem
+
+        Children:
+        ---------
+        - miring-compliant:          (required, qty: 1)
+            Is the document miring compliant?
+            "false" if the document contains any results with severity "fatal" or "miring", "true" otherwise.
+        - hmlid:                     (required, qty: 1)
+            The required HMLID element is copied from the validated HML.
+        - samples:                   (required, qty: 1)
+            A summary of the validated document's sample elements.
+        - property:                  (optional, qty: 0 or more)
+            Any property nodes that are children to the root hml node on the validated document are copied here.
+        - fatal-validation-errors:   (optional, qty: 1)
+            A collection of all severity="fatal" MIRING validation results
+        - miring-validation-errors:  (optional, qty: 1)
+            A collection of all severity="miring" MIRING validation results
+        - validation-warnings:       (optional, qty: 1)
+            A collection of all severity="warning" MIRING validation results
+        - validation-info:           (optional, qty: 1)
+            A collection of all severity="info" MIRING validation results
+
+        Attributes:
+        -----------
+        - timestamp:                 (required)
+            The exact date and time the report was generated.  Most likely it is in the format "MM/dd/yyyy HH:mm:ss"
+      
+      </xs:documentation></xs:annotation>
     
       <xs:sequence>
-
         <xs:element type="xs:string" name="miring-compliant" minOccurs="1" maxOccurs="1" />
-        <xs:element name="hmlid" type="hml:hmlid" minOccurs="0" maxOccurs="1" />
-        <xs:element name="samples" type="samples" minOccurs="0" maxOccurs="1" />
+        <xs:element name="hmlid" type="hml:hmlid" minOccurs="1" maxOccurs="1" />
+        <xs:element name="samples" type="samples" minOccurs="1" maxOccurs="1" />
         <xs:element name="property" type="hml:property" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="fatal-validation-errors" type="miring-results" minOccurs="0" maxOccurs="1" />
         <xs:element name="miring-validation-errors" type="miring-results" minOccurs="0" maxOccurs="1" />
         <xs:element name="validation-warnings" type="miring-results" minOccurs="0" maxOccurs="1" />
         <xs:element name="validation-info" type="miring-results" minOccurs="0" maxOccurs="1" />
-
       </xs:sequence>
+      <xs:attribute type="xs:string" name="timestamp" use="required"/>
     </xs:complexType>
   </xs:element>
   
   <!-- MIRING-RESULTS -->
   <xs:complexType name="miring-results">
-    <xs:annotation><xs:documentation>
-        A set of Miring Results
+    <xs:annotation><xs:documentation> 
+
+      A simple wrapper for a set of miring-result nodes.
+
+      Children:
+      ---------
+      - miring-result:          (optional, qty: 0 or more)
+          Zero or many miring-result nodes
+
     </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="miring-result" type="miring-result" minOccurs="0" maxOccurs="unbounded" />
@@ -62,8 +99,31 @@
 
   <!-- MIRING-RESULT -->
   <xs:complexType name="miring-result">
-    <xs:annotation><xs:documentation>
-        A Miring Result
+    <xs:annotation><xs:documentation> 
+    
+      Represents a single result from the MIRING Validation.  
+      A miring ID and severity are required, along with a description of the error.  
+      Solution, xpath, and sample-id are supplementary information for resolving the MIRING problem
+
+      Children:
+      ---------
+      - description:      (required, qty: 1)
+          A description of the problem or result
+      - solution:         (optional, qty: 0 or 1)
+          A suggestion of a solution to the miring violation.
+      - xpath             (optional, qty: 0 or more)
+          An xpath pointing to the location of result.
+
+      Attributes:
+      -----------
+      - miring-rule-id:   (required)
+          An identifier for what specific MIRING requirement is being violated
+      - sample-id:        (optional)
+          If this result is specific to a sample from the validated hml, it's id is included here.
+      - severity          (required)
+          The severity of a miring-result can be one of: fatal, miring, warning, info
+          Detailed descriptions are given in the "severity" type definition
+      
     </xs:documentation></xs:annotation>
     <xs:sequence>
         <xs:element type="xs:string" name="description" minOccurs="1" maxOccurs="1"/>
@@ -71,40 +131,118 @@
         <xs:element type="xs:string" name="xpath" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute type="xs:string" name="miring-rule-id" use="required"/>
-    <xs:attribute type="xs:string" name="sample-id" use="optional"/>
-    <xs:attribute type="xs:string" name="severity" use="required"/>
+    <xs:attribute type="sample-id" name="sample-id" use="optional"/>    
+    <xs:attribute type="severity" name="severity" use="required"/>
+
   </xs:complexType>
 
   <!-- SAMPLES -->
   <xs:complexType name="samples">
-    <xs:annotation><xs:documentation>
-        A set of Samples
+    <xs:annotation><xs:documentation> 
+    
+      A wrapper for a set of sample nodes.  The attributes include summary information about the analyzed samples
+
+      Children:
+      ---------
+      - sample:                    (required, qty: 1)
+          A sample results node, representing a sample element form the validated HML document
+
+      Attributes:
+      -----------
+      - sample_count:              (required)
+          The number of sample elements found in the validated HML document
+      - compliant-sample-count:    (required)
+          The number of sample elements found to be MIRING compliant
+      - noncompliant-sample-count  (required)
+          The number of sample elements found to be MIRING noncompliant
+
+      
     </xs:documentation></xs:annotation>
     <xs:sequence>
       <xs:element name="sample" type="sample" maxOccurs="unbounded" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute type="xs:byte" name="sample-count" use="required"/>
-    <xs:attribute type="xs:byte" name="compliant-sample-count" use="required"/>
-    <xs:attribute type="xs:byte" name="noncompliant-sample-count" use="required"/>
+    <xs:attribute type="xs:int" name="sample-count" use="required"/>
+    <xs:attribute type="xs:int" name="compliant-sample-count" use="required"/>
+    <xs:attribute type="xs:int" name="noncompliant-sample-count" use="required"/>
   </xs:complexType>
 
   <!-- SAMPLE -->
   <xs:complexType name="sample">
-    <xs:annotation><xs:documentation>
-        Results regarding a sample from the source XML.
+    <xs:annotation><xs:documentation> 
+    
+      Represents a single sample from the validated HML document.   
+
+      Attributes:
+      -----------
+      - id:               (required)
+          A sample identifier.  This should be a copy of the sample:id from the validated HML.
+      - center-code:      (optional)
+          If available, the sample:center-code will be copied to the report.
+      - miring-compliant  (required)
+          A boolean, representing whether this individual sample is MIRING compliant.
+          A single sample-specific miring-result element, with a severity of "fatal" or "miring",
+          (but not "warning" or "info")
+          will result in a false, otherwise true.
+
+      Data:
+      -----
+      - resource in GL String representation (string, required)
+      
     </xs:documentation></xs:annotation>
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="xs:boolean" name="miring-compliant" use="required"/>
-        <xs:attribute name="id" use="optional">
-          <xs:simpleType>
-             <xs:restriction base="xs:string" >
-               <xs:minLength value="1" />
-             </xs:restriction>
-          </xs:simpleType>
-        </xs:attribute>
+        <xs:attribute name="id" use="required" type="sample-id" />
+        <xs:attribute name="center-code" use="optional" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  
+  <!-- SEVERITY -->
+  <xs:simpleType name="severity">  
+    <xs:annotation><xs:documentation> 
+    
+      A type representing the severity of a miring-result node.  One of four possible severities.
+
+      Data:
+      -----
+      - fatal
+          A fatal result is one in which validation cannot continue.  Most likely the document is not valid XML or HML.
+          Any fatal results will set the document's miring-compliant flag to false
+      - miring
+          A miring result is a violation of one or more MIRING rules.
+          Any miring results will set the document's miring-compliant flag to false
+      - warning
+          A warning to the user.  It is not a direct violation, but the HML supplier should note the warning to ensure their data is valid.
+          A warning result will not invalidate the document.
+      - info
+          Information supplied to the user.  It may or may not be helpful.  No action is required.
+          A info result will not invalidate the document.
+      
+    </xs:documentation></xs:annotation>
+  <xs:restriction base="xs:string">
+      <xs:enumeration value="fatal" />
+      <xs:enumeration value="miring" />
+      <xs:enumeration value="warning" />
+      <xs:enumeration value="info" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- SAMPLE-ID -->
+  <xs:simpleType name="sample-id">
+      <xs:annotation><xs:documentation> 
+    
+      An ID to identify a sample.  This attribute is required in HML, and is copied to the report for each sample.
+      In HML Spec, a sample ID has no uniqueness constraints, and therefore should not be expected to be unique here.
+
+      Data:
+      -----
+      - A sample ID, copied from the validated HML document.
+      
+    </xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string" >
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
 
 </xs:schema>

@@ -22,15 +22,13 @@
 
  -->
 
-<miring-report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="../../../main/resources/schema/miringreport.xsd" >
-
+<miring-report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" timestamp="07/06/2015 16:40:00" xsi:noNamespaceSchemaLocation="../../../main/resources/schema/miringreport.xsd">
    <miring-compliant>false</miring-compliant>
    <hmlid extension="20150220.hml101.54.64" root="2.16.840.1.113883.3.1470"/>
    <samples compliant-sample-count="0" noncompliant-sample-count="3" sample-count="3">
-      <sample id="1244-0040-9" miring-compliant="false"/>
-      <sample id="1284-7136-4" miring-compliant="false"/>
-      <sample id="1431-7653-5" miring-compliant="false"/>
+      <sample center-code="001" id="1244-0040-9" miring-compliant="false"/>
+      <sample center-code="001" id="1284-7136-4" miring-compliant="false"/>
+      <sample center-code="001" id="1431-7653-5" miring-compliant="false"/>
    </samples>
    <property name="GeneratedBy" value="org.nmdp.b2b.hml.service.HMLGatewayService"/>
    <property name="SampleCount" value="3"/>
