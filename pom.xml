@@ -7,6 +7,7 @@
   
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <!-- <testSourceDirectory>src/test</testSourceDirectory>-->
     <pluginManagement>
     <plugins>
 	      <plugin>
@@ -93,7 +94,14 @@
     	<groupId>junit</groupId>
     	<artifactId>junit</artifactId>
     	<version>4.12</version>
-    	<scope>test</scope>
+    	<!-- 
+    	It does seem like junit should be in test scope, but when I do an mvn clean install,
+    	all the tests cannot find junit jar and build fails.  
+    	
+    	Probably a graceful way to handle this, maybe scope can be install or something
+    	for now I'll just always forget scope
+    	<scope>test</scope> 
+    	-->
     </dependency>
   </dependencies>  
 </project>

@@ -61,9 +61,6 @@ public class ReportGenerator
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            /*docFactory.setNamespaceAware(true);   
-            docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-            docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource", "../../../main/resources/schema/miringrpeort.xsd");*/
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
             //DOCUMENT
@@ -71,38 +68,12 @@ public class ReportGenerator
             
             
             //MIRINGREPORT ROOT
-            //Element rootElement = doc.createElement("miring-report");
-            Element rootElement = doc.createElementNS("http://schemas.nmdp.org/spec/miringreport","miring-report");
+            Element rootElement = doc.createElement("miring-report");
             doc.appendChild(rootElement);
             
             //NAMESPACES
-            //Element namespaceElement = doc.createElementNS("xmlns", "http://schemas.nmdp.org/spec/miringreport");
-            //element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:acme", "http://www.acme.com/schemas");
-            
-            //rootElement.setAttribute("xmlns", "http://schemas.nmdp.org/spec/miringreport");
-            
-            
-            rootElement.setAttribute("xmlns:mr", "http://schemas.nmdp.org/spec/miringreport");
             rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            rootElement.setAttribute("xsi:schemaLocation", "http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd");
-            
-            
-            /*URL namespaceURL = new URL("http://www.w3.org/2001/XMLSchema-instance");
-            String namespace = "xmlns:xsi="+namespaceURL.toString();
-            Element messages = doc.createElementNS(namespace, "messages");
-            doc.appendChild(messages);*/
-            //doc.createElementNS("http://schemas.nmdp.org/miringreport", "xmlns");
-            
-            //doc.createElementNS("http://schemas.nmdp.org/miringreport ../schemas/miringreport.xsd", "schemaLocation");
-            //doc.createElementNS("http://www.w3.org/2001/XMLSchema-instance", "xmlns:xsi");
-            //doc.createElementNS("http://www.w3.org/2001/XMLSchema-instance", "xmlns:xsi");
-            
-            /*
-             * <miring-report xmlns="http://schemas.nmdp.org/spec/miringreport"
-   xmlns:mr="http://schemas.nmdp.org/spec/miringreport"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://schemas.nmdp.org/spec/miringreport ../../../main/resources/schema/miringreport.xsd">
-             */
+            rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "../../../main/resources/schema/miringreport.xsd");
 
             addMiringCompliantNode(validationErrors, doc, rootElement);
             
