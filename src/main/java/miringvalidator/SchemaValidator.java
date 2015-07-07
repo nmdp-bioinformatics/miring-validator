@@ -292,11 +292,11 @@ public class SchemaValidator
                 ve.setMiringRule("?");
             }
 
-            if(xmlCurrentNode != null)
+            /*if(xmlCurrentNode != null)
             {
                 String xPath = xmlCurrentNode.generateXpath();
                 ve.addXPath(xPath);
-            }
+            }*/
             Utilities.addValidationError(validationErrors, ve);
         }
 
@@ -350,6 +350,25 @@ public class SchemaValidator
             {
                 logger.error("Exception during handleMissingAttribute: " + e);
             }
+            
+            String xPath = xmlCurrentNode.generateXpath();
+            //For some reason missing attribute exceptions are thrown BEFORE the parser hits the startElement method for the parent node.  
+            //startElement is hit AFTER the attributes for the node are checked
+            //So right now, the parent node isn't contained in the xmlCurrentNode structure.  We need to add the most recent parent to this xpath.            
+            int nodeIndex = 1;
+            for(int i = 0; i < xmlCurrentNode.childrenNodes.size(); i++)
+            {
+                SimpleXmlModel currentNode = xmlCurrentNode.childrenNodes.get(i);
+                if(currentNode.nodeName.equals(nodeName))
+                {
+                    //If the parent has other children, then this one's not the first.
+                    nodeIndex++;
+                }
+            }
+            
+            xPath = xPath + "/" + nodeName + "[" + nodeIndex + "]";
+            ve.addXPath(xPath);
+            
             return ve;
         }
 
@@ -408,6 +427,9 @@ public class SchemaValidator
             {
                 logger.error("Exception during handleMissingNode: " + e);
             }
+            
+            String xPath = xmlCurrentNode.generateXpath();
+            ve.addXPath(xPath);
 
             return ve;
         }
