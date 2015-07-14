@@ -36,11 +36,11 @@
        <directory>src/main/resources</directory>
      </resource>
      <resource>
-       <directory>src</directory>
-        <includes>
+        <directory>src</directory>
+        <!-- <includes>
           <include>log4j.properties</include>
-        </includes>
-     </resource>
+        </includes>  -->
+     </resource> 
    </resources>
   </build>
 

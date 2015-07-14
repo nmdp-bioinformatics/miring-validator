@@ -51,6 +51,7 @@ public class MiringValidatorService
     public String validateMiring(@FormParam("xml") String xml)
     {
         logger.debug( "Received web service call.");
+        logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
         if(xml == null || xml.length() == 0)
         {
