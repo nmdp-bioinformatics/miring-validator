@@ -50,12 +50,20 @@ public class MiringValidatorService
     @Produces("application/xml")
     public String validateMiring(@FormParam("xml") String xml)
     {
+        System.out.println("Web Service Call Recieved.  ");
+        //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
         logger.debug( "Received web service call.");
+        logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
-        if(xml == null || xml.length() == 0)
+        if(xml == null)
         {
-            logger.error("XML is Null or Empty.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null,null);
+            logger.error("XML is Null.");
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL)}, null, null,null,null);
+        }
+        else if(xml.length() == 0)
+        {
+            logger.error("XML is Empty.");
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL)}, null, null,null,null);
         }
         else
         {
