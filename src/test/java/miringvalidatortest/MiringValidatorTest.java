@@ -27,13 +27,13 @@ import main.java.miringvalidator.MiringValidator;
 import main.java.miringvalidator.SchemaValidator;
 import main.java.miringvalidator.Utilities;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 public class MiringValidatorTest
 {
-    private static final Logger logger = LogManager.getLogger(MiringValidatorTest.class);
+    Logger logger = LoggerFactory.getLogger(MiringValidatorTest.class);
 
     @Test
     public void testMiringValidator()

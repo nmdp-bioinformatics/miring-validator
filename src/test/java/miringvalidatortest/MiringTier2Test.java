@@ -29,13 +29,13 @@ import main.java.miringvalidator.SchematronValidator;
 import main.java.miringvalidator.Utilities;
 import main.java.miringvalidator.ValidationResult;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 public class MiringTier2Test
 {
-    private static final Logger logger = LogManager.getLogger(MiringTier2Test.class);
+    Logger logger = LoggerFactory.getLogger(MiringTier2Test.class);
 
     @Test
     public void testMiringElement1Tier2()
