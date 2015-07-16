@@ -32,8 +32,8 @@ import java.net.URLClassLoader;
 import main.java.miringvalidator.SchematronValidator;
 import main.java.miringvalidator.Utilities;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -41,7 +41,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class UtilsTest
 {
-    private static final Logger logger = LogManager.getLogger(UtilsTest.class);
+    Logger logger = LoggerFactory.getLogger(UtilsTest.class);
 
     @Test
     public void testGetAttributes() 

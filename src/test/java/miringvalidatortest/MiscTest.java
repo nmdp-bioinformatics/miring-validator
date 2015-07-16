@@ -30,13 +30,13 @@ import main.java.miringvalidator.SchemaValidator;
 import main.java.miringvalidator.Utilities;
 import main.java.miringvalidator.ValidationResult;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 public class MiscTest
 {
-    private static final Logger logger = LogManager.getLogger(MiscTest.class);
+    Logger logger = LoggerFactory.getLogger(MiscTest.class);
 
     @Test
     public void testReportSchema()

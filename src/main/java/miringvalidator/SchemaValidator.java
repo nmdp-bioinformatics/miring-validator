@@ -34,8 +34,8 @@ import javax.xml.validation.*;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
@@ -45,12 +45,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+
+/** 
+ * SchemaValidator is a class used to validate an XML document against an XML Schema.
+ * 
+ * The validation is performed by an org.xml.sax parser.  The validation logic is handled by
+ * the subclass, MiringValidationContentHandler.
+*/
 public class SchemaValidator
 {
-    private static final Logger logger = LogManager.getLogger(SchemaValidator.class);
+    static Logger logger = LoggerFactory.getLogger(SchemaValidator.class);
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
     public static List<Sample> samples;
+    
     //missingNodeTemplates and missingAttributeTemplates are loaded from xml template files.
     //They define what information (rule id, and additional info, etc.) is included in error messages
     //Included info can be specified on a per-rule basis
@@ -99,10 +107,9 @@ public class SchemaValidator
         }
         catch (Exception e)
         {
-            logger.error("Exception during schema validation: " + e);
+            logger.error("Exception during schema validation.", e);
         }
         
-        //Return results
         if(validationErrors.size() > 0)
         {
             //List -> Array
@@ -118,12 +125,20 @@ public class SchemaValidator
         }
     }
 
-    //This is a subclass of DefaultHandler, which is full of do-nothing methods
-    //that we can override.  I'm taking advantage of startElement as well as error methods
+    /** 
+     * MiringValidationContentHandler is a subclass of SchemaValidator, which is responsible for handling 
+     * parse exceptions, and performing Miring Specific logic for determining Miring Results.
+     * 
+     * The methods in this class are overrides of DefaultHandler, which I extend to provide validation logic.
+     * 
+     * The startElement and endElement methods are used to construct the SimpleXmlModel for the document.
+     * 
+     * Parser exceptions are interpreted and translated into MIRING ValidationResults.
+    */
     private static class MiringValidationContentHandler extends DefaultHandler 
     {    
-        //xmlRootNode represents the root node of the xml document.
-        //A skeleton representation of the document is being built as parsing happens
+        //xmlRootNode represents the root node of the xml document, which is a
+        //skeleton representation of the document, built recursively during the sax parse
         //This SimpleXmlModel is used to generate an xpath on the report
         public static SimpleXmlModel xmlRootNode;
         public static SimpleXmlModel xmlCurrentNode;
@@ -162,7 +177,7 @@ public class SchemaValidator
             }
             catch(Exception e)
             {
-                logger.error("Exception in startElement: " + e);
+                logger.error("Exception in startElement",e);
             }
         }
 
@@ -180,7 +195,7 @@ public class SchemaValidator
             }
             catch(Exception e)
             {
-                logger.error("Exception in endElement: " + e);
+                logger.error("Exception in endElement",e);
             }
         }
         
@@ -208,12 +223,18 @@ public class SchemaValidator
             handleParserException(exception);
         }
 
+        
+        /**
+         * Translate a SaxException object into a useful MiringResult
+         * 
+         * I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
+         * When the parser finds a problem with the xml.
+         * Take the SAX parser exception, tokenize it, and build a Miring-specific MiringResult object based on the errors.
+         *
+         * @param exception a SaxException containing schema validation information
+         */
         private static void handleParserException(SAXException exception)
         {
-            //I'm calling this method when we get a legitimate SAX Parser exception, which are triggered
-            //When the parser finds a problem with the xml
-            //Take the SAX parser exception, tokenize it, and build a Miring-specific ValidationError object based on the errors.
-
             ValidationResult ve = null;
             
             String errorMessage = exception.getMessage();
@@ -223,7 +244,8 @@ public class SchemaValidator
             {
                 ve = new ValidationResult("Content is not allowed in prolog.",Severity.FATAL);
                 ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
-            }            
+            }
+            //MISSING NODE
             else if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
             {
                 // This cvc-complex-type is called if there is a node missing.  here's a few examples of what the exception.getMessage() can look like
@@ -265,6 +287,7 @@ public class SchemaValidator
                 
                 ve = handleMissingNode(missingNodeName);
             }
+            //MISSING ATTRIBUTE
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
             {
                 //This cvc-complex-type is called if there is an attribute missing from a node
@@ -291,14 +314,17 @@ public class SchemaValidator
                 ve.setMiringRule("?");
             }
 
-            /*if(xmlCurrentNode != null)
-            {
-                String xPath = xmlCurrentNode.generateXpath();
-                ve.addXPath(xPath);
-            }*/
             Utilities.addValidationError(validationErrors, ve);
         }
 
+        /**
+         * Create a ValidationResult object based on a missing attribute.
+         *
+         * @param missingAttributeName the name of the missing attribute
+         * @param nodeName the name of the element missing the attribute.
+         * 
+         * @return a ValidationResult object for this missing attribute
+         */
         private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
         {
             String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
@@ -347,13 +373,13 @@ public class SchemaValidator
             }
             catch(Exception e)
             {
-                logger.error("Exception during handleMissingAttribute: " + e);
+                logger.error("Exception during handleMissingAttribute" , e);
             }
             
             String xPath = xmlCurrentNode.generateXpath();
             //For some reason missing attribute exceptions are thrown BEFORE the parser hits the startElement method for the parent node.  
             //startElement is hit AFTER the attributes for the node are checked
-            //So right now, the parent node isn't contained in the xmlCurrentNode structure.  We need to add the most recent parent to this xpath.            
+            //So right now, the parent node isn't contained in the xmlCurrentNode structure.  We need to add the most recent parent to this xpath.
             int nodeIndex = 1;
             for(int i = 0; i < xmlCurrentNode.childrenNodes.size(); i++)
             {
@@ -371,6 +397,13 @@ public class SchemaValidator
             return ve;
         }
 
+        /**
+         * Create a ValidationResult object based on a missing node
+         *
+         * @param missingnodeName the name of the missing node
+         * 
+         * @return a ValidationResult object for this missing node
+         */
         private static ValidationResult handleMissingNode(String missingNodeName)
         {
             String parentNodeName = "Unhandled ParentNodeName";
@@ -424,7 +457,7 @@ public class SchemaValidator
             }
             catch(Exception e)
             {
-                logger.error("Exception during handleMissingNode: " + e);
+                logger.error("Exception during handleMissingNode.",e);
             }
             
             String xPath = xmlCurrentNode.generateXpath();
@@ -432,11 +465,16 @@ public class SchemaValidator
 
             return ve;
         }
-    
+
+        /**
+         * Clean up the SimpleXmlModels 
+         * 
+         * I'm not sure if this is necessary.  Since SimpleXmlModel objects refer to both a parent and children,
+         * garbage collector might not flag them for destruction when the SchemaValidator object is de-referenced.
+         * Just want to make sure we don't have extra objects hanging around.
+         */
         private static void clearModel()
         {
-            //Just in case these are still hanging out somewhere
-            //Having some memory problems and want to make sure these aren't hanging out.
             if(xmlRootNode != null)
             {
                 xmlRootNode.deAllocate(1);
@@ -448,7 +486,6 @@ public class SchemaValidator
                 xmlCurrentNode.deAllocate(1);
                 xmlCurrentNode = null;
             }
-
             nodeCount = 0;
         }
     }

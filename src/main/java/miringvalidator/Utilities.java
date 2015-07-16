@@ -52,8 +52,8 @@ import javax.xml.xpath.XPathFactory;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,9 +63,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 
+/** 
+ * This class provides various utilities used during MIRING validation.  
+*/
 public class Utilities
 {
-    private static final Logger logger = LogManager.getLogger(Utilities.class);
+    static Logger logger = LoggerFactory.getLogger(Utilities.class);
     
     /**
      * Does XML contain an error node with errNodeDescription in the text?
@@ -91,7 +94,7 @@ public class Utilities
     }
     
     /**
-     * Load Probatron Classes
+     * Load Probatron Classes.  This method will crack open the jar file and make it's methods and objects accessible. 
      *
      * @param jarFileLocation The relative location of the jar file resource
      * @return a URLClassLoader object, which you can use to call probatron methods reflectively.
@@ -117,13 +120,13 @@ public class Utilities
     }
 
     /**
-     * Call a reflected method within a class.  This method must have a single parameter
+     * Call a reflected method within a class.  This method must accept a single parameter
      *
      * @param callingObject The object which calls the method
      * @param methodName a String with the name of the reflected method
      * @param singleParameter The object parameter to pass into the reflected method.
      * @param parameterClass The class of the object expected by the reflected method.  It must be the correct class, and not an inherited class.
-     * @return an Object which is the result of the reflected method.
+     * @return an Object which was returned by the reflected method.
      */
     public static Object callReflectedMethod(Object callingObject, String methodName, Object singleParameter, Class<?> parameterClass)
     {
@@ -136,31 +139,31 @@ public class Utilities
         } 
         catch (SecurityException e) 
         {
-            logger.error("Security exception while calling reflected method: " + e);
+            logger.error("Security exception while calling reflected method", e);
         } 
         catch (NoSuchMethodException e) 
         {
-            logger.error("NoSuchMethod exception while calling reflected method: " + e);
+            logger.error("NoSuchMethod exception while calling reflected method", e);
         }
         catch (IllegalArgumentException e) 
         {
-            logger.error("IllegalArgument exception while calling reflected method: " + e);
+            logger.error("IllegalArgument exception while calling reflected method", e);
         } 
         catch (IllegalAccessException e) 
         {
-            logger.error("IllegalAccess exception while calling reflected method: " + e);
+            logger.error("IllegalAccess exception while calling reflected method", e);
         } 
         catch (InvocationTargetException e) 
         {
-            logger.error("InvocationTarget exception while calling reflected method: " + e);
+            logger.error("InvocationTarget exception while calling reflected method", e);
         }
         catch (RuntimeException e)
         {
-            logger.error("Runtime exception while calling reflected method: " + e);
+            logger.error("Runtime exception while calling reflected method", e);
         }
         catch (Exception e)
         {
-            logger.error("Exception while calling reflected method: " + e);
+            logger.error("Exception while calling reflected method", e);
         }
 
         logger.error("callReflectedMethod() returned a null reflected method object");
@@ -185,7 +188,7 @@ public class Utilities
         {
             //If i was clever I'd handle these exceptions specifically
             //throws ParserConfigurationException, SAXException, IOException
-            logger.error("Exception in Utilities.xmlToRootElement()" + e.toString());
+            logger.error("Exception in Utilities.xmlToRootElement()",e);
             return null;
         }
     }
@@ -209,14 +212,20 @@ public class Utilities
         {
             //If i was clever I'd handle these exceptions specifically
             //throws ParserConfigurationException, SAXException, IOException
-            logger.error("Exception in Utilities.xmlToDomObject()" + e.toString());
+            logger.error("Exception in Utilities.xmlToDomObject()",e);
             return null;
         }
     }
     
+    /**
+     * Generate an XML String from the Document object.  It is pretty-printed(nice indents, etc)
+     *
+     * @param doc a Document containing valid XML.
+     * @return a string containing the text of the XML document.
+     */
     public static String getStringFromDoc(Document doc)
     {
-        //Generate an XML String from the Document object.
+        //
         String xmlString = null;
         try
         {
@@ -231,7 +240,7 @@ public class Utilities
         }
         catch(Exception e)
         {
-            logger.error("Error generating XML String" + e);
+            logger.error("Error generating XML String",e);
         }
         return xmlString;
     }
@@ -423,7 +432,7 @@ public class Utilities
      */
     public static boolean isMiringCompliant(ValidationResult[] errors)
     {
-        //Does this list contain any fatal errors?
+        //Does this list contain any fatal/MIRING errors?
         for(int i = 0; i < errors.length; i++)
         {
             if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING)
@@ -454,8 +463,17 @@ public class Utilities
             }
         }
         return false;
-    }    
+    }
     
+    /**
+     * Tokenize (split) the string based on a delimiter.
+     * 
+     * I couldn't find an easy built in method.  I shouldn't need to write this.
+     *
+     * @param text the text to tokenize
+     * @param delimiter the delimiter to tokenize by
+     * @return true if this report has at least one fatal error
+     */
     public static String[] tokenizeString(String text, String delimiter)
     {
         try
@@ -472,42 +490,19 @@ public class Utilities
         }
         catch(Exception e)
         {
-            logger.error("Exception in tokenizeString(): " + e);
+            logger.error("Exception in tokenizeString()",e);
             return null;
         }
     }
 
-
-    //This method searches for <sequence> nodes, and cleans the text of any spaces or tabs.  
-    //Pretty sure I"m not using htis for anything currently.
-    /*public static String cleanSequences(String xml)
-    {
-        //Sequence objects often have lots of tabs and spaces.  Im gonna remove them.
-        int indexBegin = xml.indexOf("<sequence>");
-        int indexEnd = xml.indexOf("</sequence>");
-        if(indexBegin != -1 && indexEnd != -1 && indexEnd > indexBegin)
-        {
-            //seqNode = "<sequence> AG GT </sequence>"
-            String seqNode = xml.substring(indexBegin, indexEnd + 11);
-            //rawSeq = " AG GT "
-            String rawSeq = xml.substring(indexBegin +10 , indexEnd);
-            
-            if(!rawSeq.contains("<") && !rawSeq.contains(">"))
-            {
-                //sequenceRemainder = ".......<AnotherSequenceToClean?>....."
-                String sequenceRemainder = cleanSequences(xml.substring(indexEnd + 11, xml.length()));
-                //polishedSeqNode = "<sequence>AGGT</sequence>"
-                String polishedSeqNode = seqNode.replace(" ", "").replace("\t", "").replace("\n", "");
-                //return <clean sequence> + <clean remainder>.
-                return xml.substring(0,indexEnd+11).replace(seqNode,polishedSeqNode) + sequenceRemainder;
-            }
-        }
-
-        return xml;
-    }*/
-    
-    
-    //Will return null if hml is the root namespace.
+    /**
+     * Find the namespace name of a document.
+     * 
+     * Will return null if hml is the root namespace
+     *
+     * @param xml a string containing the xml text.
+     * @return the name of the namespace that is used for HML.
+     */
     public static String getNamespaceName(String xml)
     {
         logger.debug("gettingNamespaceName");
@@ -548,11 +543,19 @@ public class Utilities
         }
         catch(Exception e)
         {
-            logger.error("Exception while cleaning namespaces:" + e);
+            logger.error("Exception while cleaning namespaces",e);
         }
         return xml;
     }
     
+    
+    /**
+     * Strip the namespace from the element's name.
+     *
+     * @param nodeName the element's Name
+     * @param namespaceName the namespace to remove.
+     * @return the name of the element without a namespace.
+     */
     public static String stripNamespace(String nodeName, String namespaceName)
     {
         if(namespaceName==null)
@@ -588,6 +591,12 @@ public class Utilities
         return nodeName;
     }
     
+    /**
+     * Get the HML Property elements where are immediately underneath the root HML.
+     *
+     * @param xml a String containing the XML text
+     * @return a map of key-value pairs created from the property elements
+     */
     public static HashMap<String,String> getPropertiesFromRootHml(String xml)
     {
         try
@@ -609,11 +618,20 @@ public class Utilities
         }
         catch(Exception e)
         {
-            logger.error("exception in getPropertiesFromRootXml" + xml);
+            logger.error("exception in getPropertiesFromRootXml: " + xml ,e);
             return null;
         }
     }
     
+    /**
+     * Get the sampleID associated with an xpath.
+     * 
+     * It is pulled directly from the xpath, if a sampleID is not found we return null.
+     *
+     * @param xpath a String containing a node's xpath
+     * @param sampleIDs an array of literal sampleIDs to choose from.
+     * @return the sampleID
+     */
     public static String getSampleID(String xPath, Sample[] sampleIDs)
     {
         String sampleID;
@@ -644,6 +662,13 @@ public class Utilities
         return sampleID;
     }
     
+    /**
+     * Combine two NodeList objects into an array of Node objects.
+     *
+     * @param successfulReportList a NodeList of successfull reports.
+     * @param failedAssertLists a NodeList of failed asserts.
+     * @return an array of Node objects containing the result elements.
+     */
     public static Node[] combineNodeLists(NodeList successfulReportList, NodeList failedAssertList)
     {
         Node[] newList = new Node[successfulReportList.getLength() + failedAssertList.getLength()];
@@ -659,6 +684,13 @@ public class Utilities
         return newList;
     }
 
+    /**
+     * Get an attribute by name
+     *
+     * @param ruleAttributes a node map of attributes
+     * @param attributeName the name of the attribute to retrieve
+     * @return the value of the attribute.
+     */
     public static String getAttribute(NamedNodeMap ruleAttributes, String attributeName)
     {
         Node miringRuleNode = ruleAttributes.getNamedItem(attributeName);
@@ -690,4 +722,33 @@ public class Utilities
             return xml;
         }
     }*/
+    
+    //This method searches for <sequence> nodes, and cleans the text of any spaces or tabs.  
+    //Pretty sure I"m not using htis for anything currently.
+    /*public static String cleanSequences(String xml)
+    {
+        //Sequence objects often have lots of tabs and spaces.  Im gonna remove them.
+        int indexBegin = xml.indexOf("<sequence>");
+        int indexEnd = xml.indexOf("</sequence>");
+        if(indexBegin != -1 && indexEnd != -1 && indexEnd > indexBegin)
+        {
+            //seqNode = "<sequence> AG GT </sequence>"
+            String seqNode = xml.substring(indexBegin, indexEnd + 11);
+            //rawSeq = " AG GT "
+            String rawSeq = xml.substring(indexBegin +10 , indexEnd);
+            
+            if(!rawSeq.contains("<") && !rawSeq.contains(">"))
+            {
+                //sequenceRemainder = ".......<AnotherSequenceToClean?>....."
+                String sequenceRemainder = cleanSequences(xml.substring(indexEnd + 11, xml.length()));
+                //polishedSeqNode = "<sequence>AGGT</sequence>"
+                String polishedSeqNode = seqNode.replace(" ", "").replace("\t", "").replace("\n", "");
+                //return <clean sequence> + <clean remainder>.
+                return xml.substring(0,indexEnd+11).replace(seqNode,polishedSeqNode) + sequenceRemainder;
+            }
+        }
+
+        return xml;
+    }*/
+
 }

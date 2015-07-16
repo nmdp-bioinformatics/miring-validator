@@ -24,16 +24,22 @@ package main.java.miringvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/** 
+ * A simple class for storing a lightweight skeleton of an XML document.
+ * 
+ * It can also generate an Xpath for a given element in the document.
+ * 
+*/
 public class SimpleXmlModel
 {
     public String nodeName;
     public int nodeIndex;
     public List<SimpleXmlModel> childrenNodes = new ArrayList<SimpleXmlModel>();
     public SimpleXmlModel parentNode;
-    private static final Logger logger = LogManager.getLogger(SimpleXmlModel.class);
+    Logger logger = LoggerFactory.getLogger(SimpleXmlModel.class);
     
     public SimpleXmlModel(String nodeName, int nodeIndex)
     {
@@ -60,6 +66,14 @@ public class SimpleXmlModel
         this.childrenNodes.add(childModel);
     }
     
+    /**
+     * Of an element's children, get the highest index of a child with the name childName.
+     * 
+     * This is used for xpath construction
+     *
+     * @param childName a child element's name
+     * @return a 1-based integer of an element's index, for used in xpath construction
+     */
     public int getHighestChildIndex(String childName)
     {
         int highestIndex = 0;
@@ -76,11 +90,18 @@ public class SimpleXmlModel
         }
         catch(Exception e)
         {
-            logger.error("Error in getHighestChildIndex: " + e);
+            logger.error("Error in getHighestChildIndex",e);
         }            
         return highestIndex;
     }
     
+    /**
+     * Generate an Xpath for a specific element.
+     * 
+     * This method recurses back through it's ancestor elements to generate an xpath.
+     *
+     * @return an xPath specifying the location of this element
+     */
     public String generateXpath()
     {
         try
@@ -99,18 +120,20 @@ public class SimpleXmlModel
         }
         catch(Exception e)
         {
-            logger.error("Error during generateXpath(): " + e);
+            logger.error("Error during generateXpath()", e);
         }
         return null;
     }
     
+    /**
+     * Deallocate the xml model, as well as all of it's children recursively.
+     *
+     * @param recursionDepth how far we have recursed so far to generate this xpath.  For interest's sake only, this isn't useful.
+     * @return an array of ValidationError objects found during validation
+     */
     public void deAllocate(int recursionDepth)
     {
         //logger.debug("Recursion Depth in deAllocate" + recursionDepth);
-        //This is a recursive function that deallocates this object, as well as it's children.
-        //That sounds rather violent when i write it down.
-        //I feel like i shouldn't need to do this.
-        //Might work fine to get rid of this.
         try
         {
             nodeName = null;
@@ -130,7 +153,7 @@ public class SimpleXmlModel
         }
         catch(Exception e)
         {
-            logger.error("Error during deAllocate(): " + e);
+            logger.error("Error during deAllocate()",e);
         }
     }
 }

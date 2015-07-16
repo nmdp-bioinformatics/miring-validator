@@ -25,6 +25,9 @@ package main.java.miringvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
+/** 
+ * A simple class for storing a Validation Result.  They are sorted by MIRING Rule ID.
+*/
 public class ValidationResult implements Comparable
 {
     String errorText;
@@ -44,10 +47,10 @@ public class ValidationResult implements Comparable
     }
     
     /**
-     * Constructor for a ValidationError object. A ValidationError has getters and setters and doesn't do much else.
+     * Constructor for a ValidationError object. 
      *
      * @param errorText Text containing a description of the error.
-     * @param fatal is the error considered fatal?  Should we reject the Miring HML?
+     * @param severity the severity of a ValidationResult
      */
     public ValidationResult(String errorText, Severity severity)
     {

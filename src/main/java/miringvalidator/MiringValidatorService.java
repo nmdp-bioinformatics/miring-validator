@@ -22,8 +22,6 @@
 */
 package main.java.miringvalidator;
 
-//import java.util.Properties;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,20 +29,23 @@ import javax.ws.rs.Produces;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/** 
+ * This class provides a REST service to access the MIRING Validator.  
+ * It expects a POST request with a single form parameter called xml.
+*/
 @Path("/ValidateMiring")
 public class MiringValidatorService
 {
-    private static final Logger logger = LogManager.getLogger(MiringValidatorService.class);
+    Logger logger = LoggerFactory.getLogger(MiringValidatorService.class);
     
     /**
      * This method provides a RESTFUL service for validating a MIRING compliant HML file
      *
-     * @param xml this method accepts a Form Parameter xml containing the xml text
-     * @return a String containing MIRING Results Report
+     * @param xml this method accepts a Form Parameter "xml" containing the xml text
+     * @return a String containing MIRING Results Report in XML format.
      */
     @POST
     @Produces("application/xml")
@@ -53,7 +54,7 @@ public class MiringValidatorService
         System.out.println("Web Service Call Recieved.  ");
         //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
         logger.debug( "Received web service call.");
-        logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
+        //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
         if(xml == null)
         {

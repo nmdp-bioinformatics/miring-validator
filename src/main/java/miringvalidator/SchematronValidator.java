@@ -35,17 +35,30 @@ import java.util.List;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/** 
+ * SchematronValidator is a class used to validate an XML document against a set of schematron rules.  The schematron logic is handled, in this case, by Probatron.
+ * 
+ * Probatron is distributed as an executable jar, but it is rather inconvenient to write XML files to hard drive in order to use them.
+ * I'm using reflection to call Probatron's methods in a few spots, rather than using their main method as a starting point.
+ * 
+ * For reference, see Probatron's documentation:
+ * http://www.probatron.org/probatron4j.html
+ * https://code.google.com/p/probatron4j/source/browse/#svn/trunk/
+ * 
+ * The source code is available at google right now, but I'm not sure how long it will be available since Google Code is ending...
+ * 
+*/
 public class SchematronValidator
 {
-    private static final Logger logger = LogManager.getLogger(SchematronValidator.class);
+    static Logger logger = LoggerFactory.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
     static String jarFileName = "/jar/probatron.jar";
@@ -62,7 +75,6 @@ public class SchematronValidator
     public static ValidationResult[] validate(String xml, String[] schemaFileNames)
     {
         ValidationResult[] results = new ValidationResult[0];
-        
         
         try
         {
@@ -87,7 +99,7 @@ public class SchematronValidator
                 String resultString = myBaos.toString();
 
                 //Create MIRING specific validation errors
-                ValidationResult[] currentResultErrors = getValidationErrorsFromSchematronReport(resultString);
+                ValidationResult[] currentResultErrors = translateSchematronReportToValidationResults(resultString);
                 logger.debug(currentResultErrors.length + " schema validation errors found");
 
                 //Add any errors to the tier2 results.
@@ -96,7 +108,8 @@ public class SchematronValidator
         }
         catch(Exception e )
         {
-            logger.error("Error during schematron validation: " + e);
+            logger.error("Exception in SchematronValidation", e);
+            return Utilities.combineArrays(results, new ValidationResult[]{new ValidationResult("Failed Schematron Validation: " + e.toString(),Severity.FATAL)});
         }
         logger.debug(results.length + " validation errors detected in schematron validator.");
         return results;
@@ -105,17 +118,17 @@ public class SchematronValidator
     /**
      * Perform a schematron validation for an xml string against an single schematron schema.
      * This method mimics Probatron's Session.doValidation.
-     *
+     * 
      * @param xml a String containing the xml to validate
      * @param schemaLocation an String containing the name of the schema file resource to validate against
      * @return an object which is an org.probatron.ValidationReport objects.
      */
     private static Object doValidation(String xml, String schemaLocation) 
     {
-        //We're using some reflection here, so I have to be vague about what kind of objects were dealing with
-        //vr is an org.probatron.ValidationReport
+        //We're using some reflection here, so object types are vague
+        //vr = org.probatron.ValidationReport
         Object vr = null;
-        //theSchema is an org.probatron.SchematronSchema
+        //theSchema = org.probatron.SchematronSchema
         Object theSchema = null;
         
         try 
@@ -131,8 +144,6 @@ public class SchematronValidator
             //Create a SchematronSchema object, using constructor that takes a Session and a schema URL
             Class schematronSchemaClass= loadedProbatronClasses.loadClass("org.probatron.SchematronSchema");
             Constructor ctor = schematronSchemaClass.getDeclaredConstructor(sessionClass, URL.class);
-            //Already public, lets not mess with accessibility
-            //ctor.setAccessible(true);
             theSchema = ctor.newInstance(currentSession, schemaFileURL);
             
             //Validate against a schematron schema, using probatron's validateCandidate method
@@ -147,12 +158,12 @@ public class SchematronValidator
     }
 
     /**
-     * Convert a org.probatron.ValidationReport into an array of ValidationError objects
+     * Translate a org.probatron.ValidationReport into an array of ValidationResult objects
      *
      * @param xml a String containing a probatron ValidationReport 
-     * @return an array of ValidationError objects generated from the probatron ValidationReport report.
+     * @return an array of ValidationResult objects generated from the probatron ValidationReport report.
      */
-    private static ValidationResult[] getValidationErrorsFromSchematronReport(String xml)
+    private static ValidationResult[] translateSchematronReportToValidationResults(String xml)
     {
         List<ValidationResult> validationErrors = new ArrayList<ValidationResult>();
 
@@ -190,7 +201,7 @@ public class SchematronValidator
                  */
                 for(int i = 0; i < combinedList.length; i++)
                 {
-                    String attributes = null;
+                    //String testText = null;
                     String locationText = null;
                     String errorText = null;
                     
@@ -198,10 +209,10 @@ public class SchematronValidator
                     NamedNodeMap currAttributes = currentSchematronNode.getAttributes();
                     
                     //testText contains the actual test that schematron ran to get this report. 
-                    //Not sure if we'll use that information at all
-                    attributes = currAttributes.getNamedItem("test").getNodeValue();
+                    //I don't think we need this information.
+                    //testText = currAttributes.getNamedItem("test").getNodeValue();
                     
-                    //locationText is an xpath.  We're gonna put that on the report.
+                    //locationText is an xpath.  We need this info.
                     //Probably need to skim out the namespaces, because they clutter things badly, and because who cares?
                     locationText = currAttributes.getNamedItem("location").getNodeValue();
                     
@@ -229,7 +240,7 @@ public class SchematronValidator
         }
         catch(Exception e)
         {
-            logger.error("Error forming DOM from schematron results: " + e);
+            logger.error("Error forming DOM from schematron results.", e);
             validationErrors.add(new ValidationResult("Unhandled Schematron validation exception: " + e, Severity.FATAL));
         }
 
@@ -252,7 +263,6 @@ public class SchematronValidator
      *
      * @param errorMessage an error message generated by probatron
      * @param locationText an Xpath containing the location of the error in the HML document
-     * @param testText text containing the actual test that probatron ran to generate this error
      * @return a ValidationError object describing the miring validation problem
      */
     private static ValidationResult generateValidationError(String errorMessage, String locationText)
@@ -304,7 +314,8 @@ public class SchematronValidator
         }
         catch(Exception e)
         {
-            logger.error("Exception during generateValidationError: " + e);
+            logger.error("Exception during generateValidationError" ,e);
+            return new ValidationResult(e.toString(), Severity.FATAL);
         }
 
         return ve;
