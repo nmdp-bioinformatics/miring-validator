@@ -31,15 +31,15 @@ import main.java.miringvalidator.Utilities;
 import main.java.miringvalidator.ValidationResult;
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class ReportGeneratorTest
 {
-    private static final Logger logger = LogManager.getLogger(ReportGeneratorTest.class);
+    Logger logger = LoggerFactory.getLogger(ReportGeneratorTest.class);
 
     @Test
     public void testReportGenerator()

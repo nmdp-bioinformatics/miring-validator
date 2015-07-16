@@ -38,30 +38,35 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/** 
+ * This class is used to generate an XML results report, based on the results of a MIRING Validation.
+*/
 public class ReportGenerator
 {
-    private static final Logger logger = LogManager.getLogger(ReportGenerator.class);
+    static Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
     
     public static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     
     /**
      * Generate a Miring Results Report
      *
-     * @param validationErrors an array of ValidationError objects
+     * @param validationResults an array of ValidationError objects
      * @param root the root attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
      * @param extension the extension attribute on an HMLID node on the source XML.  If it exists, you should include it in the report
+     * @param properties a HashMap<String,String> of property values to include on the results report
+     * @param sampleIDs an array of Sample objects to list on the report.
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationResult[] validationErrors, String root, String extension, HashMap<String,String> properties, Sample[] sampleIDs)
+    public static String generateReport(ValidationResult[] validationResults, String root, String extension, HashMap<String,String> properties, Sample[] sampleIDs)
     {
-        validationErrors = assignSampleIDs(validationErrors,sampleIDs);
-        validationErrors = combineSimilarErrors(validationErrors);
+        validationResults = assignSampleIDs(validationResults,sampleIDs);
+        validationResults = combineSimilarResults(validationResults);
         
         try 
         {
@@ -81,45 +86,58 @@ public class ReportGenerator
             rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
             rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "../../../main/resources/schema/miringreport.xsd");
 
-            addMiringCompliantNode(validationErrors, doc);
+            addMiringCompliantElement(validationResults, doc);
             
             addHmlidElement(root, extension, doc);
             
-            addSampleElements(validationErrors, sampleIDs, doc);
+            addSampleElements(validationResults, sampleIDs, doc);
             
             addPropertyElements(properties, doc);
             
-            addValidationResultElements(validationErrors, doc);
+            addValidationResultElements(validationResults, doc);
 
             return(Utilities.getStringFromDoc(doc));
         }
         catch (ParserConfigurationException pce) 
         {
-            logger.error("Exception in Report Generator: " + pce);
+            logger.error("Parser Configuration Exception in ReportGenerator", pce);
         } 
         catch (Exception e) 
         {
-            logger.error("Exception in Report Generator: " + e);
+            logger.error("Exception in ReportGenerator", e);
         }
         
         //Oops, something went wrong.
-        logger.error("Error during Miring Validation Report Generation.");
+        logger.error("Unknown Error during Miring Validation Report Generation.  Returning Null");
         return null;
     }
 
-    private static void addMiringCompliantNode(ValidationResult[] validationErrors, Document doc)
+    /**
+     * Add a miring-compliant element to the document.
+     *
+     * @param validationResults an array of the validationError objects from this validation.
+     * @param doc a Document to add the element to
+     */
+    private static void addMiringCompliantElement(ValidationResult[] validationResults, Document doc)
     {
         Element compliantElement = doc.createElement("miring-compliant");
         compliantElement.setTextContent(
-            (validationErrors == null)?"false"
-            :(validationErrors.length==0)?"true"
-            :(Utilities.isMiringCompliant(validationErrors))?"true"
+            (validationResults == null)?"false"
+            :(validationResults.length==0)?"true"
+            :(Utilities.isMiringCompliant(validationResults))?"true"
             :"false"
         );
 
         doc.getDocumentElement().appendChild(compliantElement);
     }
 
+    /**
+     * Add an hmlid element to the document.
+     *
+     * @param root the hmlid's root attribute
+     * @param extension the hmlid's extension attribute
+     * @param doc a Document to add the element to
+     */
     private static void addHmlidElement(String root, String extension, Document doc)
     {
         Element hmlidElement = doc.createElement("hmlid");
@@ -133,7 +151,13 @@ public class ReportGenerator
         }
         doc.getDocumentElement().appendChild(hmlidElement);
     }
-
+    
+    /**
+     * Add property elements to the document.
+     *
+     * @param properties a HashMap containing key-value pairs of properties to include on the report
+     * @param doc a Document to add the elements to
+     */
     private static void addPropertyElements(HashMap<String, String> properties, Document doc)
     {
         if(properties != null)
@@ -156,7 +180,14 @@ public class ReportGenerator
         }
     }
 
-    private static void addSampleElements(ValidationResult[] validationErrors, Sample[] sampleIDs, Document doc)
+    /**
+     * Add Sample elements to the document.
+     *
+     * @param validationResults an array of ValidationResults to assign samples to
+     * @param sampleIDs an array of Sample objects to include on the report
+     * @param doc a Document to add the elements to
+     */
+    private static void addSampleElements(ValidationResult[] validationResults, Sample[] sampleIDs, Document doc)
     {
         if(sampleIDs != null && sampleIDs.length > 0)
         {
@@ -177,7 +208,7 @@ public class ReportGenerator
                     currentSampleElement.setAttribute("center-code",centerCode);
                 }
 
-                if(doesSampleHaveMiringErrors(sampleID, validationErrors))
+                if(doesSampleHaveMiringErrors(sampleID, validationResults))
                 {
                     currentSampleElement.setAttribute("miring-compliant", "false");
                     numberBadSamples++;
@@ -199,19 +230,25 @@ public class ReportGenerator
         }
     }
 
-    private static void addValidationResultElements(ValidationResult[] validationErrors, Document doc)
+    /**
+     * Add ValidationResult elements to the document.
+     *
+     * @param validationResults an array of ValidationResult objects to include on the report
+     * @param doc a Document to add the elements to
+     */
+    private static void addValidationResultElements(ValidationResult[] validationResults, Document doc)
     {
-        ValidationResult[] fatalErrors = getErrorsBySeverity(validationErrors,Severity.FATAL);
-        ValidationResult[] miringErrors = getErrorsBySeverity(validationErrors,Severity.MIRING);
-        ValidationResult[] warnings = getErrorsBySeverity(validationErrors,Severity.WARNING);
-        ValidationResult[] info = getErrorsBySeverity(validationErrors,Severity.INFO);
+        ValidationResult[] fatalErrors = getResultsBySeverity(validationResults,Severity.FATAL);
+        ValidationResult[] miringErrors = getResultsBySeverity(validationResults,Severity.MIRING);
+        ValidationResult[] warnings = getResultsBySeverity(validationResults,Severity.WARNING);
+        ValidationResult[] info = getResultsBySeverity(validationResults,Severity.INFO);
 
         if(fatalErrors != null && fatalErrors.length > 0)
         {
             Element fatalErrorsElement = doc.createElement("fatal-validation-errors");
             for(int i = 0; i < fatalErrors.length; i++)
             {
-                fatalErrorsElement.appendChild(generateValidationErrorNode(doc, fatalErrors[i]));
+                fatalErrorsElement.appendChild(generateMiringResultElement(doc, fatalErrors[i]));
             }
             doc.getDocumentElement().appendChild(fatalErrorsElement);
         }
@@ -220,7 +257,7 @@ public class ReportGenerator
             Element miringErrorsElement = doc.createElement("miring-validation-errors");
             for(int i = 0; i < miringErrors.length; i++)
             {
-                miringErrorsElement.appendChild(generateValidationErrorNode(doc, miringErrors[i]));
+                miringErrorsElement.appendChild(generateMiringResultElement(doc, miringErrors[i]));
             }
             doc.getDocumentElement().appendChild(miringErrorsElement);
         }
@@ -229,7 +266,7 @@ public class ReportGenerator
             Element warningsElement = doc.createElement("validation-warnings");
             for(int i = 0; i < warnings.length; i++)
             {
-                warningsElement.appendChild(generateValidationErrorNode(doc, warnings[i]));
+                warningsElement.appendChild(generateMiringResultElement(doc, warnings[i]));
             }
             doc.getDocumentElement().appendChild(warningsElement);
         }
@@ -238,19 +275,25 @@ public class ReportGenerator
             Element infoElement = doc.createElement("validation-info");
             for(int i = 0; i < info.length; i++)
             {
-                infoElement.appendChild(generateValidationErrorNode(doc, info[i]));
+                infoElement.appendChild(generateMiringResultElement(doc, info[i]));
             }
             doc.getDocumentElement().appendChild(infoElement);
         }
     }
     
-    private static boolean doesSampleHaveMiringErrors(String sampleID, ValidationResult[] validationErrors)
+    /**
+     * Check if a sampleID has any assigned validationResult objects with severity of either FATAL or MIRING
+     *
+     * @param sampleID the sample's ID
+     * @param validationResults an array of ValidationResult objects to compare against the sampleID
+     */
+    private static boolean doesSampleHaveMiringErrors(String sampleID, ValidationResult[] validationResults)
     {
-        if(validationErrors != null && validationErrors.length > 0)
+        if(validationResults != null && validationResults.length > 0)
         {
-            for(int i = 0; i < validationErrors.length; i++)
+            for(int i = 0; i < validationResults.length; i++)
             {
-                ValidationResult tempResult = validationErrors[i];
+                ValidationResult tempResult = validationResults[i];
                 String currentSampleID = tempResult.getSampleID();
                 Severity currentSeverity = tempResult.getSeverity();
                 if(currentSampleID != null && currentSampleID.equals(sampleID))
@@ -267,18 +310,24 @@ public class ReportGenerator
         return false;
     }
 
-    private static ValidationResult[] assignSampleIDs(ValidationResult[] validationErrors, Sample[] sampleIDs)
+    /**
+     * For each ValidationResult, assign a SampleID if possible
+     *
+     * @param validationResults an array of ValidationResult objects to assign sampleIDs to
+     * @param sampleIDs an array of sampleIDs found in the HML
+     */
+    private static ValidationResult[] assignSampleIDs(ValidationResult[] validationResults, Sample[] sampleIDs)
     {
         try
         {
-            if(validationErrors != null
-                && validationErrors.length > 0 
+            if(validationResults != null
+                && validationResults.length > 0 
                 && sampleIDs != null 
                 && sampleIDs.length > 0)
             {
-                for(int i = 0; i < validationErrors.length; i++)
+                for(int i = 0; i < validationResults.length; i++)
                 {
-                    ValidationResult currentError = validationErrors[i];
+                    ValidationResult currentError = validationResults[i];
                     List<String> xPaths = currentError.getXPaths();
                     if(xPaths.size()!=0)
                     {
@@ -295,21 +344,27 @@ public class ReportGenerator
         }
         catch(Exception e)
         {
-            logger.error("Error during assignSampleIDs: " + e);
+            logger.error("Error during assignSampleIDs.", e);
         }
-        return validationErrors;
+        return validationResults;
     }
 
-    private static ValidationResult[] getErrorsBySeverity(ValidationResult[] validationErrors, Severity severity)
+    /**
+     * Get ValidationResults of a specific severity.
+     *
+     * @param validationResults an array of ValidationResult objects to pull from
+     * @param severity a ValidationResult.Severity.  One of "FATAL" "MIRING" "INFO" "WARNING".  
+     */
+    private static ValidationResult[] getResultsBySeverity(ValidationResult[] validationResults, Severity severity)
     {
-        if(validationErrors != null && validationErrors.length > 0)
+        if(validationResults != null && validationResults.length > 0)
         {
             List<ValidationResult> results = new ArrayList<ValidationResult>();
-            for(int i = 0; i < validationErrors.length; i++)
+            for(int i = 0; i < validationResults.length; i++)
             {
-                if(validationErrors[i].severity.equals(severity))
+                if(validationResults[i].severity.equals(severity))
                 {
-                    results.add(validationErrors[i]);
+                    results.add(validationResults[i]);
                 }
             }
             return results.toArray(new ValidationResult[results.size()]);
@@ -320,91 +375,101 @@ public class ReportGenerator
         }
     }
 
-    private static ValidationResult[] combineSimilarErrors(ValidationResult[] validationErrors)
+    /**
+     * Combine similar results.  They are considered similar if they have the same error text.  The results are combined, with multiple xpaths.
+     *
+     * @param validationResults an array of ValidationResult objects to combine
+     */
+    private static ValidationResult[] combineSimilarResults(ValidationResult[] validationResults)
     {
-        //Many errors are very similar to eachother.  If they have the same error text, then we should combine them.  Hopefully they have distinct xpaths.
-        List<ValidationResult> newErrorList = new ArrayList<ValidationResult>();
+        List<ValidationResult> newResultList = new ArrayList<ValidationResult>();
         
-        for(int i = 0; i < validationErrors.length; i++)
+        for(int i = 0; i < validationResults.length; i++)
         {
-            ValidationResult oldError = validationErrors[i];
+            ValidationResult oldResult = validationResults[i];
             //Scan existing list for an error that is a close match.
             boolean foundMatch = false;
-            for (ValidationResult newError: newErrorList)
+            for (ValidationResult newResult: newResultList)
             {
-                if(oldError.miringRule.equals(newError.miringRule)
-                    && oldError.errorText.equals(newError.errorText)
-                    && oldError.sampleID.equals(newError.sampleID))
+                if(oldResult.miringRule.equals(newResult.miringRule)
+                    && oldResult.errorText.equals(newResult.errorText)
+                    && oldResult.sampleID.equals(newResult.sampleID))
                 {
                     foundMatch = true;
                     //Add all the xpaths to the existing new error.
-                    for (String xPath:oldError.xPaths)
+                    for (String xPath:oldResult.xPaths)
                     {
-                        if(!newError.xPaths.contains(xPath))
+                        if(!newResult.xPaths.contains(xPath))
                         {
-                            newError.addXPath(xPath);
+                            newResult.addXPath(xPath);
                         }
                     }
-                    Collections.sort(newError.xPaths);
+                    Collections.sort(newResult.xPaths);
                 }
             }
             
             if(!foundMatch)
             {
-                newErrorList.add(oldError);
+                newResultList.add(oldResult);
             }
         }
         
-        ValidationResult[] results = new ValidationResult[newErrorList.size()];
-        for(int i = 0; i < newErrorList.size(); i++)
+        ValidationResult[] newResults = new ValidationResult[newResultList.size()];
+        for(int i = 0; i < newResultList.size(); i++)
         {
-            results[i]=newErrorList.get(i);
+            newResults[i]=newResultList.get(i);
         }
         
-        return results;
+        return newResults;
     }
-
-    private static Element generateValidationErrorNode(Document doc, ValidationResult validationError)
+    
+    /**
+     * Generate a single miring-result element
+     *
+     * @param doc the original document to add to
+     * @param validationResult an object containing the result information
+     */
+    private static Element generateMiringResultElement(Document doc, ValidationResult validationResult)
     {
         //Change a validation error into an XML Node to put in our report.
         Element invMiringElement = doc.createElement("miring-result");
         
         //miringElementID
         Attr miringElementAttr = doc.createAttribute("miring-rule-id");
-        miringElementAttr.setValue(validationError.getMiringRule());
+        miringElementAttr.setValue(validationResult.getMiringRule());
         invMiringElement.setAttributeNode(miringElementAttr);
         
         //severity
         Attr fatalAttr = doc.createAttribute("severity");
-        fatalAttr.setValue(validationError.getSeverity()==Severity.FATAL?"fatal":
-            validationError.getSeverity()==Severity.MIRING?"miring":
-            validationError.getSeverity()==Severity.WARNING?"warning":
-            validationError.getSeverity()==Severity.INFO?"info":
+        fatalAttr.setValue(validationResult.getSeverity()==Severity.FATAL?"fatal":
+            validationResult.getSeverity()==Severity.MIRING?"miring":
+            validationResult.getSeverity()==Severity.WARNING?"warning":
+            validationResult.getSeverity()==Severity.INFO?"info":
                 "?");
         invMiringElement.setAttributeNode(fatalAttr);
         
         //sampleID
         Attr sampleIDAttr = doc.createAttribute("sample-id");
-        if(validationError.getSampleID() != null && validationError.getSampleID().length() > 0)
+        if(validationResult.getSampleID() != null && validationResult.getSampleID().length() > 0)
         {
-            sampleIDAttr.setValue(validationError.getSampleID());
+            sampleIDAttr.setValue(validationResult.getSampleID());
             invMiringElement.setAttributeNode(sampleIDAttr);
         }
         
         //description
         Element descriptionElement = doc.createElement("description");
-        descriptionElement.appendChild(doc.createTextNode(validationError.getErrorText()));
+        descriptionElement.appendChild(doc.createTextNode(validationResult.getErrorText()));
         invMiringElement.appendChild(descriptionElement);
         
         //solution
         Element solutionElement = doc.createElement("solution");
-        solutionElement.appendChild(doc.createTextNode(validationError.getSolutionText()));
+        solutionElement.appendChild(doc.createTextNode(validationResult.getSolutionText()));
         invMiringElement.appendChild(solutionElement);
         
         //xPath
-        if(validationError.getXPaths() != null && validationError.getXPaths().size() > 0)
+        if(validationResult.getXPaths() != null && validationResult.getXPaths().size() > 0)
         {
-            List<String> xPaths = validationError.getXPaths();
+            List<String> xPaths = validationResult.getXPaths();
             for(int i = 0; i < xPaths.size(); i++)
             {
                 Element xPathElement = doc.createElement("xpath");
@@ -415,5 +480,4 @@ public class ReportGenerator
         
         return invMiringElement;
     }
-    
 }

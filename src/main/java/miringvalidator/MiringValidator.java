@@ -26,18 +26,20 @@ import java.util.HashMap;
 
 import main.java.miringvalidator.ValidationResult.Severity;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/** 
+ * This class is used to validate an XML file against a MIRING checklist.  Both tier 1 and tier 2 are included in the validation.
+*/
 public class MiringValidator
 {
-    private static final Logger logger = LogManager.getLogger(MiringValidator.class);
+    Logger logger = LoggerFactory.getLogger(MiringValidator.class);
     String xml;
     String report;
     ValidationResult[] tier1ValidationErrors;
     ValidationResult[] tier2ValidationErrors;
     Sample[] sampleIDs;
-    
     
     /**
      * Constructor for a MiringValidator object
@@ -51,7 +53,7 @@ public class MiringValidator
     }
     
     /**
-     * Validate the xml text against MIRING checklist
+     * Validate the xml text against MIRING checklist.  This method performs validation for both Tiers 1 and 2.
      *
      * @return a String containing MIRING Results Report
      */
@@ -63,9 +65,6 @@ public class MiringValidator
             return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null,null);
         }
         
-        //xml = Utilities.cleanSequences(xml);
-        //xml = Utilities.trimPrologText(xml);
-        
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         
         //Tier 1
@@ -74,14 +73,7 @@ public class MiringValidator
         sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
         
         //Tier 2
-        //Skip it if we already know it is bad.  Maybe?  Do we want to schematron automatically?
-        //Yeah actually don't skip it.  We want to give them the most information we can.
-        //if(!ReportGenerator.containsFatalErrors(tier1ValidationErrors))
-        
-        //We're just gonna skip tier 2 if there are fatal schema validation errors.
-        //I mean fatal as in it's a bad XML file, not a bad MIRING file.
-        //Schematron can't get errors if it can't parse the XML validly.
-        //For now I only know about the "Content is not allowed in prolog." error
+        //If tier 1 has fatal errors, we should not continue to tier 2.
         if(!Utilities.hasFatalErrors(tier1ValidationErrors))
         {
             logger.debug("Attempting Tier 2 validation");
@@ -93,6 +85,10 @@ public class MiringValidator
             {
             //tier3();
             }*/
+        }
+        else
+        {
+            logger.error("Did not perform tier 2 validation, fatal errors in tier 1.");
         }
 
         //Make a report.
