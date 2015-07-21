@@ -2,37 +2,57 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>MiringValidator</groupId>
   <artifactId>MiringValidator</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>war</packaging>
   
   <build>
     <sourceDirectory>src</sourceDirectory>
     <!-- <testSourceDirectory>src/test</testSourceDirectory>-->
-    <pluginManagement>
-    <plugins>
-	      <plugin>
-	        <artifactId>maven-compiler-plugin</artifactId>
-	        <version>3.1</version>
-	        <configuration>
-	          <source>1.7</source>
-	          <target>1.7</target>
-	        </configuration>
-	      </plugin>
-          <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.4</version>
-            <configuration>
-              <warSourceDirectory>WebContent</warSourceDirectory>
-              <failOnMissingWebXml>false</failOnMissingWebXml>
-              <outputDirectory>${project.build.directory}/deployedWar</outputDirectory>
-              <warName>MiringValidator</warName>
-            </configuration>
-          </plugin>
-    </plugins>
-    </pluginManagement>
+    <pluginManagement><plugins>
+    
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      
+      <plugin>       
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <warSourceDirectory>WebContent</warSourceDirectory>
+          <failOnMissingWebXml>false</failOnMissingWebXml> 
+          <!-- <outputDirectory>./target</outputDirectory> -->
+          <warName>MiringValidator</warName> 
+        </configuration>
+      </plugin>  
+      
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+
+        <configuration>
+            <!--  <url>http://localhost:8080/MiringValidator</url> 
+            <server>TomcatServer</server> -->
+            <path>/MiringValidator</path>
+            <!-- <warSourceDirectory>WebContent</warSourceDirectory>
+            <warDirectory>${project.build.directory}/${project.build.finalName}.</warDirectory> -->
+             <!--<path>/</path> -->
+           <!--  <path>/${project.build.finalName}</path>  -->
+            <port>8080</port>
+             
+        </configuration>
+        
+      </plugin>
+      
+    </plugins></pluginManagement>
     
    <resources>
-   
+
      <resource>
        <directory>src/main/resources</directory>
      </resource>
@@ -45,20 +65,28 @@
         </includes> 
      </resource>-->
      
-     <resource>
+     <!-- <resource>
         <directory>src</directory>
-     </resource> 
+     </resource>  -->
      
    </resources>
   </build>
 
   <dependencies>
   
-  	<dependency>
-  		<groupId>asm</groupId>
-  		<artifactId>asm</artifactId>
-  		<version>3.3.1</version>
-  	</dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+
   	<dependency>
   		<groupId>org.json</groupId>
   		<artifactId>json</artifactId>
@@ -70,22 +98,25 @@
         <artifactId>jersey-bundle</artifactId>
         <version>1.19</version>
     </dependency>
+    
   	<dependency>
   		<groupId>com.sun.jersey</groupId>
   		<artifactId>jersey-server</artifactId>
   		<version>1.19</version>
   	</dependency>
-  	<dependency>
-  		<groupId>com.sun.jersey</groupId>
-  		<artifactId>jersey-core</artifactId>
-  		<version>1.19</version>
-  	</dependency>
+  	
+	<dependency>
+		<groupId>com.sun.jersey</groupId>
+		<artifactId>jersey-core</artifactId>
+		<version>1.19</version>
+	</dependency>
 
     <dependency>
 	    <groupId>com.megginson.sax</groupId>
 	    <artifactId>xml-writer</artifactId>
 	    <version>0.2</version>
     </dependency>
+    
     <dependency>
 	    <groupId>net.sf.saxon</groupId>
 	    <artifactId>Saxon-HE</artifactId>
