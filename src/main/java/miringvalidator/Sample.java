@@ -21,6 +21,9 @@
 */
 package main.java.miringvalidator;
 
+/** 
+ * This class a simple class to store a sample's ID and centercode.
+*/
 public class Sample
 {
     public String id;
