@@ -20,7 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package main.java.miringvalidator;
+package org.nmdp.miring;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,8 +34,6 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 
@@ -46,15 +44,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
-import main.java.miringvalidator.ValidationResult.Severity;
+import org.nmdp.miring.ValidationResult.Severity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

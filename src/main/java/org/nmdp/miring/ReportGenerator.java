@@ -20,7 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package main.java.miringvalidator;
+package org.nmdp.miring;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import main.java.miringvalidator.ValidationResult.Severity;
+import org.nmdp.miring.ValidationResult.Severity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
