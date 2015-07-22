@@ -6,17 +6,32 @@
   <packaging>war</packaging>
   
   <build>
-    <sourceDirectory>src</sourceDirectory>
-    <!-- <testSourceDirectory>src/test</testSourceDirectory>-->
+    <sourceDirectory>src/main/java/org/nmdp/miring</sourceDirectory>
+
     <pluginManagement><plugins>
     
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions><execution>
+          <phase>generate-sources</phase>
+          <goals><goal>add-source</goal></goals>
+          <configuration>
+            <sources>
+              <source>src/test/java/org/nmdp/miring</source>
+            </sources>
+          </configuration>
+        </execution></executions>
       </plugin>
       
       <plugin>       
@@ -54,21 +69,12 @@
    <resources>
 
      <resource>
-       <directory>src/main/resources</directory>
-     </resource>
-     
-     <!-- <resource>
-       <directory>src/main/resources</directory>
-       <targetPath>${project.build.directory}/classes</targetPath> 
-       <includes>
-          <include>log4j.properties</include>
-        </includes> 
-     </resource>-->
-     
-     <!-- <resource>
-        <directory>src</directory>
-     </resource>  -->
-     
+       <directory>src/main/resources/org/nmdp/miring</directory>
+     </resource> 
+     <resource>
+       <directory>src/test/resources/org/nmdp/miring</directory>
+     </resource> 
+
    </resources>
   </build>
 
