@@ -19,7 +19,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package main.java.miringvalidator;
+package org.nmdp.miring;
 
 /** 
  * This class a simple class to store a sample's ID and centercode.

@@ -20,7 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package main.java.miringvalidator;
+package org.nmdp.miring;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 /** 
  * A simple class for storing a Validation Result.  They are sorted by MIRING Rule ID.
 */
-public class ValidationResult implements Comparable
+public class ValidationResult implements Comparable<ValidationResult>
 {
     String errorText;
     String solutionText;
@@ -82,7 +82,7 @@ public class ValidationResult implements Comparable
     }
     
     @Override
-    public int compareTo(Object o)
+    public int compareTo(ValidationResult o)
     {
         //When we compare object, we'll just compare their miringRules.
         //So we can sort the errors by miringRule.

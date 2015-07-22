@@ -14,7 +14,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
 		   <param-name>com.sun.jersey.config.property.packages</param-name>
-		   <param-value>main.java.miringvalidator</param-value>
+		   <param-value>org.nmdp.miring</param-value>
 		</init-param>
         <load-on-startup>1</load-on-startup>
   </servlet>

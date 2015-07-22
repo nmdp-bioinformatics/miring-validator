@@ -20,12 +20,11 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package test.java.miringvalidatortest;
+package org.nmdp.miring;
 
 import static org.junit.Assert.*;
-import main.java.miringvalidator.MiringValidator;
-import main.java.miringvalidator.SchemaValidator;
-import main.java.miringvalidator.Utilities;
+import org.nmdp.miring.MiringValidator;
+import org.nmdp.miring.Utilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

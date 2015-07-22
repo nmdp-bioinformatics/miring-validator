@@ -19,7 +19,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
-package main.java.miringvalidator;
+package org.nmdp.miring;
 
 import java.util.ArrayList;
 import java.util.List;
