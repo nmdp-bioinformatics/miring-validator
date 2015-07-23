@@ -61,7 +61,7 @@ public class SchematronValidator
     static Logger logger = LoggerFactory.getLogger(SchematronValidator.class);
     
     static ClassLoader loadedProbatronClasses;
-    static String jarFileName = "/jar/probatron.jar";
+    static String jarFileName = "/org/nmdp/miring/jar/probatron.jar";
     static String namespaceText = "{http://schemas.nmdp.org/spec/hml/1.0.1}";
     public static Document schematronRuleTemplate = null;
 
@@ -82,7 +82,7 @@ public class SchematronValidator
             URL jarURL = SchematronValidator.class.getResource(jarFileName);
             URI jarURI = jarURL.toURI();
             loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));            
-            schematronRuleTemplate = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/SchematronRuleTemplate.xml"));
+            schematronRuleTemplate = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/SchematronRuleTemplate.xml"));
             
             for(int i = 0; i < schemaFileNames.length; i++)
             {

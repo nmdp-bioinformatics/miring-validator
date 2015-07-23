@@ -69,7 +69,7 @@ public class MiringValidator
         
         //Tier 1
         logger.debug("Attempting Tier 1 Validation");
-        tier1ValidationErrors = SchemaValidator.validate(xml, "/schema/MiringTier1.xsd");
+        tier1ValidationErrors = SchemaValidator.validate(xml, "/org/nmdp/miring/schema/MiringTier1.xsd");
         sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
         
         //Tier 2
@@ -78,7 +78,7 @@ public class MiringValidator
         {
             logger.debug("Attempting Tier 2 validation");
             
-            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"/schematron/MiringAll.sch"});
+            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"/org/nmdp/miring/schematron/MiringAll.sch"});
             
             //Tier 3 is outside scope for now.  Okay.
             /*if(!Utilities.hasFatalErrors(tier2ValidationErrors)))
