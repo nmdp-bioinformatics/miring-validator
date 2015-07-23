@@ -82,8 +82,8 @@ public class SchemaValidator
         {
             MiringValidationContentHandler.clearModel();
             
-            missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingNodeTemplate.xml"));
-            missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/ruletemplates/MissingAttributeTemplate.xml"));
+            missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingNodeTemplate.xml"));
+            missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingAttributeTemplate.xml"));
             
             hmlNamespace = Utilities.getNamespaceName(xml);
             
