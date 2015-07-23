@@ -42,7 +42,7 @@ public class MiscTest
     public void testReportSchema()
     {        
         //Try against a report I have on file
-        String xml = Utilities.readXmlResource("/hml/ExampleResultReport.xml");
+        String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/ExampleResultReport.xml");
         //System.out.println("Validating these results against the report schema:");
         //System.out.println(xml);
         assertTrue(xml.length() > 1);
@@ -55,7 +55,7 @@ public class MiscTest
         
 
         //Try against a generated report
-        String hml = Utilities.readXmlResource("/hml/HMLWithCustomNamespace.xml");
+        String hml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLWithCustomNamespace.xml");
         assertTrue(hml.length()>0);
 
         String results = new MiringValidator(hml).validate();
@@ -78,7 +78,7 @@ public class MiscTest
     {
         logger.debug("Starting a testInvalidProlog");
         
-        String xml = Utilities.readXmlResource("/hml/invalid.prolog.xml.txt");
+        String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/invalid.prolog.xml.txt");
         MiringValidator validator = new MiringValidator(xml);
         String results = validator.validate();
         assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
@@ -89,7 +89,7 @@ public class MiscTest
     public void testXmlWithNamespace()
     {
         logger.debug("starting testXmlWithNamespace");
-        String xml = Utilities.readXmlResource("/hml/HMLWithCustomNamespace.xml");
+        String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLWithCustomNamespace.xml");
         assertTrue(xml.length()>0);
 
         String results;
@@ -110,12 +110,12 @@ public class MiscTest
     {
         logger.debug("starting testXmlWithTextAfterwards");
         
-        String xml = Utilities.readXmlResource("/hml/HMLwithoutTextAfter.txt");
+        String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLwithoutTextAfter.txt");
         String results = new MiringValidator(xml).validate();
         //System.out.println(results);
         assertTrue(results.length() > 1);
 
-        xml = Utilities.readXmlResource("/hml/HMLwithTextAfter.txt");
+        xml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLwithTextAfter.txt");
         results = new MiringValidator(xml).validate();
         //System.out.println(results);
         assertTrue(results.length() > 1);
