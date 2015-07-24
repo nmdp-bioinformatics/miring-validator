@@ -1,5 +1,10 @@
 /target/
 /log/
+/bin/
 
 *.log
 *.class
+.classpath
+.project
+.settings
+/.settings/*

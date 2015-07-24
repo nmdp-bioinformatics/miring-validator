@@ -108,7 +108,7 @@ public class ReportGeneratorTest
     public void testGetPropertiesFromRootHml()
     {
         logger.debug("starting testXmlWithNamespace");
-        String xml = Utilities.readXmlResource("/hml/HMLWithNamespaces.hml");
+        String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLWithNamespaces.hml");
         
         HashMap<String, String> properties = Utilities.getPropertiesFromRootHml(xml);
 

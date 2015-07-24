@@ -77,7 +77,7 @@ public class UtilsTest
         logger.debug("starting testLoadJarElements");
         try
         {
-            URL jarURL = SchematronValidator.class.getResource("/jar/probatron.jar");
+            URL jarURL = SchematronValidator.class.getResource("/org/nmdp/miring/jar/probatron.jar");
             assertNotNull(jarURL);
             URI jarURI = jarURL.toURI();
             URLClassLoader loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
@@ -113,7 +113,7 @@ public class UtilsTest
         logger.debug("starting testCallReflectedMethod");
         try
         {
-            URL jarURL = SchematronValidator.class.getResource("/jar/probatron.jar");
+            URL jarURL = SchematronValidator.class.getResource("/org/nmdp/miring/jar/probatron.jar");
             URI jarURI = jarURL.toURI();
             ClassLoader loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
             
@@ -136,7 +136,7 @@ public class UtilsTest
     {
         logger.debug("starting testXmlToDomObject");
 
-        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoGoodXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demogood.xml");
         Element xmlElement = Utilities.xmlToRootElement(demoGoodXML);
         assertNotNull(xmlElement);
         
@@ -159,7 +159,7 @@ public class UtilsTest
     {
         logger.debug("starting testGetHMLID");
 
-        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoGoodXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demogood.xml");
         
         String root = Utilities.getHMLIDRoot(demoGoodXML);
         String extension = Utilities.getHMLIDExtension(demoGoodXML);
@@ -173,7 +173,7 @@ public class UtilsTest
     {
         logger.debug("starting testReadXML");
 
-        String demoGoodXML = Utilities.readXmlResource("/hml/demogood.xml");
+        String demoGoodXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demogood.xml");
         assertNotNull(demoGoodXML);
         assertTrue(demoGoodXML.length() > 50);
     }
