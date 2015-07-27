@@ -168,7 +168,7 @@
     
   <rule node-name="consensus-sequence-block" 
     attribute-name="continuity" 
-    miring-rule-id="4.2.5.a" 
+    miring-rule-id="4.2.7.a" 
     severity="miring" />
     
   <rule node-name="variant" 
