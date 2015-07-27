@@ -138,7 +138,7 @@
   <rule node-name="consensus-sequence-block" 
     attribute-name="description" 
     miring-rule-id="4.2.a" 
-    severity="miring" />
+    severity="warning" />
     
   <rule node-name="consensus-sequence-block" 
     attribute-name="reference-sequence-id" 
