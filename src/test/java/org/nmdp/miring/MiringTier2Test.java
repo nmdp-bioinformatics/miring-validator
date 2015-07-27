@@ -109,13 +109,11 @@ public class MiringTier2Test
         assertTrue(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
         assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
 
-        
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element3.glstring.text.xml");
         results = new MiringValidator(xml).validate();
         assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
         assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
 
-        
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element3.glstring.uri.xml");
         results = new MiringValidator(xml).validate();
         assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));

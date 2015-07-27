@@ -39,13 +39,49 @@
     attribute-name="test-id" 
     miring-rule-id="1.3.a" 
     severity="miring" 
-    solution-text="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
     
   <rule node-name="sbt-ngs" 
     attribute-name="test-id-source" 
     miring-rule-id="1.3.a" 
     severity="miring" 
-    solution-text="test-id and test-id-source should refer to a valid NCBI-GRT procedure." />
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+   <rule node-name="sbt-sanger" 
+    attribute-name="test-id" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+  <rule node-name="sbt-sanger" 
+    attribute-name="test-id-source" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+   <rule node-name="sso" 
+    attribute-name="test-id" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+  <rule node-name="sso" 
+    attribute-name="test-id-source" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+   <rule node-name="ssp" 
+    attribute-name="test-id" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
+    
+  <rule node-name="ssp" 
+    attribute-name="test-id-source" 
+    miring-rule-id="1.3.a" 
+    severity="miring" 
+    solution-text="test-id and test-id-source should refer to a valid NCBI-GTR procedure." />
     
   <rule node-name="raw-reads" 
     attribute-name="availability" 
@@ -102,7 +138,7 @@
   <rule node-name="consensus-sequence-block" 
     attribute-name="description" 
     miring-rule-id="4.2.a" 
-    severity="miring" />
+    severity="warning" />
     
   <rule node-name="consensus-sequence-block" 
     attribute-name="reference-sequence-id" 
@@ -132,7 +168,7 @@
     
   <rule node-name="consensus-sequence-block" 
     attribute-name="continuity" 
-    miring-rule-id="4.2.5.a" 
+    miring-rule-id="4.2.7.a" 
     severity="miring" />
     
   <rule node-name="variant" 

@@ -40,7 +40,7 @@
     
   <rule node-name="allele-assignment" 
     miring-rule-id="2.1.a" 
-    severity="miring" 
+    severity="warning" 
     solution-text="Every typing node must have at least one child allele-assignment node." />
     
   <rule node-name="glstring" 
