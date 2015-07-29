@@ -22,78 +22,38 @@
 
  -->
 <html>
-   <head> 
-     <script type="text/javascript" src="jquery-1.11.3.min.js"></script>
-     <script>
-    function callRestService() 
-    {
-        var request = window.location.href + "validator/ValidateMiring/";
-        //alert("the request location is: " + request);
-        
-        var xmlText = document.getElementById("inputText").value;
-        //alert("xml = " + xmlText);
-        
-        var results = $.post(request,
-        {xml:xmlText},
-        function(response)
-        {
-            //alert("This is called if there was a successful request.  Storing the response in the right text box.");
-            var resultXml = new XMLSerializer().serializeToString(response);
-            resultXml = decodeURIComponent(resultXml);
-            //alert(String(resultXml));
-            document.getElementById("resultsText").value = resultXml;
-        })
-        .done(function() 
-        {
-              //alert( "Function was done successfully." );
-        })
-        
-        .fail(function() 
-        {
-              alert( "Error.  Something wrong happened.");
-              alert("request = " + request);
-        })
-        
-        .always(function() 
-        {
-              //alert( "Finished Attempt.  This should always be called after success or failure." );
-        })
-        ;
-    }
-    </script>
-   </head>
-   <body>
-   A simple but beautiful HTML interface for calling the MIRING HML Validation Service.<br/>
-   Please paste some XML, compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1</a> into the upper field and hit "VALIDATE".<br/>
-   MIRING results will appear below.
-   <br/><br/>
+  <head>
+    <script type="text/javascript" src="jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="WebScripts.js" ></script>
+  </head>
 
-   Input:
-   
-   <br/>
-   <textarea id="inputText" cols="160" rows="15">Paste some HML Here.</textarea>
-   <br/><br/>
-      
-     <button onclick="javascript:callRestService();">VALIDATE</button>
-     <br/>
-     <br/>
-      
-      Results:
-   
-   <br/>
-   <textarea id="resultsText" cols="160" rows="15">Results go here.</textarea>
-   
-   <br/>
-   <a href="http://biorxiv.org/content/early/2015/02/06/014951">HML manuscript</a>
-   <br/><br/>
-   <a href="http://schemas.nmdp.org/">HML Schema and Samples</a>
-   <br/><br/>
-   <a href="http://biorxiv.org/content/early/2015/02/16/015230">MIRING manuscript</a>
-   <br/><br/>
-   <a href="https://github.com/nmdp-bioinformatics/MiringValidator">MIRING Validator code is on GITHUB</a>
-   <br/><br/>
-   <!--<a href="http://www.w3schools.com/html/">MIRING Report Schema</a>
-   <br/><br/>-->
+  <body>
+  
+  Please paste some XML, compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1</a> into the HML field and hit "VALIDATE".<br/>
+  MIRING results will appear below.
+  
+  <br/><br/>
 
-   </body>
+  HML Input:<br/>
+  <textarea id="inputText" cols="160" rows="15"></textarea>
+  
+  <br/><br/>
+  <button onclick="javascript:callRestService();">VALIDATE</button>
+  <button onclick="javascript:clearText();">CLEAR</button>  
+  <br/><br/>
+
+  MIRING Results:<br/>
+  <textarea id="resultsText" cols="160" rows="15"></textarea>
+
+  <br/><br/>More info on HML and MIRING:<br/><br/>  
+  <a href="http://biorxiv.org/content/early/2015/02/06/014951">HML manuscript</a><br/><br/>
+  <a href="http://schemas.nmdp.org/">HML Schema and Samples</a><br/><br/>
+  <a href="http://biorxiv.org/content/early/2015/02/16/015230">MIRING manuscript</a><br/><br/>
+  <a href="https://github.com/nmdp-bioinformatics/MiringValidator">MIRING Validator code is on GITHUB</a><br/><br/>
+  <a href="https://bethematch.org/">Be The Match</a><br/><br/>
+
+  <!--<a href="http://www.w3schools.com/html/">MIRING Report Schema</a><br/><br/>-->
+
+
+  </body>
 </html>
