@@ -4,4 +4,4 @@ docker rmi $(docker images -qf "dangling=true")
 
 docker build -t miringvalidator .
 
-docker run -it miringvalidator bash
+docker run -it -p 8080 miringvalidator bash

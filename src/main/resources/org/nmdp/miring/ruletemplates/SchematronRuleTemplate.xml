@@ -54,18 +54,33 @@
     miring-rule-id="2.2.1.c" 
     solution-text="This is a warning, not a serious error.  consensus-sequence-block:reference-sequence-id must have a corresponding reference-sequence:id, but the opposite is not necessarily true." 
     severity="warning" />
+
+  <rule error-text="A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring." 
+    miring-rule-id="3.2.a" 
+    solution-text="A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start." 
+    severity="warning" />
+    
+  <rule error-text="On a sequence quality node, sequence-end must be greater than sequence-start." 
+    miring-rule-id="4.a" 
+    solution-text="A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start." 
+    severity="warning" />
     
   <rule error-text="On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive." 
     miring-rule-id="4.b" 
     solution-text="A sequence-quality node has a sequence-start and sequence-end attributes.  They refer to positions within the consensus-sequence-block, and therefore must be contained within the range of parent's end and start." 
+    severity="warning" />
+    
+  <rule error-text="On a consensus-sequence-block node, end attribute should be greater than or equal to the start attribute." 
+    miring-rule-id="4.2.3.b" 
+    solution-text="Verify that the end attribute is greater than or equal to the start attribute." 
     severity="miring" />
 
-  <rule error-text="The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute" 
+  <rule error-text="The start attribute on a consensus-sequence-block node should be greater than or equal to the start attribute on the corresponding reference-sequence node." 
     miring-rule-id="4.2.3.d" 
     solution-text="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
     severity="miring" />
     
-  <rule error-text="The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute" 
+  <rule error-text="The end attribute on a consensus-sequence-block node should be less than or equal to the end attribute on the corresponding reference-sequence node." 
     miring-rule-id="4.2.3.d" 
     solution-text="Verify that the consensus-sequence-block:start is greater than or equal to start, and consensus-sequence-block:end is less than or equal to end on the corresponding reference-sequence." 
     severity="miring" />
