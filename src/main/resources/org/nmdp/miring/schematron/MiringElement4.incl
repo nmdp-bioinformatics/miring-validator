@@ -39,6 +39,7 @@
         <assert test="@sequence-start &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
         <assert test="@sequence-end &lt;= $csbRange">On a sequence quality node, the sequence-start and sequence-end attributes must be between 0 and (consensus-sequence-block:end - consensus-sequence-block:start) inclusive.</assert>
     </rule>
+    
     <!--
         Rule 4.2.3.b
         end >= start

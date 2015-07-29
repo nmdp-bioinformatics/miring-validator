@@ -21,10 +21,11 @@ RUN apt-get install -y git
 #Clone Github Project Site
 RUN cd /opt && git clone https://github.com/bmatern-nmdp/MiringValidator
 
-#Build and Run Miring Validator
-#RUN cd /opt/MiringValidator && mvn clean
-#RUN cd /opt/MiringValidator && mvn install
-RUN cd /opt/MiringValidator && mvn tomcat7:run-war
-
+#Expose my port
 EXPOSE 8080
+
+#Build and Run Miring Validator
+RUN cd /opt/MiringValidator && mvn clean install tomcat7:run-war
+
+
 
