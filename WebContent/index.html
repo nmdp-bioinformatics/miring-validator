@@ -26,9 +26,6 @@
     <title>MIRING HML Validator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="WebScripts.js" ></script>
   </head>
 
 
@@ -37,15 +34,20 @@
       <h1 align="center">MIRING Validator for HML</h1>
       <p align="center">Paste some XML, compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1</a> into the HML field and hit "VALIDATE".</p>
       <p align="center">MIRING results will appear below.</p>
+      <p align="center">Or, use the "Choose File" button to select an HML document on your local computer.</p>
 
       <br/>
       <h4 align="center">HML Input:</h4>
       <textarea id="inputText" class="form-control" rows="15"></textarea>
       <br/>
 
+      <div align="center" class="form-group">
+        <input type="file" class="file" id="hmlInputFile" >
+      </div>
+
       <p align="center">
-        <button onclick="javascript:callRestService();">VALIDATE</button>
-        <button onclick="javascript:clearText();">CLEAR</button>
+        <button class='btn btn-primary' onclick="javascript:callRestService();">VALIDATE</button>
+        <button class='btn btn-primary' onclick="javascript:clearText();">CLEAR</button>
       </p>
 
       <br/>
@@ -72,4 +74,9 @@
 
     </div>
   </body>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="WebScripts.js" ></script>
+  
 </html>
