@@ -1474,7 +1474,7 @@
     </xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="variant-effect" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="variant-effect" minOccurs="1" maxOccurs="unbounded" />
       </xs:sequence>
       <xs:attribute name="id" use="required">
         <xs:simpleType>
