@@ -22,7 +22,7 @@
 
  -->
 
-<miring-report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" timestamp="07/06/2015 16:40:00" xsi:noNamespaceSchemaLocation="../../../main/resources/schema/miringreport.xsd">
+<miring-report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" timestamp="07/06/2015 16:40:00" xsi:noNamespaceSchemaLocation="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">
    <miring-compliant>false</miring-compliant>
    <hmlid extension="20150220.hml101.54.64" root="2.16.840.1.113883.3.1470"/>
    <samples compliant-sample-count="0" noncompliant-sample-count="3" sample-count="3">

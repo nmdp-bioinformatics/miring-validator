@@ -84,7 +84,7 @@ public class ReportGenerator
             
             //NAMESPACES
             rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "../../../main/resources/schema/miringreport.xsd");
+            rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd");
 
             addMiringCompliantElement(validationResults, doc);
             
