@@ -930,7 +930,7 @@
         Children:
         ---------
         - property: (optional, qty, 0 or more)
-        - raw-reads (optional, qty: 0 or more)
+        - raw-reads (required, qty: 1 or more)
 
         Also allows an optional "property" element that may have nested/custom 
         use data related to this typing-method.
