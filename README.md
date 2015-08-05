@@ -4,6 +4,8 @@
 
 This is a REST service that validates an HML file according to a MIRING checklist, and returns a XML report specifying any encountered MIRING infractions.
 
+You can import this project into eclipse (Import as a Maven Project), or use the text editor of your choice.  I recommend you use java 1.8 and MAVEN to build.
+
 Build MiringValidator.war file using MAVEN:
 $ mvn clean install
 
@@ -17,14 +19,14 @@ http://localhost:8080/MiringValidator
 
 MIRING stands for Minimum Information for Reporting Next Generation Sequence Genotyping, and represents a minimum checklist of data to be included in a NGS report.
 
-MIRING is meant to be independant of data platform, this implementation is based on HML 1.0.1.
+MIRING is independant of data platform, but this validator is based on HML 1.0.1.
 
 See a MIRING Compliant HML sample at schemas.nmdp.org
 
 MIRING: http://biorxiv.org/content/early/2015/02/16/015230
 HML: http://biorxiv.org/content/early/2015/02/06/014951
 
-MIRING rules are based on 7 general elements:
+MIRING rules are based on 8 general elements:
 
 ##### MIRING Element 1 - Message Annotation
 Message Generator Contact Information
