@@ -33,7 +33,8 @@
   <rule node-name="reporting-center" 
     attribute-name="reporting-center-context" 
     miring-rule-id="1.2.b" 
-    severity="miring" />
+    severity="warning" 
+    solution-text="You can use reporting-center-context to specify the naming authority of the reporting center identifier.  Reporting-center-context is not explicitly required." />
     
   <rule node-name="sbt-ngs" 
     attribute-name="test-id" 

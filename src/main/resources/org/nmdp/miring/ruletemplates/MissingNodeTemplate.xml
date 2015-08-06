@@ -48,6 +48,11 @@
     severity="warning" 
     solution-text="A glstring node is expected as a child of an allele-assignment node. Please verify that the locus of the allele-assignment is specified either in a glstring, or as a locus attribute in a sbt-ngs node." />
 
+  <rule node-name="variant-effect" 
+    miring-rule-id="5.1.a" 
+    severity="warning" 
+    solution-text="You can use variant-effect nodes to specify the type of variant specified.  They should have a term attribute, containing a SO (Sequence Ontology) variant effect term." />
+
 </rule-template>
 
 

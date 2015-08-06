@@ -51,7 +51,7 @@ public class MiringValidatorService
     @Produces("application/xml")
     public String validateMiring(@FormParam("xml") String xml)
     {
-        System.out.println("Web Service Call Recieved.  ");
+        //System.out.println("Web Service Call Received.  ");
         //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
         logger.debug( "Received web service call.");
         //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
