@@ -21,13 +21,47 @@
 
 */
 
-document.getElementById("hmlInputFile").addEventListener("change", 
-    function()
-    {
-        readSingleFile(document.getElementById("hmlInputFile"));
-    }
-);
+/*
+    These are the scripts used by index.html to present a simple validation interface.
+ */
 
+function click(el) 
+{
+    // Simulate click on the hidden file element.
+    var evt = document.createEvent('Event');
+    evt.initEvent('click', true, true);
+    el.dispatchEvent(evt);
+}
+
+document.querySelector('#fileSelectButton').addEventListener('click', function(e) 
+{
+    //When we click the browse button, instead click the hidden file element.
+    var fileInput = document.querySelector('#fileInput');
+    fileInput.click(); 
+}, false);
+
+function readSingleFile(fileElement) 
+{
+    //Read the file from the hidden file element, put it's text in the input field.
+    var f = fileElement.files[0]; 
+    if (f)
+    {
+        var r = new FileReader();
+        r.onload = function(e) 
+        {
+            var contents = e.target.result;
+            document.getElementById("inputText").value = contents;
+            callRestService();
+        }
+        r.readAsText(f);
+    } 
+    else 
+    { 
+        alert("Failed to load file");
+    }
+}
+
+//This script uses jquery, which was loaded in index.html.
 function callRestService() 
 {
     var request = window.location.href + "validator/ValidateMiring/";
@@ -44,6 +78,20 @@ function callRestService()
             resultXml = decodeURIComponent(resultXml);
             //alert(String(resultXml));
             document.getElementById("resultsText").value = resultXml;
+            
+            if(isMiringCompliant(resultXml))
+            {
+                //alert("MIRING Compliant.");
+                document.getElementById("greenCheck").style.display = 'block';
+                document.getElementById("redX").style.display = 'none';
+            }
+            else
+            {
+                //alert("Not MIRING Compliant.");
+                document.getElementById("greenCheck").style.display = 'none';
+                document.getElementById("redX").style.display = 'block';
+            }
+            
         })
         .done(function() 
         {
@@ -65,24 +113,30 @@ function clearText()
 {
     document.getElementById("resultsText").value = "";
     document.getElementById("inputText").value = "";
+    document.getElementById("greenCheck").style.display = 'none';
+    document.getElementById("redX").style.display = 'none';
 }
 
-function readSingleFile(fileElement) 
+function isMiringCompliant(xml)
 {
-    var f = fileElement.files[0]; 
-    if (f)
+    //Using simple string operations to pull a "true" or "false" from the report
+    compliantBooleanBeginLocation = xml.indexOf("<miring-compliant>") + 18;
+    compliantBooleanEndLocation = xml.indexOf("</miring-compliant>");
+    compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
+    //alert(compliantBoolean);
+    
+    if(compliantBoolean == "true" )
     {
-        var r = new FileReader();
-        r.onload = function(e) 
-        {
-            var contents = e.target.result;
-            document.getElementById("inputText").value = contents;
-            callRestService();
-        }
-        r.readAsText(f);
-    } 
-    else 
-    { 
-      alert("Failed to load file");
+        return true;
+    }
+    else if (compliantBoolean == "false")
+    {
+        return false;
+    }
+    else
+    {
+        alert("Error determining MIRING Compliance.");
+        return false;
     }
 }
+
