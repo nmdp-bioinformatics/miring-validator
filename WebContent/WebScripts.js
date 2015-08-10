@@ -25,6 +25,26 @@
     These are the scripts used by index.html to present a simple validation interface.
  */
 
+function downloadResults()
+{
+    xml = document.getElementById("resultsText").value;
+    download("MiringResultsReport.xml",xml);
+}
+
+function download(filename, text) 
+{
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
 function click(el) 
 {
     // Simulate click on the hidden file element.
