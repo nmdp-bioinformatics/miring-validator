@@ -52,6 +52,9 @@ References for processing methodologies and software
 ##### MIRING Element 8 - Primary Data  
 References to raw NGS data in a public database  
   
+  
+### RULES  
+  
 The validator further divides these elements into rules.  For a rule ID reference, see http://miring.b12x.org/MoreInfo.html  
 
 
