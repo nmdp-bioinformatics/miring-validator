@@ -15,13 +15,13 @@ $ mvn clean install tomcat7:run-war
 Once your tomcat server is running, you should find the web interface at:
 http://localhost:8080/MiringValidator
 
-### Rule Reference:
+### MIRING:
 
 MIRING stands for Minimum Information for Reporting Next Generation Sequence Genotyping, and represents a minimum checklist of data to be included in a NGS report.
 
 MIRING is independant of data platform, but this validator is based on HML 1.0.1.
 
-See a MIRING Compliant HML sample at schemas.nmdp.org
+See a MIRING Compliant HML sample at http://schemas.nmdp.org
 
 MIRING: http://biorxiv.org/content/early/2015/02/16/015230
 HML: http://biorxiv.org/content/early/2015/02/06/014951
@@ -29,8 +29,7 @@ HML: http://biorxiv.org/content/early/2015/02/06/014951
 MIRING rules are based on 8 general elements:
 
 ##### MIRING Element 1 - Message Annotation
-Message Generator Contact Information
-Document Identification
+Message Generator Contact Information & Document Identification
 
 ##### MIRING Element 2 - Reference Context
 Reference Sequences and Databases
@@ -52,6 +51,8 @@ References for processing methodologies and software
 
 ##### MIRING Element 8 - Primary Data
 References to raw NGS data in a public database
+
+The validator further divides these elements into rules.  For a rule ID reference, see http://miring.b12x.org/MoreInfo.html
 
 
 

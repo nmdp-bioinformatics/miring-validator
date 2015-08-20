@@ -23,6 +23,7 @@
 package org.nmdp.miring;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -53,7 +54,7 @@ public class MiringValidatorService
     {
         //System.out.println("Web Service Call Received.  ");
         //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
-        logger.debug( "Received web service call.");
+        logger.debug( "Received Miring Validation web service call.");
         //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
         if(xml == null)
@@ -75,6 +76,27 @@ public class MiringValidatorService
 
             String report = myValidator.getReport();
             return report;
+        }
+    }
+    
+    /**
+     * This method provides a MIRING Compliant sample HML document.
+     *
+     * @return a String containing MIRING Compliant XML document.
+     */
+    @GET
+    @Produces("application/xml")
+    public String getMiringSample()
+    {
+        logger.debug( "Received Sample XML web service call.");
+        try
+        {
+            String sampleXML = Utilities.readXmlResource("/org/nmdp/miring/hml/hml_1_0_1_example_miring.xml");
+            return sampleXML;
+        }
+        catch(Exception e)
+        {
+            return "There was a problem fetching the sample: " + e;
         }
     }
 }

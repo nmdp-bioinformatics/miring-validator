@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    MIRING (Minimum Information for Reporting Next Generation Sequence Genotyping) Compliant HML
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
+
+    This specification is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation; either version 3 of the License, or (at
+    your option) any later version.
+
+    This specification is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; with out even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this specification;  if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.
+
+    > http://www.gnu.org/licenses/lgpl.html
+
+-->
+<hml xmlns="http://schemas.nmdp.org/spec/hml/1.0.1"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://schemas.nmdp.org/spec/hml/1.0.1  http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd"
+ version="1.0.1" >
+
+ <!-- 
+  MIRING Element 1.1 requires the inclusion of an hmlid.
+  hmlid can be reported in the form of an ISO Object Identifier (OID)
+  "root" represents a unique publically registered organization
+  "extension" is a unique document id managed by the reporting organization.
+ -->
+
+ <hmlid root="2.34.48.32" extension="HML.3245662"/>
+
+ <!-- 
+  MIRING Element 1.2 requires the inclusion of a reporting-center.
+  reporting-center identifies the organization sending the HML message.
+  "reporting-center-id" is a unique identifier of the sender.
+  "reporting-center-context" reports the context/naming authority of the identifier.
+ -->
+
+ <reporting-center reporting-center-id="567"/>
+ <sample id="4555-6677-8">
+  <typing gene-family="HLA" date="2015-01-13">
+
+   <!-- 
+    MIRING Element 3 requires the inclusion of Genotyping information.
+    The Genotype should include all pertinent Loci, as well as a Genotype in a standard format.  
+    GLStrings can be included either as plain text, or as a reference to a publicly
+    available service, such as GL Service (gl.nmdp.org)
+   -->
+
+   <allele-assignment date="2015-07-28" allele-db="IMGT/HLA" allele-version="3.17.0">
+    <haploid locus="HLA-A" method="DNA" type="02:20:01"/>
+    <glstring>
+     HLA-A*02:20:01
+    </glstring>
+   </allele-assignment>
+   <typing-method>
+
+   <!-- 
+    MIRING Element 6 requires platform documentation.  This could be a peer-reviewed publication,
+    or an identifier of a procedure on a publicly available resource, such as NCBI GTR
+   -->
+
+    <sbt-ngs locus="HLA-A"
+     test-id="HLA-A.Test.1234"
+     test-id-source="AcmeGenLabs">
+     <raw-reads uri="rawreads/read1.fastq.gz"
+      availability="public"
+      format="fastq"
+      paired="1"
+      pooled="1"
+      adapter-trimmed="1"
+      quality-trimmed="0"/>
+    </sbt-ngs>
+   </typing-method>
+   <consensus-sequence date="2015-01-13">
+
+    <!-- 
+     MIRING Element 2 requires the inclusion of Reference Context.
+     The location and identifiers of the reference sequence should be specified. 
+     start and end attributes are 0-based, and refer to positions on the reference sequence.
+    --> 
+
+    <reference-database availability="public" curated="true">
+     <reference-sequence
+      name="HLA-A reference"
+      id="Ref111"
+      start="945000"
+      end="946000"
+      accession="GL000123.4"
+      uri="http://AcmeGenReference/RefDB/GL000123.4"/>
+    </reference-database>
+
+    <!-- 
+     MIRING Element 4 requires the inclusion of a consensus sequence.
+     The start and end positions are 0-based, and refer to positions on the reference sequence (reference-sequence-id)
+     Multiple consensus-sequence-block elements can be included sequentially.
+    -->
+
+    <consensus-sequence-block reference-sequence-id="Ref111"
+     start="945532"
+     end="945832"
+     strand="+"
+     phase-set="1"
+     expected-copy-number="1"
+     continuity="true"
+     description="HLA-A Consensus Sequence 4.5.67">
+
+     <!-- 
+      A sequence can be reported as plain text, or as a pointer to an external reference,
+      or as variants from a reference sequence.
+     -->
+
+     <sequence>
+      CCCAGTTCTCACTCCCATTGGGTGTCGGGTTTCCAGAGAAGCCAATCAGTGTCGTCGCGGTCGCTGTTCTAAAGCCCGCACGCACCCACCGGGACTCAGATTCTCCCCAGACGCCGAGGATGGCCGTCATGGCGCCCCGAACCCTCCTCCTGCTACTCTCGGGGGCCCTGGCCCTGACCCAGACCTGGGCGGGTGAGTGCGGGGTCGGGAGGGAAACCGCCTCTGCGGGGAGAAGCAAGGGGCCCTCCTGGCGGGGGCGCAGGACCGGGGGAGCCGCGCCGGGACGAGGGTCGGGCAGGT
+     </sequence>
+
+     <!-- 
+      MIRING Element 5 requires the inclusion of any relevant sequence polymorphisms.  
+      These represent variants from the reference sequence.
+      start and end attributes are 0-based, and refer to positions on the reference sequence.
+      You can see this variant at positions 10 - 15 on the sequence. (945542 - 945532 = 10)
+     -->
+
+     <variant id="0"
+      reference-bases="GTCATG"
+      alternate-bases="ACTCCC"
+      start="945542"
+      end="945548"
+      filter="pass"
+      quality-score="95">
+
+      <!-- 
+       The functional effects of variants can be reported using variant-effect.  
+       They should use Sequence Ontology (SO) variant effect terms.
+      -->
+
+      <variant-effect term="missense_variant"/>
+     </variant>
+    </consensus-sequence-block>
+   </consensus-sequence>
+  </typing>
+ </sample>
+
+ <!-- 
+  Multiple samples can be included in a single message.  
+  Each sample should have it's own reference-database(s) even if they are identical to other samples' references. 
+ -->
+
+ <sample id="4555-6677-9">
+  <typing gene-family="HLA" date="2015-01-13">
+   <allele-assignment date="2015-07-28" allele-db="IMGT/HLA" allele-version="3.17.0">
+    <haploid locus="HLA-A" method="DNA" type="02:20:01"/>
+    <glstring>
+     HLA-A*02:01:01:01
+    </glstring>
+   </allele-assignment>
+   <typing-method>
+    <sbt-ngs locus="HLA-A"
+     test-id="HLA-A.Test.1234"
+     test-id-source="AcmeGenLabs">
+     <raw-reads uri="rawreads/read2.fastq.gz"
+      availability="public"
+      format="fastq"
+      paired="1"
+      pooled="1"
+      adapter-trimmed="1"
+      quality-trimmed="0"/>
+    </sbt-ngs>
+   </typing-method>
+   <consensus-sequence date="2015-01-13">
+    <reference-database availability="public" curated="true">
+     <reference-sequence
+      name="HLA-A reference"
+      id="Ref112"
+      start="945000"
+      end="946000"
+      accession="GL000123.4"
+      uri="http://AcmeGenReference/RefDB/GL000123.4"/>
+    </reference-database>
+    <consensus-sequence-block 
+     reference-sequence-id="Ref112"
+     start="945532"
+     end="945832"
+     strand="+"
+     phase-set="1"
+     expected-copy-number="1"
+     continuity="true"
+     description="HLA-A Consensus Sequence 4.5.89">
+     <sequence>
+      CCCAGTTCTCGTCATGATTGGGTGTCGGGTTTCCAGAGAAGCCAATCAGTGTCGTCGCGGTCGCTGTTCTAAAGCCCGCACGCACCCACCGGGACTCAGATTCTCCCCAGACGCCGAGGATGGCCGTCATGGCGCCCCGAACCCTCCTCCTGCTACTCTCGGGGGCCCTGGCCCTGACCCAGACCTGGGCGGGTGAGTGCGGGGTCGGGAGGGAAACCGCCTCTGCGGGGAGAAGCAAGGGGCCCTCCTGGCGGGGGCGCAGGACCGGGGGAGCCGCGCCGGGACGAGGGTCGGGCAGGT
+     </sequence>
+    </consensus-sequence-block>
+   </consensus-sequence>
+  </typing>
+ </sample>
+ 
+</hml>

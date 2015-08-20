@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- 
+
+    MiringValidator  Semantic Validator for MIRING compliant HML
+    Copyright (c) 2015 National Marrow Donor Program (NMDP)
+
+    This library is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation; either version 3 of the License, or (at
+    your option) any later version.
+
+    This library is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; with out even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+    License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library;  if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.
+
+    > http://www.gnu.org/licenses/lgpl.html
+
+ -->
+<html>
+  <head>
+    <title>MIRING Info and Rules</title>
+    <!-- Viewport makes everything resizeable and nice. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap makes the webpage look nice-ish so I don't have to. -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <h1 align="center">MIRING</h1>
+      
+      <p align="center">
+        MIRING stands for <u>M</u>inimum <u>I</u>nformation for <u>R</u>eport<u>i</u>ng <u>N</u>ext Generation Sequencing <u>G</u>enotyping.  It is a checklist of elements that should be included when transmitting NGS Genotyping data.  
+      </p>
+      <p align="center">
+        The purpose of MIRING is to enable downstream platform-independant analysis and re-analaysis of genotyping data, and allow comparison between the genotyping results of different platforms, references, or methodologies.
+      </p>
+      <p align="center">
+        MIRING is intended to be a restriction on the syntax or format of the data, but more as a set of minimum requirements for what should be present.  This MIRING validator specifically is intented to be used on an XML document compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1.</a>
+      </p>
+
+
+      <p align="center">
+        <a href="http://biorxiv.org/content/early/2015/02/06/014951">HML manuscript</a><br/>
+        <a href="http://schemas.nmdp.org/">HML Schema and Samples</a><br/>
+        <a href="http://biorxiv.org/content/early/2015/02/16/015230">MIRING manuscript</a><br/>
+        <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report Schema</a><br/>
+        
+        <a href="https://bethematch.org/">Be The Match</a><br/>
+      </p>
+      
+         <p align="center" ><a href="https://github.com/nmdp-bioinformatics/MiringValidator">Validator code is on GITHUB</a></p>
+
+
+    </div>
+  </body>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</html>
