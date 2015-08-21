@@ -78,25 +78,4 @@ public class MiringValidatorService
             return report;
         }
     }
-    
-    /**
-     * This method provides a MIRING Compliant sample HML document.
-     *
-     * @return a String containing MIRING Compliant XML document.
-     */
-    @GET
-    @Produces("application/xml")
-    public String getMiringSample()
-    {
-        logger.debug( "Received Sample XML web service call.");
-        try
-        {
-            String sampleXML = Utilities.readXmlResource("/org/nmdp/miring/hml/hml_1_0_1_example_miring.xml");
-            return sampleXML;
-        }
-        catch(Exception e)
-        {
-            return "There was a problem fetching the sample: " + e;
-        }
-    }
 }

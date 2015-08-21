@@ -25,6 +25,72 @@
     These are the scripts used by index.html to present a simple validation interface.
  */
 
+function printRuleTable()
+{
+    alert("inside printrule");
+    ruleText = ""
+    htmlText = "";
+    
+    getFileFromServer("rules/Rules.csv", function(text) 
+    {
+        if (text === null) 
+        {
+            alert("Problem getting Rules.csv from the server");
+        }
+        else 
+        {
+            alert("text: " + text);
+            ruleText = text;
+            alert("ruleText: " + ruleText);
+        }
+    });
+    
+    alert("just wasting time.");
+    var lines = ruleText.split(/\r|\r?\n/g);
+    
+    alert("ruletext: " + ruleText);
+    alert("lineCount: " + lines.length);
+
+    htmlText+="<table>";
+    for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
+    {
+        htmlText+="<tr>";
+        
+        line = lines[lineIndex];
+        var tokens = line.split(",");
+        
+        htmlText+="<td>SMAMPLME</td>";
+        for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
+        {
+            htmlText+="<td>" + tokens[tokenInd] + "</td>";
+        }
+        
+        htmlText+="</tr>";
+    }
+    htmlText+="</table>";
+    
+    
+    alert("returning html: " + htmlText);
+    return htmlText;
+}
+
+//AJAX to get a file from the server.
+function getFileFromServer(url, doneCallback)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = handleStateChange;
+    xhr.open("GET", url, true);
+    xhr.send();
+
+    function handleStateChange() 
+    {
+        if (xhr.readyState === 4) 
+        {
+            doneCallback(xhr.status == 200 ? xhr.responseText : null);
+        }
+    }
+}
+
 function downloadResults()
 {
     xml = document.getElementById("resultsText").value;
@@ -45,21 +111,6 @@ function download(filename, text)
     document.body.removeChild(element);
 }
 
-function click(el) 
-{
-    // Simulate click on the hidden file element.
-    var evt = document.createEvent('Event');
-    evt.initEvent('click', true, true);
-    el.dispatchEvent(evt);
-}
-
-document.querySelector('#fileSelectButton').addEventListener('click', function(e) 
-{
-    //When we click the browse button, instead click the hidden file element.
-    var fileInput = document.querySelector('#fileInput');
-    fileInput.click(); 
-}, false);
-
 function readSingleFile(fileElement) 
 {
     //Read the file from the hidden file element, put it's text in the input field.
@@ -71,7 +122,7 @@ function readSingleFile(fileElement)
         {
             var contents = e.target.result;
             document.getElementById("inputText").value = contents;
-            callRestService();
+            callValidatorService();
         }
         r.readAsText(f);
     } 
@@ -83,37 +134,23 @@ function readSingleFile(fileElement)
 
 function loadSample()
 {
-    var request = window.location.href + "validator/ValidateMiring/";
-    //alert("the request location is: " + request);
-  
-    var results = $.get(request,
-        function(response)
+    getFileFromServer("hml/hml_1_0_1_example_miring.xml", function(text) 
+    {
+        if (text === null) 
         {
-            //alert("This is called if there was a successful request.  Storing the response in the right text box.");
-            var resultXml = new XMLSerializer().serializeToString(response);
-            resultXml = decodeURIComponent(resultXml);
-            //alert(String(resultXml));
-            document.getElementById("inputText").value = resultXml;
-            
-            callRestService();
-        })
-        .done(function() 
-        {
-            //alert( "Function was completed successfully." );
-        })
-        .fail(function() 
-        {
-            alert( "Error.  Something wrong happened.");
-            alert("request = " + request);
-        })
-        .always(function() 
-        {
-            //alert( "Finished Attempt.  This should always be called after success or failure." );
+            alert("Problem getting hml_1_0_1_example_miring.xml from the server");
         }
-    );
+        else 
+        {
+            sampleXML = text;
+            
+            document.getElementById("inputText").value = sampleXML;
+            callValidatorService();
+        }
+    });
 }
 
-function callRestService() 
+function callValidatorService() 
 {
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);

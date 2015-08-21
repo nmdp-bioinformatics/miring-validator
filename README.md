@@ -56,7 +56,9 @@ References to raw NGS data in a public database
 ### RULES  
   
 The validator further divides these elements into rules.  For a rule ID reference, see http://miring.b12x.org/MoreInfo.html  
-
+  
+  
+This validator engine is powered by [SAX Parser](http://docs.oracle.com/javase/7/docs/api/javax/xml/parsers/SAXParser.html) and [Probatron4j](http://www.probatron.org/probatron4j.html), an excellent implementation of [Schematron](http://www.schematron.com/)
 
 
 

@@ -22,6 +22,11 @@
 
  -->
 <html>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="javascript\WebScripts.js" ></script>
+
   <head>
     <title>MIRING HML Validator</title>
     <!-- Viewport makes everything resizeable and nice. -->
@@ -73,13 +78,29 @@
       -->
       <input type="file" id="fileInput" multiple onchange="readSingleFile(this)">
 
-
       <p align="center">
-        <button class='btn btn-primary' onclick="javascript:callRestService();">VALIDATE</button>
+        <button class='btn btn-primary' onclick="javascript:callValidatorService();">VALIDATE</button>
         <button class='btn btn-primary' id="fileSelectButton">BROWSE</button>
         <button class='btn btn-primary' onclick="javascript:loadSample();">SAMPLE</button>
         <button class='btn btn-primary' onclick="javascript:clearText();">CLEAR</button>
       </p>
+      
+      <script>
+        function click(el) 
+        {
+            // Simulate click on the hidden file element.
+            var evt = document.createEvent('Event');
+            evt.initEvent('click', true, true);
+            el.dispatchEvent(evt);
+        }
+
+        document.querySelector('#fileSelectButton').addEventListener('click', function(e) 
+        {
+            //When we click the browse button, instead click the hidden file element.
+            var fileInput = document.querySelector('#fileInput');
+            fileInput.click(); 
+        }, false);
+      </script>
 
       <br/>
       <h3 align="center">MIRING Results</h3>
@@ -93,6 +114,8 @@
       <button class='btn btn-primary' onclick="javascript:downloadResults();">DOWNLOAD RESULTS</button>
       </p>
       <br/>
+      
+
 
       <h4 align="center">
         Use the MIRING Validator in your own application:
@@ -110,13 +133,7 @@
         <a href="MoreInfo.html">More information on MIRING, HML, and validation</a><br/>
       </h4>
 
-      
-
     </div>
   </body>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="WebScripts.js" ></script>
 
 </html>
