@@ -27,56 +27,57 @@
 
 function printRuleTable()
 {
-    alert("inside printrule");
-    ruleText = ""
+    //alert("inside printrule");
     htmlText = "";
     
     getFileFromServer("rules/Rules.csv", function(text) 
     {
+        //This is the callback function for the web request.
+        //This function should really only be executed if the request was a success.
         if (text === null) 
         {
-            alert("Problem getting Rules.csv from the server");
+            alert("Problem getting Rules.csv from the server.  Text is null.");
         }
         else 
         {
-            alert("text: " + text);
-            ruleText = text;
-            alert("ruleText: " + ruleText);
+            
+            //alert("text: " + text);
+            var lines = text.split(/\r|\r?\n/g);
+            
+            //alert("ruletext: " + ruleText);
+            //alert("lineCount: " + lines.length);
+
+            htmlText+="<table>";
+            for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
+            {
+                htmlText+="<tr>";
+                
+                line = lines[lineIndex];
+                var tokens = line.split(",");
+                
+                htmlText+="<td>SMAMPLME</td>";
+                for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
+                {
+                    htmlText+="<td>" + tokens[tokenInd] + "</td>";
+                }
+                
+                htmlText+="</tr>";
+            }
+            htmlText+="</table>";
+
+            //alert("Setting Rule Table html to : " + htmlText);
+            document.getElementById('ruleTable').contentWindow.document.write(htmlText);
+            //return htmlText;
         }
     });
-    
-    alert("just wasting time.");
-    var lines = ruleText.split(/\r|\r?\n/g);
-    
-    alert("ruletext: " + ruleText);
-    alert("lineCount: " + lines.length);
-
-    htmlText+="<table>";
-    for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
-    {
-        htmlText+="<tr>";
-        
-        line = lines[lineIndex];
-        var tokens = line.split(",");
-        
-        htmlText+="<td>SMAMPLME</td>";
-        for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
-        {
-            htmlText+="<td>" + tokens[tokenInd] + "</td>";
-        }
-        
-        htmlText+="</tr>";
-    }
-    htmlText+="</table>";
-    
-    
-    alert("returning html: " + htmlText);
-    return htmlText;
 }
 
 //AJAX to get a file from the server.
+//http request status 200 = "OK"
+//readyState of 4 = "The request is complete."
 function getFileFromServer(url, doneCallback)
 {
+    alert("Inside getFileFromServer");
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = handleStateChange;
     xhr.open("GET", url, true);
@@ -84,8 +85,10 @@ function getFileFromServer(url, doneCallback)
 
     function handleStateChange() 
     {
+        //State changed.  Is the request completed?
         if (xhr.readyState === 4) 
         {
+            //Call the callback method, passing in response text
             doneCallback(xhr.status == 200 ? xhr.responseText : null);
         }
     }

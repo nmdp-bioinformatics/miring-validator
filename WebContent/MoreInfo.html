@@ -33,6 +33,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap makes the webpage look nice-ish so I don't have to. -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    
+    <style>
+
+    .ruleTableWrapper 
+    {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 */
+        padding-top: 25px;
+        height: 100;
+    }
+    .ruleTableWrapper iframe 
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    </style>
+    
   </head>
 
   <body>
@@ -44,7 +65,7 @@
         MIRING stands for <u>M</u>inimum <u>I</u>nformation for <u>R</u>eport<u>i</u>ng <u>N</u>ext Generation Sequencing <u>G</u>enotyping.  It is a checklist of elements that should be included when transmitting NGS Genotyping data.  
       </p>
       <p align="center">
-        The purpose of MIRING is to enable downstream platform-independant analysis and re-analaysis of genotyping data, and allow comparison between the genotyping results of different platforms, references, or methodologies.
+        The purpose of MIRING is to enable downstream platform-independent analysis and re-analysis of genotyping data, and allow comparison between the genotyping results of different platforms, references, or methodologies.
       </p>
       <p align="center">
         MIRING is intended to be a restriction on the syntax or format of the data, but more as a set of minimum requirements for what should be present.  This MIRING validator specifically is intented to be used on an XML document compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1.</a>
@@ -55,21 +76,16 @@
       </p>
       <h1 align="center">RULES</h1>
 
-      <p align="center" id="ruleTable">
-      </p>
-<script>
-myInnerHTML = printRuleTable();
-alert("MYHTML:" + myInnerHTML);
-document.getElementById('ruleTable').innerHTML = myInnerHTML;
-//document.write("HERES THE TABLE");
-//printRuleTable();
-//document.write("AFTER TABLE");
-//document.write(theTable);
-</script>
+      <div class="ruleTableWrapper">
+        <iframe id="ruleTable" >
+          Loading rule list..
+        </iframe>
+      </div>
 
- <!--  <button class='btn btn-primary' onclick="javascript:printRuleTable();">TESTBUTTON</button>-->
+      <script>
+        printRuleTable();
+      </script>
 
-      <p align="center"></p>
 
       <p align="center">
         <a href="http://biorxiv.org/content/early/2015/02/06/014951">HML manuscript</a><br/>
