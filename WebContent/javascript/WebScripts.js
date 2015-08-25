@@ -22,8 +22,75 @@
 */
 
 /*
-    These are the scripts used by index.html to present a simple validation interface.
+    These are the scripts used by index.html and MoreInfo.html to present a simple validation interface.
  */
+
+function printRuleTable()
+{
+    htmlText = "";
+    
+    getFileFromServer("rules/Rules.csv", function(text) 
+    {
+        //This is the callback function for the web request.
+        //This function should really only be executed if the request was a success.
+        //Generate some table HTML from the rules csv and put it in the iframe element.
+        if (text === null) 
+        {
+            alert("Problem getting Rules.csv from the server.  Text is null.");
+        }
+        else 
+        {
+            var lines = text.split(/\r|\r?\n/g);
+
+            htmlText+="<table border=\"1\">";
+            for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
+            {
+                htmlText+="<tr>";
+                
+                line = lines[lineIndex];
+                var tokens = line.split(",");
+                
+                for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
+                {
+                    //If it's a table header
+                    if(lineIndex==0)
+                    {
+                        htmlText+="<th>" + tokens[tokenInd] + "</th>";
+                    }
+                    else
+                    {
+                        htmlText+="<td>" + tokens[tokenInd] + "</td>";
+                    }
+                }
+                htmlText+="</tr>";
+            }
+            htmlText+="</table>";
+
+            document.getElementById('ruleTable').contentWindow.document.write(htmlText);
+        }
+    });
+}
+
+//AJAX to get a file from the server.
+//http request status 200 = "OK"
+//readyState of 4 = "The request is complete."
+function getFileFromServer(url, doneCallback)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = handleStateChange;
+    xhr.open("GET", url, true);
+    xhr.send();
+
+    function handleStateChange() 
+    {
+        //State changed.  Is the request completed?
+        if (xhr.readyState === 4) 
+        {
+            //Call the callback method, passing in response text
+            doneCallback(xhr.status == 200 ? xhr.responseText : null);
+        }
+    }
+}
 
 function downloadResults()
 {
@@ -45,24 +112,10 @@ function download(filename, text)
     document.body.removeChild(element);
 }
 
-function click(el) 
-{
-    // Simulate click on the hidden file element.
-    var evt = document.createEvent('Event');
-    evt.initEvent('click', true, true);
-    el.dispatchEvent(evt);
-}
-
-document.querySelector('#fileSelectButton').addEventListener('click', function(e) 
-{
-    //When we click the browse button, instead click the hidden file element.
-    var fileInput = document.querySelector('#fileInput');
-    fileInput.click(); 
-}, false);
-
 function readSingleFile(fileElement) 
 {
     //Read the file from the hidden file element, put it's text in the input field.
+    //This is how users submit a file using the browse button.
     var f = fileElement.files[0]; 
     if (f)
     {
@@ -71,7 +124,7 @@ function readSingleFile(fileElement)
         {
             var contents = e.target.result;
             document.getElementById("inputText").value = contents;
-            callRestService();
+            callValidatorService();
         }
         r.readAsText(f);
     } 
@@ -81,8 +134,26 @@ function readSingleFile(fileElement)
     }
 }
 
-//This script uses jquery, which was loaded in index.html.
-function callRestService() 
+function loadSample()
+{
+    //load some sample HML and validate it.
+    getFileFromServer("hml/hml_1_0_1_example_miring.xml", function(text) 
+    {
+        if (text === null) 
+        {
+            alert("Problem getting hml_1_0_1_example_miring.xml from the server");
+        }
+        else 
+        {
+            sampleXML = text;
+            
+            document.getElementById("inputText").value = sampleXML;
+            callValidatorService();
+        }
+    });
+}
+
+function callValidatorService() 
 {
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);
@@ -143,7 +214,6 @@ function isMiringCompliant(xml)
     compliantBooleanBeginLocation = xml.indexOf("<miring-compliant>") + 18;
     compliantBooleanEndLocation = xml.indexOf("</miring-compliant>");
     compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
-    //alert(compliantBoolean);
     
     if(compliantBoolean == "true" )
     {

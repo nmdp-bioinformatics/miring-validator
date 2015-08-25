@@ -23,6 +23,7 @@
 package org.nmdp.miring;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -53,7 +54,7 @@ public class MiringValidatorService
     {
         //System.out.println("Web Service Call Received.  ");
         //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
-        logger.debug( "Received web service call.");
+        logger.debug( "Received Miring Validation web service call.");
         //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
         if(xml == null)

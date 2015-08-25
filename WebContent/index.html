@@ -22,6 +22,11 @@
 
  -->
 <html>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="javascript\WebScripts.js" ></script>
+
   <head>
     <title>MIRING HML Validator</title>
     <!-- Viewport makes everything resizeable and nice. -->
@@ -73,12 +78,29 @@
       -->
       <input type="file" id="fileInput" multiple onchange="readSingleFile(this)">
 
-
       <p align="center">
-        <button class='btn btn-primary' onclick="javascript:callRestService();">VALIDATE</button>
+        <button class='btn btn-primary' onclick="javascript:callValidatorService();">VALIDATE</button>
         <button class='btn btn-primary' id="fileSelectButton">BROWSE</button>
+        <button class='btn btn-primary' onclick="javascript:loadSample();">SAMPLE</button>
         <button class='btn btn-primary' onclick="javascript:clearText();">CLEAR</button>
       </p>
+      
+      <script>
+        function click(el) 
+        {
+            // Simulate click on the hidden file element.
+            var evt = document.createEvent('Event');
+            evt.initEvent('click', true, true);
+            el.dispatchEvent(evt);
+        }
+
+        document.querySelector('#fileSelectButton').addEventListener('click', function(e) 
+        {
+            //When we click the browse button, instead click the hidden file element.
+            var fileInput = document.querySelector('#fileInput');
+            fileInput.click(); 
+        }, false);
+      </script>
 
       <br/>
       <h3 align="center">MIRING Results</h3>
@@ -92,29 +114,26 @@
       <button class='btn btn-primary' onclick="javascript:downloadResults();">DOWNLOAD RESULTS</button>
       </p>
       <br/>
+      
+
+
+      <h4 align="center">
+        Use the MIRING Validator in your own application:
+      </h4>
 
       <br/>
       <p align="center">The MIRING HML Validator is a REST service, available to the public, hosted at miring.b12x.org/validator/ValidateMiring/</p>
       <p align="center">You can use this service programmatically using a POST request, with a single form parameter, "xml", containing the HML text.</p>
       <p align="center">Try this example using <a href = "http://curl.haxx.se/">cURL:</a></p>
       <p align="center"><code>$ curl -X POST --data-urlencode 'xml=&lt;hml>...&lt;/hml>' http://miring.b12x.org/validator/ValidateMiring/</code></p>
+      <p align="center" >Validator source is on <a href="https://github.com/nmdp-bioinformatics/MiringValidator">GITHUB</a></p>
       <br/>
 
-      <h4 align="center">More info on HML and MIRING:</h4>
-      <p align="center">
-        <a href="http://biorxiv.org/content/early/2015/02/06/014951">HML manuscript</a><br/>
-        <a href="http://schemas.nmdp.org/">HML Schema and Samples</a><br/>
-        <a href="http://biorxiv.org/content/early/2015/02/16/015230">MIRING manuscript</a><br/>
-        <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report Schema</a><br/>
-        <a href="https://github.com/nmdp-bioinformatics/MiringValidator">MIRING HML Validator is on GITHUB</a><br/>
-        <a href="https://bethematch.org/">Be The Match</a><br/>
-      </p>
+      <h4 align="center">
+        <a href="MoreInfo.html">More information on MIRING, HML, and validation</a><br/>
+      </h4>
 
     </div>
   </body>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="WebScripts.js" ></script>
 
 </html>
