@@ -22,32 +22,27 @@
 */
 
 /*
-    These are the scripts used by index.html to present a simple validation interface.
+    These are the scripts used by index.html and MoreInfo.html to present a simple validation interface.
  */
 
 function printRuleTable()
 {
-    //alert("inside printrule");
     htmlText = "";
     
     getFileFromServer("rules/Rules.csv", function(text) 
     {
         //This is the callback function for the web request.
         //This function should really only be executed if the request was a success.
+        //Generate some table HTML from the rules csv and put it in the iframe element.
         if (text === null) 
         {
             alert("Problem getting Rules.csv from the server.  Text is null.");
         }
         else 
         {
-            
-            //alert("text: " + text);
             var lines = text.split(/\r|\r?\n/g);
-            
-            //alert("ruletext: " + ruleText);
-            //alert("lineCount: " + lines.length);
 
-            htmlText+="<table>";
+            htmlText+="<table border=\"1\">";
             for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
             {
                 htmlText+="<tr>";
@@ -55,19 +50,23 @@ function printRuleTable()
                 line = lines[lineIndex];
                 var tokens = line.split(",");
                 
-                htmlText+="<td>SMAMPLME</td>";
                 for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
                 {
-                    htmlText+="<td>" + tokens[tokenInd] + "</td>";
+                    //If it's a table header
+                    if(lineIndex==0)
+                    {
+                        htmlText+="<th>" + tokens[tokenInd] + "</th>";
+                    }
+                    else
+                    {
+                        htmlText+="<td>" + tokens[tokenInd] + "</td>";
+                    }
                 }
-                
                 htmlText+="</tr>";
             }
             htmlText+="</table>";
 
-            //alert("Setting Rule Table html to : " + htmlText);
             document.getElementById('ruleTable').contentWindow.document.write(htmlText);
-            //return htmlText;
         }
     });
 }
@@ -77,7 +76,6 @@ function printRuleTable()
 //readyState of 4 = "The request is complete."
 function getFileFromServer(url, doneCallback)
 {
-    alert("Inside getFileFromServer");
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = handleStateChange;
     xhr.open("GET", url, true);
@@ -117,6 +115,7 @@ function download(filename, text)
 function readSingleFile(fileElement) 
 {
     //Read the file from the hidden file element, put it's text in the input field.
+    //This is how users submit a file using the browse button.
     var f = fileElement.files[0]; 
     if (f)
     {
@@ -137,6 +136,7 @@ function readSingleFile(fileElement)
 
 function loadSample()
 {
+    //load some sample HML and validate it.
     getFileFromServer("hml/hml_1_0_1_example_miring.xml", function(text) 
     {
         if (text === null) 
@@ -214,7 +214,6 @@ function isMiringCompliant(xml)
     compliantBooleanBeginLocation = xml.indexOf("<miring-compliant>") + 18;
     compliantBooleanEndLocation = xml.indexOf("</miring-compliant>");
     compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
-    //alert(compliantBoolean);
     
     if(compliantBoolean == "true" )
     {
