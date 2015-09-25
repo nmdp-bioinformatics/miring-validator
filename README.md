@@ -32,30 +32,17 @@ MIRING rules are based on 8 general elements:
 Message Generator Contact Information & Document Identification  
   
 ##### MIRING Element 2 - Reference Context  
-Reference Sequences and Databases  
-  
 ##### MIRING Element 3 - Full Genotype  
-GLStrings and Typings  
-  
 ##### MIRING Element 4 - Consensus Sequence  
-Gene-length sequences  
-  
 ##### MIRING Element 5 - Novel Polymorphisms  
-Sequence variants relative to the reference sequence  
-  
 ##### MIRING Element 6 - Platform Documentation  
-Citations to reference each instrument and method  
-  
 ##### MIRING Element 7 - Read Processing Documentation  
-References for processing methodologies and software  
-  
 ##### MIRING Element 8 - Primary Data  
-References to raw NGS data in a public database  
-  
+
   
 ### RULES  
   
-The validator further divides these elements into rules.  For a rule ID reference, see http://miring.b12x.org/MoreInfo.html  
+The validator further divides these elements into rules.  For more information on MIRING elements and a rule ID reference, see http://miring.b12x.org/MoreInfo.html or the local github wiki [HERE](Rules).
   
   
 This validator engine is powered by [SAX Parser](http://docs.oracle.com/javase/7/docs/api/javax/xml/parsers/SAXParser.html) and [Probatron4j](http://www.probatron.org/probatron4j.html), an excellent implementation of [Schematron](http://www.schematron.com/)
