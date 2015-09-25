@@ -42,7 +42,8 @@ Message Generator Contact Information & Document Identification
   
 ### RULES  
   
-The validator further divides these elements into rules.  For more information on MIRING elements and a rule ID reference, see http://miring.b12x.org/MoreInfo.html or the local github wiki [HERE](Rules).
+The validator further divides these elements into rules.  For more information on MIRING elements and a rule ID reference, see http://miring.b12x.org/MoreInfo.html or the local github wiki [HERE](https://github.com/nmdp-bioinformatics/MiringValidator/wiki/Rules).
+
   
   
 This validator engine is powered by [SAX Parser](http://docs.oracle.com/javase/7/docs/api/javax/xml/parsers/SAXParser.html) and [Probatron4j](http://www.probatron.org/probatron4j.html), an excellent implementation of [Schematron](http://www.schematron.com/)
