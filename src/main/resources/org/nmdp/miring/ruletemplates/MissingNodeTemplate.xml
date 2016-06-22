@@ -52,7 +52,63 @@
     miring-rule-id="5.1.a" 
     severity="warning" 
     solution-text="You can use variant-effect nodes to specify the type of variant specified.  They should have a term attribute, containing a SO (Sequence Ontology) variant effect term." />
+  <hml-rule node-name="documentation"
+    severity="hml" />
+  <hml-rule node-name="hlmid"
+    severity="hml" />
 
-</rule-template>
+  <hml-rule node-name="reporting-center"
+    severity="hml" />
 
+  <hml-rule node-name="typing-test-name"
+    severity="warning" />
+
+  <hml-rule node-name="property"
+    severity="hml" />
+
+  <hml-rule node-name="sample"
+    severity="hml" />
+<hml-rule node-name="sequence"
+severity="hml" />
+
+<hml-rule node-name="typing"
+severity="hml" />
+<hml-rule node-name="allele-assignment"
+severity="hml" />
+<hml-rule node-name="haploid"
+severity="hml" />
+<hml-rule node-name="glstring"
+severity="hml" />
+<hml-rule node-name="sso"
+severity="hml" />
+<hml-rule node-name="ssp"
+severity="hml" />
+<hml-rule node-name="sbt-sanger"
+severity="hml" />
+<hml-rule node-name="amplification"
+severity="hml" />
+<hml-rule node-name="sub-amplification"
+severity="hml" />
+<hml-rule node-name="gssp"
+severity="hml" />
+<hml-rule node-name="sbt-ngs"
+severity="hml" />
+<hml-rule node-name="consenses-sequence"
+severity="hml" />
+<hml-rule node-name="consenses-sequence-block"
+severity="hml" />
+<hml-rule node-name="sequence-quality"
+severity="hml" />
+<hml-rule node-name="reference-sequence"
+severity="hml" />
+<hml-rule node-name="reference-database"
+severity="hml" />
+<hml-rule node-name="variant"
+severity="hml" />
+<hml-rule node-name="variant-effect"
+severity="hml" />
+<hml-rule node-name="raw-reads"
+severity="hml" />
+<</rule-template>
+<!-- make new Attribute for HML-->
 

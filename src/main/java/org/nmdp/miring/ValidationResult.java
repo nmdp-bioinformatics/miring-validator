@@ -43,7 +43,7 @@ public class ValidationResult implements Comparable<ValidationResult>
         //MIRING = A MIRING Rule Validation error. 
         //WARNING = A potential problem, but not enough to reject the document
         //INFO = Purely informational, no problems.
-        FATAL, MIRING, WARNING, INFO
+        FATAL, MIRING, WARNING, INFO, HML, HMLFATAL, HMLWARNING, REJECT
     }
     
     /**
@@ -159,4 +159,5 @@ public class ValidationResult implements Comparable<ValidationResult>
     {
         this.sampleID = sampleID;
     }
+
 }

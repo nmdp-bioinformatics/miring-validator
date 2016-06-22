@@ -60,6 +60,7 @@ import org.xml.sax.InputSource;
 /** 
  * This class provides various utilities used during MIRING validation.  
 */
+//Do I need to add anything in here? I dont think so but check with ben to make sure
 public class Utilities
 {
     static Logger logger = LoggerFactory.getLogger(Utilities.class);
@@ -123,7 +124,7 @@ public class Utilities
      * @return an Object which was returned by the reflected method.
      */
     public static Object callReflectedMethod(Object callingObject, String methodName, Object singleParameter, Class<?> parameterClass)
-    {
+    { 
         Method method = null;
         try 
         {
@@ -286,6 +287,7 @@ public class Utilities
      * @param xml A String containing HML
      * @return the HML document's HMLID node
      */
+    //why is this the only private method
     private static Node getHMLIDNode(String xml)
     {
         //hmlid should be a child nodes of the root xml element.
@@ -328,35 +330,67 @@ public class Utilities
      *
      * @param firstErrorArray An Array of ValidationError objects
      * @param secondErrorArray An Array of ValidationError objects
+     * @param thirdErrorArray An Array of ValidationError objects
      * @return A combined and sorted Array of ValidationError objects
      */
-    public static ValidationResult[] combineArrays(ValidationResult[] firstErrorArray, ValidationResult[] secondErrorArray)
+    public static ValidationResult[] combineArrays(ValidationResult[] firstErrorArray, ValidationResult[] secondErrorArray, ValidationResult[] thirdErrorArray)//add thirdErrorArray
     {
-        //Super clever way of handling nulls.
-        if(firstErrorArray == null)
+        //Super clever way of handling nulls.//
+    	//Add a few more permutations when third one is added ;) still super clever-Anu and by a few more I mean 1
+        if(firstErrorArray == null && thirdErrorArray == null)
         {
             return secondErrorArray;
         }
-        if(secondErrorArray == null)
+        if(secondErrorArray == null && thirdErrorArray == null)
         {
             return firstErrorArray;
         }
-
-        ValidationResult[] combinedErrors = new ValidationResult[firstErrorArray.length + secondErrorArray.length];
-        
-        for(int i = 0; i < firstErrorArray.length; i++)
+        if(firstErrorArray == null && secondErrorArray == null)
         {
-            combinedErrors[i] = firstErrorArray[i];
+        	return thirdErrorArray;
         }
-        for(int j = 0; j < secondErrorArray.length; j++)
+        //This conditional is called when schematronvalidator call this method
+        if(thirdErrorArray==null)
         {
-            combinedErrors[j + firstErrorArray.length] = secondErrorArray[j];
+            ValidationResult[] combinedErrors = new ValidationResult[firstErrorArray.length + secondErrorArray.length];
+            
+            for(int i = 0; i < firstErrorArray.length; i++)
+            {
+                combinedErrors[i] = firstErrorArray[i];
+            }
+            for(int j = 0; j < secondErrorArray.length; j++)
+            {
+                combinedErrors[j + firstErrorArray.length] = secondErrorArray[j];
+            }
+            //ValidationError objects are sorted by their Miring Rule IDs
+            Arrays.sort(combinedErrors);
+            
+            return combinedErrors;
+
+        }
+        //When the report is being made
+        else{
+        ValidationResult[] combinedErrors = new ValidationResult[firstErrorArray.length + secondErrorArray.length + thirdErrorArray.length];
+        
+            for(int i = 0; i < firstErrorArray.length; i++)
+            {
+                combinedErrors[i] = firstErrorArray[i];
+            }
+            for(int j = 0; j < secondErrorArray.length; j++)
+            {
+                combinedErrors[j + firstErrorArray.length] = secondErrorArray[j];
+            }
+            for(int k = 0; k< thirdErrorArray.length; k++)
+            {
+                combinedErrors[k+firstErrorArray.length+secondErrorArray.length]=thirdErrorArray[k];
+            }
+            //ValidationError objects are sorted by their Miring Rule IDs
+            Arrays.sort(combinedErrors);
+            
+            return combinedErrors;
         }
         
-        //ValidationError objects are sorted by their Miring Rule IDs
-        Arrays.sort(combinedErrors);
 
-        return combinedErrors;
     }
 
     /**
@@ -417,6 +451,22 @@ public class Utilities
         }
         return attributeString;
     }
+    /**
+     * Does the array contain any HMLfatal or HML severities?
+     * @param errors in validationerrors
+     * @return boolean true or false
+     */
+    public static boolean isHMLCompliant(ValidationResult[] errors)
+    {
+    	for(int i = 0; i < errors.length; i++)
+    	{
+    		if(errors[i].getSeverity()==Severity.HMLFATAL || errors[i].getSeverity()==Severity.HML)//Need HML Fatal
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
 
     /**
      * Does this array contain zero Miring errors?  Any ValidationErrors with Severity=FATAL OR Severity=MIRING will return false.
@@ -424,12 +474,14 @@ public class Utilities
      * @param errors an array of ValidationError objects
      * @return is this report miring compliant?
      */
+
+   
     public static boolean isMiringCompliant(ValidationResult[] errors)
     {
         //Does this list contain any fatal/MIRING errors?
         for(int i = 0; i < errors.length; i++)
         {
-            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING)
+            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING || errors[i].getMiringRule()=="Node")
             {
                 return false;
             }
@@ -458,7 +510,40 @@ public class Utilities
         }
         return false;
     }
-    
+    public static boolean hasHMLFatalErrors(ValidationResult[] errors)
+    {
+        for(int i = 0; i < errors.length; i++)
+        {
+            if(errors[i] != null)
+            {
+                if(errors[i].getSeverity()==Severity.HMLFATAL)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * Does this array have any rejections Any Validation Errors with Severity=REJECT will return true.
+     *
+     *@param errors an array of ValidationError Objects
+     *@return true if report has a rejection
+     */
+    public static boolean hasRejects(ValidationResult[] errors)
+    {
+        for(int i=0; i < errors.length; i++)
+        {
+            if(errors[i] != null)
+            {
+                if(errors[i].getMiringRule()=="reject")
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Tokenize (split) the string based on a delimiter.
      * 
@@ -685,6 +770,7 @@ public class Utilities
      * @param attributeName the name of the attribute to retrieve
      * @return the value of the attribute.
      */
+    //Should be fine with HML
     public static String getAttribute(NamedNodeMap ruleAttributes, String attributeName)
     {
         Node miringRuleNode = ruleAttributes.getNamedItem(attributeName);
