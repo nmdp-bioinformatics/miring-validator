@@ -28,6 +28,14 @@ import org.nmdp.miring.ValidationResult.Severity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+//import org.w3c.dom.DocumentBuilder;
+//import org.w3c.dom.DocumentBuilderFactory;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 
 /** 
  * This class is used to validate an XML file against a MIRING checklist.  Both tier 1 and tier 2 are included in the validation.
@@ -39,6 +47,7 @@ public class MiringValidator
     String report;
     ValidationResult[] tier1ValidationErrors;
     ValidationResult[] tier2ValidationErrors;
+    ValidationResult[] hmlValidationErrors;
     Sample[] sampleIDs;
     
     /**
@@ -62,39 +71,71 @@ public class MiringValidator
         if(xml==null || xml.length() == 0)
         {
             logger.error("XML is null or length 0.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL)}, null, null,null,null);
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL), new ValidationResult("XML is null or length 0.", Severity.HMLFATAL)}, null, null,null,null,0);
         }
+        //Retrieve version number submitted by user
+        //worry in space and optimization
+        /**
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.parse(new File(xml));
+        NodeList nodeList = document.getElementsByTagName("hml");
+        String versionNumber = nodeList.item(x).getAttributes().getNamedItem("version").getNodeValue();
+         
+        logger.debug("Version Number: "+ cd.getData());*/
         
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
-        
-        //Tier 1
-        logger.debug("Attempting Tier 1 Validation");
-        tier1ValidationErrors = SchemaValidator.validate(xml, "/org/nmdp/miring/schema/MiringTier1.xsd");
-        sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
-        
-        //Tier 2
-        //If tier 1 has fatal errors, we should not continue to tier 2.
-        if(!Utilities.hasFatalErrors(tier1ValidationErrors))
+        logger.debug("Attempting HML Validation");
+        hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-1.0.1.xsd");
+        //If there are any fatal issues with HML do not continue
+        if(!Utilities.hasHMLFatalErrors(hmlValidationErrors))
         {
-            logger.debug("Attempting Tier 2 validation");
-            
-            tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"/org/nmdp/miring/schematron/MiringAll.sch"});
-            
-            //Tier 3 is outside scope for now.  Okay.
-            /*if(!Utilities.hasFatalErrors(tier2ValidationErrors)))
+        	//Tier 1
+            logger.debug("Attempting Tier 1 Validation");
+            tier1ValidationErrors = SchemaValidator.validate(xml, "/org/nmdp/miring/schema/MiringTier1.xsd");
+            sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
+            //Tier 2
+            //If tier 1 has fatal errors, we should not continue to tier 2.
+            if(!Utilities.hasFatalErrors(tier1ValidationErrors))
             {
-            //tier3();
-            }*/
+                logger.debug("Attempting Tier 2 validation");
+                
+                tier2ValidationErrors = SchematronValidator.validate(xml, new String[] {"/org/nmdp/miring/schematron/MiringAll.sch"});
+                //Make a report.
+                String hmlIdRoot = Utilities.getHMLIDRoot(xml);
+                String hmlIdExt = Utilities.getHMLIDExtension(xml);
+                report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors, hmlValidationErrors), hmlIdRoot, hmlIdExt, properties, sampleIDs,(tier1ValidationErrors.length + tier2ValidationErrors.length));
+
+                
+                //Tier 3 is outside scope for now.  Okay.
+                /*if(!Utilities.hasFatalErrors(tier2ValidationErrors)))
+                {
+                //tier3();
+                }*/
+            }
+            else
+            {
+                logger.error("Did not perform tier 2 validation, fatal errors in tier 1.");
+                tier2ValidationErrors=new ValidationResult[0];
+                
+                //Make a report.
+                String hmlIdRoot = Utilities.getHMLIDRoot(xml);
+                String hmlIdExt = Utilities.getHMLIDExtension(xml);
+                report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors,tier2ValidationErrors,  hmlValidationErrors), hmlIdRoot, hmlIdExt, properties, sampleIDs,(tier1ValidationErrors.length+1));
+            }
+
         }
         else
         {
-            logger.error("Did not perform tier 2 validation, fatal errors in tier 1.");
-        }
+            //Make a report.
+            String hmlIdRoot = Utilities.getHMLIDRoot(xml);
+            String hmlIdExt = Utilities.getHMLIDExtension(xml);
+            report = ReportGenerator.generateReport(hmlValidationErrors, hmlIdRoot, hmlIdExt, properties, sampleIDs,0);
 
-        //Make a report.
-        String hmlIdRoot = Utilities.getHMLIDRoot(xml);
-        String hmlIdExt = Utilities.getHMLIDExtension(xml);
-        report = ReportGenerator.generateReport(Utilities.combineArrays(tier1ValidationErrors, tier2ValidationErrors), hmlIdRoot, hmlIdExt, properties, sampleIDs);
+            logger.error("Did not perform Tier 1 validation, fatal errors in HML");
+        }
+        
+        
         return report;
     }
 

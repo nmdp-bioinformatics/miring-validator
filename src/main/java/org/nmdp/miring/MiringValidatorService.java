@@ -60,12 +60,12 @@ public class MiringValidatorService
         if(xml == null)
         {
             logger.error("XML is Null.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL)}, null, null,null,null);
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL),new ValidationResult("XML is null.",Severity.HMLFATAL)}, null, null,null,null,0);
         }
         else if(xml.length() == 0)
         {
             logger.error("XML is Empty.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL)}, null, null,null,null);
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL),new ValidationResult("XML is length 0.",Severity.HMLFATAL)}, null, null,null,null,0);
         }
         else
         {

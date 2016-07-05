@@ -103,13 +103,13 @@ public class SchematronValidator
                 logger.debug(currentResultErrors.length + " schema validation errors found");
 
                 //Add any errors to the tier2 results.
-                results = Utilities.combineArrays(results, currentResultErrors);
+                results = Utilities.combineArrays(results, currentResultErrors,null);
             }
         }
         catch(Exception e )
         {
             logger.error("Exception in SchematronValidation", e);
-            return Utilities.combineArrays(results, new ValidationResult[]{new ValidationResult("Failed Schematron Validation: " + e.toString(),Severity.FATAL)});
+            return Utilities.combineArrays(results, new ValidationResult[]{new ValidationResult("Failed Schematron Validation: " + e.toString(),Severity.FATAL)},null);
         }
         logger.debug(results.length + " validation errors detected in schematron validator.");
         return results;

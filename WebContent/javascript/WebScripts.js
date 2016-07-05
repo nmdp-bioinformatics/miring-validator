@@ -132,6 +132,9 @@ function readSingleFile(fileElement)
     { 
         alert("Failed to load file");
     }
+    //Still need to figure out a way to allow for multiple submissions of same file. Lowest priority though.
+    fileElement.files[0]='';
+    
 }
 
 function loadSample()
@@ -167,7 +170,6 @@ function callValidatorService()
             //alert("This is called if there was a successful request.  Storing the response in the right text box.");
             var resultXml = new XMLSerializer().serializeToString(response);
             resultXml = decodeURIComponent(resultXml);
-            //alert(String(resultXml));
             document.getElementById("resultsText").value = resultXml;
             
             if(isMiringCompliant(resultXml))
@@ -182,16 +184,31 @@ function callValidatorService()
                 document.getElementById("greenCheck").style.display = 'none';
                 document.getElementById("redX").style.display = 'block';
             }
+            if(isHMLCompliant(resultXml))
+            {
+                //HML Compliant
+                document.getElementById("HMLcheck").style.display='block';
+                document.getElementById("HMLX").style.display='none';
+            }
+            else
+            {
+                //Not HML Compliant
+                document.getElementById("HMLcheck").style.display='none';
+                document.getElementById("HMLX").style.display='block';
+            }
             
         })
         .done(function() 
         {
             //alert( "Function was completed successfully." );
         })
-        .fail(function() 
+        .fail(function(response)
         {
+         //Alerts user about critical server errors due to the file
             alert( "Error.  Something wrong happened.");
-            alert("request = " + request);
+              //replaces all tags, child errors and new lines with spaces
+            alert("Error: " + response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," "));
+              clearText();
         })
         .always(function() 
         {
@@ -206,6 +223,36 @@ function clearText()
     document.getElementById("inputText").value = "";
     document.getElementById("greenCheck").style.display = 'none';
     document.getElementById("redX").style.display = 'none';
+    document.getElementById("HMLcheck").style.display='none';
+    document.getElementById("HMLX").style.display='none';
+}
+
+function isHMLCompliant(xml)
+{
+    //Simple string operations to find true, false, or warn user if hml was rejected due to critical hml formatting error
+    compliantBooleanBeginLocation = xml.indexOf("<hml-compliant>") + 15;
+    compliantBooleanEndLocation = xml.indexOf("</hml-compliant>");
+    compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
+    
+    if(compliantBoolean == "true")
+    {
+        return true;
+    }
+    else if (compliantBoolean == "false")
+    {
+        return false;
+    }
+    else if(compliantBoolean == "reject")
+    {
+        alert("HML Rejected, Please Check Below For Reason");
+        return false;
+    }
+    else
+    {
+        alert("Error determining HML Compliance.");
+        return false;
+    }
+    return false;
 }
 
 function isMiringCompliant(xml)
@@ -223,10 +270,15 @@ function isMiringCompliant(xml)
     {
         return false;
     }
+    else if (compliantBoolean == "reject")
+    {
+        return false;
+    }
     else
     {
         alert("Error determining MIRING Compliance.");
         return false;
     }
+    return false;
 }
 

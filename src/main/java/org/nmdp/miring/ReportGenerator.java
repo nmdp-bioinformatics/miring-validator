@@ -21,7 +21,7 @@
 
 */
 package org.nmdp.miring;
-
+import java.util.Arrays;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ public class ReportGenerator
     static Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
     
     public static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    public static int hmls;
     
     /**
      * Generate a Miring Results Report
@@ -63,11 +64,11 @@ public class ReportGenerator
      * @param sampleIDs an array of Sample objects to list on the report.
      * @return a String containing MIRING Results Report
      */
-    public static String generateReport(ValidationResult[] validationResults, String root, String extension, HashMap<String,String> properties, Sample[] sampleIDs)
+    public static String generateReport(ValidationResult[] validationResults, String root, String extension, HashMap<String,String> properties, Sample[] sampleIDs, int hmlstart)
     {
         validationResults = assignSampleIDs(validationResults,sampleIDs);
         validationResults = combineSimilarResults(validationResults);
-        
+        hmls=hmlstart;
         try 
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -85,7 +86,9 @@ public class ReportGenerator
             //NAMESPACES
             rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
             rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd");
-
+            
+            addHMLCompliantElement(validationResults,doc);
+            
             addMiringCompliantElement(validationResults, doc);
             
             addHmlidElement(root, extension, doc);
@@ -113,6 +116,27 @@ public class ReportGenerator
     }
 
     /**
+     * Add a hml-compliant element to the document.
+     *
+     * @param validationResults an array of the validationError objects from this validation.
+     * @param doc a Document to add the element to
+     */
+    private static void addHMLCompliantElement(ValidationResult[] validationResults, Document doc)
+    {
+
+        ValidationResult[] hmlErrors=validationResults;
+    	Element compliantElement = doc.createElement("hml-compliant");
+    	compliantElement.setTextContent(
+    	(hmlErrors == null)? "false"
+    	:(hmlErrors.length==0)?"true"
+        :(Utilities.hasRejects(hmlErrors))?"reject"
+    	:(Utilities.isHMLCompliant(hmlErrors))?"true" 
+    	:"false"
+        );
+        doc.getDocumentElement().appendChild(compliantElement);
+    } 
+    
+    /**
      * Add a miring-compliant element to the document.
      *
      * @param validationResults an array of the validationError objects from this validation.
@@ -124,6 +148,7 @@ public class ReportGenerator
         compliantElement.setTextContent(
             (validationResults == null)?"false"
             :(validationResults.length==0)?"true"
+            :(Utilities.hasRejects(validationResults))?"reject"
             :(Utilities.isMiringCompliant(validationResults))?"true"
             :"false"
         );
@@ -207,7 +232,7 @@ public class ReportGenerator
                 {
                     currentSampleElement.setAttribute("center-code",centerCode);
                 }
-
+                //Make one for HML? Probably
                 if(doesSampleHaveMiringErrors(sampleID, validationResults))
                 {
                     currentSampleElement.setAttribute("miring-compliant", "false");
@@ -217,6 +242,16 @@ public class ReportGenerator
                 {
                     currentSampleElement.setAttribute("miring-compliant", "true");
                     numberGoodSamples++;
+                }
+                if(doesSampleHaveHMLErrors(sampleID, validationResults))
+                {
+                	currentSampleElement.setAttribute("hml-compliant", "false");
+                	numberBadSamples++;//Do we need seperate variable and new setAttributes for hml? I feel like its a waste.
+                }
+                else
+                {
+                	currentSampleElement.setAttribute("hml-compliant", "true");
+                	numberGoodSamples++;//do we need?
                 }
 
                 samplesElement.appendChild(currentSampleElement);
@@ -242,6 +277,9 @@ public class ReportGenerator
         ValidationResult[] miringErrors = getResultsBySeverity(validationResults,Severity.MIRING);
         ValidationResult[] warnings = getResultsBySeverity(validationResults,Severity.WARNING);
         ValidationResult[] info = getResultsBySeverity(validationResults,Severity.INFO);
+        ValidationResult[] hmlErrors = getResultsBySeverity(validationResults,Severity.HML);
+        ValidationResult[] hmlFatal = getResultsBySeverity(validationResults,Severity.HMLFATAL);
+        ValidationResult[] hmlWarnings = getResultsBySeverity(validationResults,Severity.HMLWARNING);
 
         if(fatalErrors != null && fatalErrors.length > 0)
         {
@@ -279,6 +317,36 @@ public class ReportGenerator
             }
             doc.getDocumentElement().appendChild(infoElement);
         }
+        if(hmlFatal != null && hmlFatal.length > 0)
+        {
+            Element hmlFatalElement = doc.createElement("fatal-hml-schema-validation-errors");
+            
+            for(int i = 0; i < hmlFatal.length; i++)
+            {
+                hmlFatalElement.appendChild(generateHMLResultElement(doc, hmlFatal[i]));
+            }
+            doc.getDocumentElement().appendChild(hmlFatalElement);
+        }
+        if(hmlErrors != null && hmlErrors.length > 0)
+        {
+            Element hmlErrorsElement = doc.createElement("hml-schema-validation-errors");
+            
+            for(int i = 0; i < hmlErrors.length; i++)
+            {
+                hmlErrorsElement.appendChild(generateHMLResultElement(doc, hmlErrors[i]));
+            }
+            doc.getDocumentElement().appendChild(hmlErrorsElement);
+        }
+        if(hmlWarnings != null && hmlWarnings.length > 0)
+        {
+            Element hmlWarningsElement = doc.createElement("hml-schema-validation-warnings");
+            
+            for(int i = 0; i < hmlErrors.length; i++)
+            {
+                hmlWarningsElement.appendChild(generateHMLResultElement(doc, hmlWarnings[i]));
+            }
+            doc.getDocumentElement().appendChild(hmlWarningsElement);
+        }
     }
     
     /**
@@ -309,6 +377,28 @@ public class ReportGenerator
         }
         return false;
     }
+    private static boolean doesSampleHaveHMLErrors(String sampleID, ValidationResult[] validationResults)
+    {
+        if(validationResults != null && validationResults.length > 0)
+        {
+            for(int i = hmls; i < validationResults.length; i++)
+            {
+                ValidationResult tempResult = validationResults[i];
+                String currentSampleID = tempResult.getSampleID();
+                Severity currentSeverity = tempResult.getSeverity();
+                if(currentSampleID != null && currentSampleID.equals(sampleID))
+                {
+                    if(currentSeverity != null && (
+                        currentSeverity.equals(Severity.HMLFATAL)
+                        || currentSeverity.equals(Severity.HML)))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * For each ValidationResult, assign a SampleID if possible
@@ -324,11 +414,14 @@ public class ReportGenerator
                 && validationResults.length > 0 
                 && sampleIDs != null 
                 && sampleIDs.length > 0)
+                
             {
+              
                 for(int i = 0; i < validationResults.length; i++)
                 {
                     ValidationResult currentError = validationResults[i];
                     List<String> xPaths = currentError.getXPaths();
+         
                     if(xPaths.size()!=0)
                     {
                         //Only getting the very first xPath here.  What if there are more xPaths?  I dunno?
@@ -353,7 +446,8 @@ public class ReportGenerator
      * Get ValidationResults of a specific severity.
      *
      * @param validationResults an array of ValidationResult objects to pull from
-     * @param severity a ValidationResult.Severity.  One of "FATAL" "MIRING" "INFO" "WARNING".  
+     * @param severity a ValidationResult.Severity.  One of "FATAL" "MIRING" "INFO" "WARNING" "HML" "HMLFATAL 
+     * "REJECT" "HMLWARNING".
      */
     private static ValidationResult[] getResultsBySeverity(ValidationResult[] validationResults, Severity severity)
     {
@@ -383,7 +477,7 @@ public class ReportGenerator
     private static ValidationResult[] combineSimilarResults(ValidationResult[] validationResults)
     {
         List<ValidationResult> newResultList = new ArrayList<ValidationResult>();
-        
+        try{
         for(int i = 0; i < validationResults.length; i++)
         {
             ValidationResult oldResult = validationResults[i];
@@ -392,8 +486,9 @@ public class ReportGenerator
             for (ValidationResult newResult: newResultList)
             {
                 if(oldResult.miringRule.equals(newResult.miringRule)
-                    && oldResult.errorText.equals(newResult.errorText)
-                    && oldResult.sampleID.equals(newResult.sampleID))
+                   && oldResult.errorText.equals(newResult.errorText)
+                    && oldResult.sampleID.equals(newResult.sampleID)
+                   )
                 {
                     foundMatch = true;
                     //Add all the xpaths to the existing new error.
@@ -421,6 +516,12 @@ public class ReportGenerator
         }
         
         return newResults;
+        }
+        catch(Exception e)
+        {
+            logger.error("Can not combine similar results due to some unknown reason "+ e);
+            return validationResults;
+        }
     }
     
     /**
@@ -479,5 +580,52 @@ public class ReportGenerator
         }
         
         return invMiringElement;
+    }
+    private static Element generateHMLResultElement(Document doc, ValidationResult validationResult)
+    {
+        //Change a validation error into an XML Node to put in our report.
+        Element invHMLElement = doc.createElement("hml-result");
+        
+        
+        //severity
+        Attr fatalAttr = doc.createAttribute("severity");
+        fatalAttr.setValue(validationResult.getSeverity()==Severity.HMLFATAL?"fatal":
+            validationResult.getSeverity()==Severity.HML?"hml":
+            validationResult.getSeverity()==Severity.HMLWARNING?"warning"://make hml-warning
+            validationResult.getSeverity()==Severity.INFO?"info":
+                "?");
+        invHMLElement.setAttributeNode(fatalAttr);
+        
+        //sampleID
+        Attr sampleIDAttr = doc.createAttribute("sample-id");
+        if(validationResult.getSampleID() != null && validationResult.getSampleID().length() > 0)
+        {
+            sampleIDAttr.setValue(validationResult.getSampleID());
+            invHMLElement.setAttributeNode(sampleIDAttr);
+        }
+        
+        //description
+        Element descriptionElement = doc.createElement("description");
+        descriptionElement.appendChild(doc.createTextNode(validationResult.getErrorText()));
+        invHMLElement.appendChild(descriptionElement);
+        
+        //solution
+        Element solutionElement = doc.createElement("solution");
+        solutionElement.appendChild(doc.createTextNode(validationResult.getSolutionText()));
+        invHMLElement.appendChild(solutionElement);
+        
+        //xPath
+        if(validationResult.getXPaths() != null && validationResult.getXPaths().size() > 0)
+        {
+            List<String> xPaths = validationResult.getXPaths();
+            for(int i = 0; i < xPaths.size(); i++)
+            {
+                Element xPathElement = doc.createElement("xpath");
+                xPathElement.appendChild(doc.createTextNode(xPaths.get(i)));
+                invHMLElement.appendChild(xPathElement);
+            }
+        }
+        
+        return invHMLElement;
     }
 }
