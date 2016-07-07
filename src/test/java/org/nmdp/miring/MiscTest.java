@@ -40,7 +40,7 @@ public class MiscTest
 
     @Test
     public void testReportSchema()
-    {        
+    {
         //Try against a report I have on file
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/ExampleResultReport.xml");
         //System.out.println("Validating these results against the report schema:");
@@ -52,16 +52,16 @@ public class MiscTest
         assertTrue(errorReport.length() > 0 );
         //System.out.println("Report Schema Results:");
         //System.out.println(errorReport);
-        
+
 
         //Try against a generated report
         String hml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLWithCustomNamespace.xml");
         assertTrue(hml.length()>0);
 
         String results = new MiringValidator(hml).validate();
-        
+
         //System.out.println("Validating these results against the report schema:");
-        //System.out.println(results);        
+        //System.out.println(results);
 
         xml = results;
         assertTrue(xml.length() > 1);
@@ -77,11 +77,11 @@ public class MiscTest
     public void testInvalidProlog()
     {
         logger.debug("Starting a testInvalidProlog");
-        
+
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/invalid.prolog.xml.txt");
         MiringValidator validator = new MiringValidator(xml);
         String results = validator.validate();
-        assertTrue(Utilities.containsErrorNode(results, "Content is not allowed in prolog."));
+        assertTrue(Utilities.containsErrorNode(results, "[Content, is, not, allowed, in, prolog.]"));
     }
 
 
@@ -95,21 +95,21 @@ public class MiscTest
         String results;
         results = new MiringValidator(xml).validate();
         //System.out.println(results);
-        
+
         assertTrue(results.length() > 1);
     }
-    
+
     //TODO: Make a test for running my curl command.   Might not work because server is supposed to be running.  Only one way to find out.
-    
-    
+
+
     /*
      * TODO: Make a test for xml with text afterwards.
-     
+
     @Test
     public void testXmlWithTextAfterwards()
     {
         logger.debug("starting testXmlWithTextAfterwards");
-        
+
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLwithoutTextAfter.txt");
         String results = new MiringValidator(xml).validate();
         //System.out.println(results);
