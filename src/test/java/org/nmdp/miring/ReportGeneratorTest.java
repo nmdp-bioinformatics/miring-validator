@@ -53,11 +53,14 @@ public class ReportGeneratorTest
             ValidationResult error3 = new ValidationResult("This is a big problem 3.", Severity.MIRING);
             ValidationResult error4 = new ValidationResult("This is a big problem 4.", Severity.MIRING);
             ValidationResult error5 = new ValidationResult("This is a big problem 5.", Severity.MIRING);
+            ValidationResult error6 = new ValidationResult("This is a big problem 6.", Severity.HML);
+            ValidationResult error7 = new ValidationResult("This is a big problem 7.", Severity.HML);
             
             ValidationResult[] tier1Errors = {error1, error2};
             ValidationResult[] tier2Errors = {error3, error4, error5};
+            ValidationResult[] hmlErrors = {error6, error7};
             
-            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors), "testRoot", "1.2.3.4", null, null);
+            String reportResults = ReportGenerator.generateReport(Utilities.combineArrays(tier1Errors, tier2Errors,null), "testRoot", "1.2.3.4", null, null,0);
             
             assertTrue(reportResults != null);
             assertTrue(reportResults.length() > 4);
@@ -80,9 +83,9 @@ public class ReportGeneratorTest
             ValidationResult fatalError = new ValidationResult("A fatal error", Severity.FATAL);
             ValidationResult nonFatalError = new ValidationResult("A nonFatal error", Severity.WARNING);
             
-            String score1Report = ReportGenerator.generateReport(new ValidationResult[]{}, "testRoot", "1.2.3.4", null, null);
-            String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null, null);
-            String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null, null);
+            String score1Report = ReportGenerator.generateReport(new ValidationResult[]{}, "testRoot", "1.2.3.4", null, null,0);
+            String score2Report = ReportGenerator.generateReport(new ValidationResult[]{nonFatalError}, "testRoot", "1.2.3.4", null, null,0);
+            String score3Report = ReportGenerator.generateReport(new ValidationResult[]{fatalError,nonFatalError}, "testRoot", "1.2.3.4", null, null,0);
             
             assertNotNull(score1Report);
             assertNotNull(score2Report);

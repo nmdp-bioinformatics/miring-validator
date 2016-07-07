@@ -48,7 +48,7 @@ public class MiscTest
         assertTrue(xml.length() > 1);
         ValidationResult[] errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
         assertTrue(errors.length == 0 );
-        String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
+        String errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null,0);
         assertTrue(errorReport.length() > 0 );
         //System.out.println("Report Schema Results:");
         //System.out.println(errorReport);
@@ -67,7 +67,7 @@ public class MiscTest
         assertTrue(xml.length() > 1);
         errors = SchemaValidator.validate(xml,"/schema/miringreport.xsd");
         assertTrue(errors.length == 0 );
-        errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null);
+        errorReport = ReportGenerator.generateReport(errors, "sampleRoot", "sampleExtension", null, null,0);
         assertTrue(errorReport.length() > 0 );
         //System.out.println("Report Schema Results:");
         //System.out.println(errorReport);
