@@ -2,7 +2,7 @@
 ##### Semantic Validator for MIRING-compliant HML  
 ##### National Marrow Donor Program (NMDP)  
   
-This is a REST service that validates an HML file according to a MIRING checklist, and returns a XML report specifying any encountered MIRING infractions.  
+This is a REST service that validates an HML file according to a MIRING checklist, and returns a XML report specifying any encountered MIRING or HML infractions.  
   
 You can import this project into eclipse (Import as a Maven Project), or use the text editor of your choice.  I recommend you use java 1.8 and MAVEN to build.  
   
