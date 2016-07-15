@@ -205,10 +205,9 @@ function callValidatorService()
         .fail(function(response)
         {
          //Alerts user about critical server errors due to the file
-            alert( "Error.  Something wrong happened.");
-              //replaces all tags, child errors and new lines with spaces
-            alert("Error: " + response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," "));
+            alert( "Error.  Something wrong happened: Check in results text area ");
               clearText();
+              document.getElementById("resultsText").value = "Please contact the System Admin: bioinformatics-web@nmdp.org             \n"+ response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," ");
         })
         .always(function() 
         {
