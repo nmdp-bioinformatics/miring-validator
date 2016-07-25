@@ -88,7 +88,7 @@ public class MiringValidator
         logger.debug("Attempting HML Validation");
         hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-1.0.1.xsd");
         //If there are any fatal issues with HML do not continue
-        if(!Utilities.hasHMLFatalErrors(hmlValidationErrors))
+        if(!Utilities.hasHMLFatalErrors(hmlValidationErrors)&&!Utilities.hasRejects(hmlValidationErrors))
         {
         	//Tier 1
             logger.debug("Attempting Tier 1 Validation");
@@ -132,7 +132,7 @@ public class MiringValidator
             String hmlIdExt = Utilities.getHMLIDExtension(xml);
             report = ReportGenerator.generateReport(hmlValidationErrors, hmlIdRoot, hmlIdExt, properties, sampleIDs,0);
 
-            logger.error("Did not perform Tier 1 validation, fatal errors in HML");
+            logger.error("Did not perform Tier 1 validation, fatal errors in HML or malformed HML");
         }
         
         
