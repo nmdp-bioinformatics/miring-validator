@@ -177,25 +177,36 @@ function callValidatorService()
                 //alert("MIRING Compliant.");
                 document.getElementById("greenCheck").style.display = 'block';
                 document.getElementById("redX").style.display = 'none';
+                         document.getElementById("reject").style.display='none';
             }
             else
             {
                 //alert("Not MIRING Compliant.");
                 document.getElementById("greenCheck").style.display = 'none';
                 document.getElementById("redX").style.display = 'block';
+                         document.getElementById("reject").style.display='none';
             }
-            if(isHMLCompliant(resultXml))
+            if(isHMLCompliant(resultXml)=="true")
             {
                 //HML Compliant
                 document.getElementById("HMLcheck").style.display='block';
                 document.getElementById("HMLX").style.display='none';
+                         document.getElementById("reject").style.display='none';
             }
-            else
+            else if (isHMLCompliant(resultXml)=="false")
             {
                 //Not HML Compliant
                 document.getElementById("HMLcheck").style.display='none';
                 document.getElementById("HMLX").style.display='block';
+                         document.getElementById("reject").style.display='none';
             }
+                         else{
+                         document.getElementById("reject").style.display='block';
+                         document.getElementById("greenCheck").style.display = 'nonw';
+                         document.getElementById("redX").style.display = 'none';
+                         document.getElementById("HMLcheck").style.display='none';
+                         document.getElementById("HMLX").style.display='none';
+                         }
             
         })
         .done(function() 
@@ -224,6 +235,8 @@ function clearText()
     document.getElementById("redX").style.display = 'none';
     document.getElementById("HMLcheck").style.display='none';
     document.getElementById("HMLX").style.display='none';
+    document.getElementById("reject").style.display='none';
+   
 }
 
 function isHMLCompliant(xml)

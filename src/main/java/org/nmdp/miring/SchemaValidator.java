@@ -324,7 +324,7 @@ public class SchemaValidator
             else
             {
 
-                for(int i =0; i<exceptionTokens.length;i++)
+                for(int i =1; i<exceptionTokens.length;i++)
                 {
                     error+=" "+exceptionTokens[i];
                 }
@@ -679,12 +679,12 @@ public class SchemaValidator
             //If there HML is not well formed reject the file and return the error and how to fix it
             else
             {
-                for(int i =0; i<exceptionTokens.length;i++)
+                for(int i =1; i<exceptionTokens.length;i++)
                 {
                     error+=" "+exceptionTokens[i];
                 }
                 
-                ve=new ValidationResult(error,Severity.FATAL);
+                ve=new ValidationResult(error,Severity.HMLFATAL);
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("reject");
             }
