@@ -149,6 +149,7 @@ public class ReportGenerator
             (validationResults == null)?"false"
             :(validationResults.length==0)?"true"
             :(Utilities.hasRejects(validationResults))?"reject"
+            :(Utilities.hasHMLFatalErrors(validationResults))?"false"
             :(Utilities.isMiringCompliant(validationResults))?"true"
             :"false"
         );

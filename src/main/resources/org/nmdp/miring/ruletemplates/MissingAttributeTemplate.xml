@@ -196,6 +196,9 @@
     attribute-name="filter" 
     miring-rule-id="5.7.a" 
     severity="miring" />
+    
+    
+    
   <hml-rule node-name="hml"
       attribute="version"
       severity="hml"

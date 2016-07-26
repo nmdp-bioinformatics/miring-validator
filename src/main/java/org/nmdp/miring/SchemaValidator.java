@@ -263,6 +263,7 @@ public class SchemaValidator
             
             String errorMessage = exception.getMessage();
             String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
+            String error="["+Integer.toString(exception.getLineNumber())+","+Integer.toString(exception.getColumnNumber())+"]";
             
                        //MISSING NODE
            if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
@@ -303,7 +304,7 @@ public class SchemaValidator
                 int enDex = qualifiedNodeName.indexOf("}'");
                 
                 String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
-                ve = handleMissingNode(missingNodeName);
+                ve = handleMissingNode(error,missingNodeName);
             }
             //MISSING ATTRIBUTE
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
@@ -317,13 +318,18 @@ public class SchemaValidator
                 String untrimmedNodeName = exceptionTokens[7];
                 String nodeName = untrimmedNodeName.substring(1, untrimmedNodeName.indexOf("'."));//What does this do?
                 
-                ve = handleMissingAttribute(missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
+                ve = handleMissingAttribute(error,missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
             }
             //If there is an error with formatting of the hml consider it fatal and reject the file
             else
             {
-                
-                ve=new ValidationResult(Arrays.toString(exceptionTokens),Severity.FATAL);
+
+                for(int i =0; i<exceptionTokens.length;i++)
+                {
+                    error+=" "+exceptionTokens[i];
+                }
+                    
+                ve=new ValidationResult(error,Severity.FATAL);
                 
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("reject");
@@ -340,9 +346,9 @@ public class SchemaValidator
          * 
          * @return a ValidationResult object for this missing attribute
          */
-        private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
+        private static ValidationResult handleMissingAttribute(String error, String missingAttributeName, String nodeName)
         {
-            String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
+            String errorMessage = error+" The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionText = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
@@ -418,7 +424,7 @@ public class SchemaValidator
          * 
          * @return a ValidationResult object for this missing node
          */
-        private static ValidationResult handleMissingNode(String missingNodeName)
+        private static ValidationResult handleMissingNode(String error,String missingNodeName)
         {
             String parentNodeName = "Unhandled ParentNodeName";
 
@@ -428,8 +434,8 @@ public class SchemaValidator
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
 
-            String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
@@ -609,6 +615,7 @@ public class SchemaValidator
             
             String errorMessage = exception.getMessage();
             String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
+            String error="["+Integer.toString(exception.getLineNumber())+","+Integer.toString(exception.getColumnNumber())+"]";
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
@@ -653,7 +660,7 @@ public class SchemaValidator
                 int enDex = qualifiedNodeName.indexOf("}'");
                 
                 String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
-                ve = handleMissingNode(missingNodeName);
+                ve = handleMissingNode(error,missingNodeName);
             }
             //MISSING ATTRIBUTE
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
@@ -667,12 +674,17 @@ public class SchemaValidator
                 String untrimmedNodeName = exceptionTokens[7];
                 String nodeName = untrimmedNodeName.substring(1, untrimmedNodeName.indexOf("'."));
                 
-                ve = handleMissingAttribute(missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
+                ve = handleMissingAttribute(error,missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
             }
             //If there HML is not well formed reject the file and return the error and how to fix it
             else
             {
-                ve=new ValidationResult(Arrays.toString(exceptionTokens),Severity.FATAL);
+                for(int i =0; i<exceptionTokens.length;i++)
+                {
+                    error+=" "+exceptionTokens[i];
+                }
+                
+                ve=new ValidationResult(error,Severity.FATAL);
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
                 ve.setMiringRule("reject");
             }
@@ -690,9 +702,9 @@ public class SchemaValidator
          * 
          * @return a ValidationResult object for this missing attribute
          */
-        private static ValidationResult handleMissingAttribute(String missingAttributeName, String nodeName)
+        private static ValidationResult handleMissingAttribute(String error,String missingAttributeName, String nodeName)
         {
-            String errorMessage = "The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
+            String errorMessage = error+" The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionText = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.HMLFATAL);
             
@@ -767,7 +779,7 @@ public class SchemaValidator
          * 
          * @return a ValidationResult object for this missing node
          */
-        private static ValidationResult handleMissingNode(String missingNodeName)
+        private static ValidationResult handleMissingNode(String error,String missingNodeName)
         {
 
             String parentNodeName = "Unhandled ParentNodeName";
@@ -778,8 +790,8 @@ public class SchemaValidator
                 logger.error("No parent node found for missingNodeName=" + missingNodeName);
             }
             
-            String errorMessage = "There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.HMLFATAL);
             boolean matchFound = false;
             //Specific logic for various HML errors

@@ -516,7 +516,7 @@ public class Utilities
         {
             if(errors[i] != null)
             {
-                if(errors[i].getSeverity()==Severity.HMLFATAL)
+                if(errors[i].getSeverity()==Severity.HMLFATAL||errors[i].getSeverity()==Severity.HML)
                 {
                     return true;
                 }

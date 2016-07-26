@@ -109,6 +109,6 @@ severity="hml" />
 severity="hml" />
 <hml-rule node-name="raw-reads"
 severity="hml" />
-<</rule-template>
+</rule-template>
 <!-- make new Attribute for HML-->
 
