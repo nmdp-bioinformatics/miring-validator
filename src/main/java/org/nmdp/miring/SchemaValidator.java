@@ -435,7 +435,7 @@ public class SchemaValidator
             }
 
             String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
@@ -791,7 +791,7 @@ public class SchemaValidator
             }
             
             String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.HMLFATAL);
             boolean matchFound = false;
             //Specific logic for various HML errors
