@@ -202,7 +202,7 @@ function callValidatorService()
             }
                          else{
                          document.getElementById("reject").style.display='block';
-                         document.getElementById("greenCheck").style.display = 'nonw';
+                         document.getElementById("greenCheck").style.display = 'none';
                          document.getElementById("redX").style.display = 'none';
                          document.getElementById("HMLcheck").style.display='none';
                          document.getElementById("HMLX").style.display='none';
@@ -248,23 +248,23 @@ function isHMLCompliant(xml)
     
     if(compliantBoolean == "true")
     {
-        return true;
+        return "true";
     }
     else if (compliantBoolean == "false")
     {
-        return false;
+        return "false";
     }
     else if(compliantBoolean == "reject")
     {
         alert("HML Rejected, Please Check Below For Reason");
-        return false;
+        return "reject";
     }
     else
     {
         alert("Error determining HML Compliance.");
-        return false;
+        return "false";
     }
-    return false;
+    return "false";
 }
 
 function isMiringCompliant(xml)
