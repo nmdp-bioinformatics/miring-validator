@@ -21,8 +21,7 @@
 */
 package org.nmdp.miring;
 
-import java.io.File;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -324,7 +323,7 @@ public class SchemaValidator
             else
             {
 
-                for(int i =1; i<exceptionTokens.length;i++)
+                for(int i =cvcOrNumberCheck(exceptionTokens[0]); i<exceptionTokens.length;i++)
                 {
                     error+=" "+exceptionTokens[i];
                 }
@@ -508,6 +507,18 @@ public class SchemaValidator
             }
             nodeCount = 0;
         }
+        private static int cvcOrNumberCheck(String exceptionName)
+        {
+            logger.debug("ExceptionName= "+exceptionName.substring(0,3));
+            if(exceptionName.substring(0,3).equals("cvc")){
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
     }
     //Is there any methods I need to make it HML specfic or is this okay with pretty much just a vairable name change and deletions here and there
     private static class HMLValidationContentHandler extends DefaultHandler
@@ -679,7 +690,7 @@ public class SchemaValidator
             //If there HML is not well formed reject the file and return the error and how to fix it
             else
             {
-                for(int i =1; i<exceptionTokens.length;i++)
+                for(int i =cvcOrNumberCheck(exceptionTokens[0]); i<exceptionTokens.length;i++)
                 {
                     error+=" "+exceptionTokens[i];
                 }
@@ -868,6 +879,17 @@ public class SchemaValidator
             }
             nodeCount = 0;
         }
+          private static int cvcOrNumberCheck(String exceptionName)
+          {
+              logger.debug("ExceptionName= "+exceptionName.substring(0,3));
+              if(exceptionName.substring(0,3).equals("cvc")){
+                  return 1;
+              }
+              else
+              {
+                  return 0;
+              }
+          }
         }
      
 }

@@ -186,12 +186,14 @@ function callValidatorService()
                 document.getElementById("redX").style.display = 'block';
                          document.getElementById("reject").style.display='none';
             }
-            if(isHMLCompliant(resultXml)=="true")
+            if(isHMLCompliant(resultXml)=="reject")
             {
-                //HML Compliant
-                document.getElementById("HMLcheck").style.display='block';
-                document.getElementById("HMLX").style.display='none';
-                         document.getElementById("reject").style.display='none';
+                         document.getElementById("reject").style.display='block';
+                         document.getElementById("greenCheck").style.display = 'none';
+                         document.getElementById("redX").style.display = 'none';
+                         document.getElementById("HMLcheck").style.display='none';
+                         document.getElementById("HMLX").style.display='none';
+           
             }
             else if (isHMLCompliant(resultXml)=="false")
             {
@@ -201,11 +203,11 @@ function callValidatorService()
                          document.getElementById("reject").style.display='none';
             }
                          else{
-                         document.getElementById("reject").style.display='block';
-                         document.getElementById("greenCheck").style.display = 'nonw';
-                         document.getElementById("redX").style.display = 'none';
-                         document.getElementById("HMLcheck").style.display='none';
+                         //HML Compliant
+                         document.getElementById("HMLcheck").style.display='block';
                          document.getElementById("HMLX").style.display='none';
+                         document.getElementById("reject").style.display='none';
+
                          }
             
         })
@@ -248,23 +250,23 @@ function isHMLCompliant(xml)
     
     if(compliantBoolean == "true")
     {
-        return true;
+        return "true";
     }
     else if (compliantBoolean == "false")
     {
-        return false;
+        return "false";
     }
     else if(compliantBoolean == "reject")
     {
         alert("HML Rejected, Please Check Below For Reason");
-        return false;
+        return "reject";
     }
     else
     {
         alert("Error determining HML Compliance.");
-        return false;
+        return "false";
     }
-    return false;
+    return "false";
 }
 
 function isMiringCompliant(xml)
