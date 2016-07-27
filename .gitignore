@@ -2,6 +2,7 @@
 /log/
 /bin/
 
+**/.DS_Store
 *.log
 *.class
 .classpath

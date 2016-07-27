@@ -81,7 +81,7 @@ public class MiscTest
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/invalid.prolog.xml.txt");
         MiringValidator validator = new MiringValidator(xml);
         String results = validator.validate();
-        assertTrue(Utilities.containsErrorNode(results, "[Content, is, not, allowed, in, prolog.]"));
+        assertTrue(Utilities.containsErrorNode(results, "[1,1] Content is not allowed in prolog."));
     }
 
 
