@@ -49,16 +49,18 @@ public class MiringValidator
     ValidationResult[] tier2ValidationErrors;
     ValidationResult[] hmlValidationErrors;
     Sample[] sampleIDs;
+    String version;
     
     /**
      * Constructor for a MiringValidator object
      *
      * @param xml a String containing the xml text
      */
-    public MiringValidator(String xml)
+    public MiringValidator(String xml,String version)
     {
         this.xml = xml;
         this.report = null;
+        this.version=version;
     }
     
     /**
@@ -86,7 +88,8 @@ public class MiringValidator
         
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         logger.debug("Attempting HML Validation");
-        hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-1.0.1.xsd");
+        //Make method called version control
+        hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-"+version+".xsd");
         //If there are any fatal issues with HML do not continue
         if(!Utilities.hasHMLFatalErrors(hmlValidationErrors)&&!Utilities.hasRejects(hmlValidationErrors))
         {

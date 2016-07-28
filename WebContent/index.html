@@ -1,4 +1,11 @@
+
 <!DOCTYPE html>
+<?php
+    
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    ?>
 <!-- 
 
     MiringValidator  Semantic Validator for MIRING compliant HML
@@ -71,6 +78,10 @@
         display:none;
         color:red;
     }
+    select {
+        
+        padding: 0 0 0 1000px;
+    }
 
     
         </style>
@@ -79,10 +90,19 @@
   <body>
     <div class="container-fluid">
       <h1 align="center">MIRING Validator for HML</h1>
-      <h5 align = "center"> Version 1.1.2 </h5>
-      <p align="center">Paste some XML, compliant with <a href="http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd">HML 1.0.1</a> into the HML field and hit [ VALIDATE ].</p>
+      <h5 align = "center"> Version 1.1.3 </h5>
+      <p align="center">Paste some XML, compliant with <a href="http://schemas.nmdp.org">HML Version</a> that corresponds to your HML into the HML field and hit [ VALIDATE ].</p>
       <p align="center">Or, use the [ BROWSE ] button find an HML document on your computer.</p>
       <p align="center">A <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report</a> will appear below.</p>
+      <p align="center"> Please choose the version of HML you are using </p>
+      <div style="text-align:center">
+      <select id="versionNumber">
+          <option value="0">HML Version selection</option>
+          <option value="1.0.1">HML 1.0.1</option>
+          <option value="1.0.2">HML 1.0.2</option>
+      </select>
+      </div>
+
 
       <br/>
       <h3 align="center">HML Input</h3>
@@ -109,6 +129,7 @@
             var evt = document.createEvent('Event');
             evt.initEvent('click', true, true);
             el.dispatchEvent(evt);
+            document.getElementById("fileInput").value=null;
         }
 
         document.querySelector('#fileSelectButton').addEventListener('click', function(e) 

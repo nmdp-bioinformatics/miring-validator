@@ -81,7 +81,30 @@ public class SchemaValidator
         try 
         {
             MiringValidationContentHandler.clearModel();
-            if(schemaFileName.equals("/org/nmdp/miring/schema/hml-1.0.1.xsd"))
+            //Switch the two
+            if(schemaFileName.equals("/org/nmdp/miring/schema/MiringTier1.xsd"))
+            {
+                missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingNodeTemplate.xml"));
+                missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingAttributeTemplate.xml"));
+                hmlNamespace = Utilities.getNamespaceName(xml);
+                URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
+                logger.debug("Schema URL Resource Location = " + schemaURL);
+                File schemaFile = new File(schemaURL.toURI());
+                Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
+                
+                final SAXParserFactory factory = SAXParserFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setSchema(schema);
+                
+                final SAXParser parser = factory.newSAXParser();
+                final MiringValidationContentHandler handler = new MiringValidationContentHandler();
+                //parser.parse is what does the actual "validation."  It parses the sample xml referring to the schema.
+                //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
+                parser.parse(new InputSource(new StringReader(xml)), handler);//??????
+                MiringValidationContentHandler.clearModel();//except here
+            }
+
+            else
             {
             	missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingNodeTemplate.xml"));
                 missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingAttributeTemplate.xml"));
@@ -101,27 +124,6 @@ public class SchemaValidator
                 //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
                 parser.parse(new InputSource(new StringReader(xml)), handler);//??????
                 
-            }
-            else
-            {
-            missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingNodeTemplate.xml"));
-            missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingAttributeTemplate.xml"));
-            hmlNamespace = Utilities.getNamespaceName(xml);
-            URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
-            logger.debug("Schema URL Resource Location = " + schemaURL);
-            File schemaFile = new File(schemaURL.toURI());
-            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
-
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setSchema(schema);
-            
-            final SAXParser parser = factory.newSAXParser();
-            final MiringValidationContentHandler handler = new MiringValidationContentHandler();
-            //parser.parse is what does the actual "validation."  It parses the sample xml referring to the schema.
-            //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
-            parser.parse(new InputSource(new StringReader(xml)), handler);//?????? 
-            MiringValidationContentHandler.clearModel();//except here
             }
             
             
@@ -330,7 +332,7 @@ public class SchemaValidator
                     
                 ve=new ValidationResult(error,Severity.FATAL);
                 
-                ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
+                ve.setSolutionText("Verify that your HML file is well formed, and conforms to the chosen hml version");
                 ve.setMiringRule("reject");
             }
 
@@ -696,7 +698,7 @@ public class SchemaValidator
                 }
                 
                 ve=new ValidationResult(error,Severity.HMLFATAL);
-                ve.setSolutionText("Verify that your HML file is well formed, and conforms to http://schemas.nmdp.org/spec/hml/1.0.1/hml-1.0.1.xsd");
+                ve.setSolutionText("Verify that your HML file is well formed, and conforms to the chosen hml version");
                 ve.setMiringRule("reject");
             }
            
