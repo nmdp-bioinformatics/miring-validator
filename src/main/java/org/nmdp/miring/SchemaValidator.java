@@ -343,9 +343,7 @@ public class SchemaValidator
                  begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
                    }
                 int enDex = qualifiedNodeName.indexOf("}'");
-                System.out.println("Old Error "+error);
                 String newError=error.replaceAll(".{9}.http.+?(?=expected)expected.","");
-                System.out.println("New Error "+newError);
                 String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
                 ve = handleMissingNode(newError,missingNodeName);
             }
@@ -391,10 +389,6 @@ public class SchemaValidator
          */
         private static ValidationResult handleMissingAttribute(String error, String missingAttributeName, String nodeName)
         {
-           
-            
-                missingAttributeName.replace("((.*)hemas.nmdp.org.spec.hml.1.0.:*)/g"," ");
-                System.out.println(missingAttributeName);
             
             String errorMessage = error+" The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionText = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
@@ -475,12 +469,6 @@ public class SchemaValidator
         private static ValidationResult handleMissingNode(String error,String missingNodeName)
         {
             String parentNodeName = "Unhandled ParentNodeName";
-            
-          
-                   missingNodeName.replace("((.*)hemas.nmdp.org.spec.hml.1.0.:*)/g"," ");
-                   System.out.println(missingNodeName);
-            
-
             parentNodeName = xmlCurrentNode.nodeName;
             if(parentNodeName.isEmpty())
             {
