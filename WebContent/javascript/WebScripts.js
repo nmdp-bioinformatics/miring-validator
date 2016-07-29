@@ -230,7 +230,7 @@ function callValidatorService()
          //Alerts user about critical server errors due to the file
             alert( "Error.  Something wrong happened: Check in results text area ");
               clearText();
-              document.getElementById("resultsText").value = "Please contact the System Admin: bioinformatics-web@nmdp.org             \n"+ response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," ");
+              document.getElementById("resultsText").value = "Please contact the System Admin: bioinformatics-web@nmdp.org in your message attach your hml and note your version number.             \n"+ response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," ");
         })
         .always(function() 
         {

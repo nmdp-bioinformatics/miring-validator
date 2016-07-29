@@ -58,7 +58,7 @@ public class SchemaValidator
     public static List<ValidationResult> validationErrors;
     public static String hmlNamespace = null;
     public static List<Sample> samples;
-    
+    public static String schema;
     //missingNodeTemplates and missingAttributeTemplates are loaded from xml template files.
     //They define what information (rule id, and additional info, etc.) is included in error messages
     //Included info can be specified on a per-rule basis
@@ -77,6 +77,7 @@ public class SchemaValidator
         logger.debug("Starting a schema validation");
         validationErrors = new ArrayList<ValidationResult>();
         samples = new ArrayList<Sample>();
+        schema=schemaFileName;
 
         try 
         {
@@ -102,6 +103,28 @@ public class SchemaValidator
                 //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
                 parser.parse(new InputSource(new StringReader(xml)), handler);//??????
                 MiringValidationContentHandler.clearModel();//except here
+            }
+            else if(schemaFileName.equals("/org/nmdp/miring/schema/MiringTier1-1.0.xsd"))
+            {
+                missingNodeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingNodeTemplate.xml"));
+                missingAttributeTemplates = Utilities.xmlToDocumentObject(Utilities.readXmlResource("/org/nmdp/miring/ruletemplates/MissingAttributeTemplate.xml"));
+                hmlNamespace = Utilities.getNamespaceName(xml);
+                URL schemaURL = SchemaValidator.class.getResource(schemaFileName);
+                logger.debug("Schema URL Resource Location = " + schemaURL);
+                File schemaFile = new File(schemaURL.toURI());
+                Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
+                
+                final SAXParserFactory factory = SAXParserFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setSchema(schema);
+                
+                final SAXParser parser = factory.newSAXParser();
+                final MiringValidationContentHandler handler = new MiringValidationContentHandler();
+                //parser.parse is what does the actual "validation."  It parses the sample xml referring to the schema.
+                //Errors are thrown by the handler, and we'll turn those into validation errors that are human readable.
+                parser.parse(new InputSource(new StringReader(xml)), handler);//??????
+                MiringValidationContentHandler.clearModel();//except here
+
             }
 
             else
@@ -132,6 +155,7 @@ public class SchemaValidator
         catch (Exception e)
         {
             logger.error("Exception during schema validation.", e);
+            
         }
         
         if(validationErrors.size() > 0)
@@ -265,9 +289,18 @@ public class SchemaValidator
             String errorMessage = exception.getMessage();
             String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
             String error="["+Integer.toString(exception.getLineNumber())+","+Integer.toString(exception.getColumnNumber())+"]";
+            for(int i =cvcOrNumberCheck(exceptionTokens[0]); i<exceptionTokens.length;i++)
+            {
+                error+=" "+exceptionTokens[i];
+            }
             
                        //MISSING NODE
-           if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
+            if(errorMessage.equals("Content is not allowed in prolog."))
+            {
+                ve = new ValidationResult(error,Severity.FATAL);
+                ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
+            }
+           else if(exceptionTokens[0].equals("cvc-complex-type.2.4.a:") || exceptionTokens[0].equals("cvc-complex-type.2.4.b:"))
             {
                 // This cvc-complex-type is called if there is a node missing.  here's a few examples of what the exception.getMessage() can look like
                 // cvc-complex-type.2.4.a: Invalid content was found starting with element 'sample'. One of '{"http://schemas.nmdp.org/spec/hml/1.0.1":property, "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}' is expected.
@@ -301,11 +334,20 @@ public class SchemaValidator
                 // qualifiedNodeName should look like this:
                 // "http://schemas.nmdp.org/spec/hml/1.0.1":hmlid}'
                 String qualifiedNodeName = exceptionTokens[maxInd];
-                int begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
+                int begIndex=maxInd;
+                if(schema.equals("/org/nmdp/miring/schema/MiringTier1-1.0.xsd"))
+                   {
+                     begIndex = 9 + qualifiedNodeName.indexOf("hml/1.0\":");
+                }
+                   else{
+                 begIndex = 11 + qualifiedNodeName.indexOf("hml/1.0.1\":");
+                   }
                 int enDex = qualifiedNodeName.indexOf("}'");
-                
+                System.out.println("Old Error "+error);
+                String newError=error.replaceAll(".{9}.http.+?(?=expected)expected.","");
+                System.out.println("New Error "+newError);
                 String missingNodeName = qualifiedNodeName.substring(begIndex, enDex);
-                ve = handleMissingNode(error,missingNodeName);
+                ve = handleMissingNode(newError,missingNodeName);
             }
             //MISSING ATTRIBUTE
             else if(exceptionTokens[0].equals("cvc-complex-type.4:"))
@@ -321,20 +363,20 @@ public class SchemaValidator
                 
                 ve = handleMissingAttribute(error,missingAttributeName, Utilities.stripNamespace(nodeName, hmlNamespace));
             }
-            //If there is an error with formatting of the hml consider it fatal and reject the file
-            else
-            {
-
+            else{
                 for(int i =cvcOrNumberCheck(exceptionTokens[0]); i<exceptionTokens.length;i++)
                 {
                     error+=" "+exceptionTokens[i];
                 }
-                    
-                ve=new ValidationResult(error,Severity.FATAL);
+                System.out.println(error);
                 
+                ve=new ValidationResult(error,Severity.HMLFATAL);
                 ve.setSolutionText("Verify that your HML file is well formed, and conforms to the chosen hml version");
                 ve.setMiringRule("reject");
+
+                
             }
+          
 
             Utilities.addValidationError(validationErrors, ve);
         }
@@ -349,6 +391,11 @@ public class SchemaValidator
          */
         private static ValidationResult handleMissingAttribute(String error, String missingAttributeName, String nodeName)
         {
+           
+            
+                missingAttributeName.replace("((.*)hemas.nmdp.org.spec.hml.1.0.:*)/g"," ");
+                System.out.println(missingAttributeName);
+            
             String errorMessage = error+" The node " + nodeName + " is missing a " + missingAttributeName + " attribute.";
             String solutionText = "Please add a " + missingAttributeName + " attribute to the " + nodeName + " node.";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
@@ -428,6 +475,11 @@ public class SchemaValidator
         private static ValidationResult handleMissingNode(String error,String missingNodeName)
         {
             String parentNodeName = "Unhandled ParentNodeName";
+            
+          
+                   missingNodeName.replace("((.*)hemas.nmdp.org.spec.hml.1.0.:*)/g"," ");
+                   System.out.println(missingNodeName);
+            
 
             parentNodeName = xmlCurrentNode.nodeName;
             if(parentNodeName.isEmpty())
@@ -436,7 +488,7 @@ public class SchemaValidator
             }
 
             String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance with the HML version chosen";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.FATAL);
             
             //Specific logic for various MIRING errors
@@ -804,7 +856,7 @@ public class SchemaValidator
             }
             
             String errorMessage = error+" There is a missing " + missingNodeName + " node underneath the " + parentNodeName + " node.";
-            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance of HML 1.0.1.";
+            String solutionText = "Please add one " + missingNodeName + " node underneath the " + parentNodeName + " node. If it exists, please make sure the placement is in accordance with your chosen HML version";
             ValidationResult ve = new ValidationResult(errorMessage,Severity.HMLFATAL);
             boolean matchFound = false;
             //Specific logic for various HML errors
