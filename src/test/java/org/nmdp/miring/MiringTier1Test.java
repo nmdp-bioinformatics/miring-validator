@@ -43,32 +43,32 @@ public class MiringTier1Test
         logger.debug("starting testMiringElement1Tier1");
         //1.1.a
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.no.hmlid.xml");
-        String results = new MiringValidator(xml).validate();
+        String results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "There is a missing hmlid node underneath the hml node."));
         
         //1.2.a
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.no.reportingcenter.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "There is a missing reporting-center node underneath the hml node."));
         
         //1.3.a
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.sbtngs.missing.testid.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node sbt-ngs is missing a test-id-source attribute."));
         
         //1.5.a
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.missing.rawreads.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "There is a missing raw-reads node underneath the sbt-ngs node."));
         
         //1.5.b
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.rawreads.no.availability.xml");
-        String noAvailResults = new MiringValidator(xml).validate();
+        String noAvailResults = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(noAvailResults, "The node raw-reads is missing a availability attribute."));
         
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element1.rawreads.availability.xml");
-        String availResults = new MiringValidator(xml).validate();
+        String availResults = new MiringValidator(xml,"1.0.1").validate();
         assertFalse(Utilities.containsErrorNode(availResults, "The node raw-reads is missing a availability attribute."));
     }
 
@@ -79,18 +79,18 @@ public class MiringTier1Test
         
         //2.1.a
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element2.no.alleleassignment.xml");
-        String results = new MiringValidator(xml).validate();
+        String results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "There is a missing allele-assignment node underneath the typing node."));
         
         //2.1.b and 2.1.c
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element2.no.alleleassignment.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-db attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node allele-assignment is missing a allele-version attribute."));
         
         //2.2.b
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element2.referencesequence.missing.attributes.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a name attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a start attribute."));
         assertTrue(Utilities.containsErrorNode(results, "The node reference-sequence is missing a end attribute."));
@@ -99,7 +99,7 @@ public class MiringTier1Test
         
         //2.3.b
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element2.referencesequence.missing.attributes.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "The node reference-database is missing a curated attribute."));
     }
 
@@ -109,12 +109,12 @@ public class MiringTier1Test
         logger.debug("starting testMiringElement3Tier1");
         //3.1.a
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element3.glstring.missing.xml");
-        String results = new MiringValidator(xml).validate();
+        String results = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
         assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
         
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element3.glstring.text.xml");
-        results = new MiringValidator(xml).validate();
+        results = new MiringValidator(xml,"1.0.1").validate();
         assertFalse(Utilities.containsErrorNode(results, "There is a missing glstring node underneath the allele-assignment node."));
         assertFalse(Utilities.containsErrorNode(results, "A glstring node should have one of either A) A uri attribute specifying the location of a valid glstring, or B) Text containing a valid glstring."));
     }
@@ -127,7 +127,7 @@ public class MiringTier1Test
         //4.2.a and 4.2.3.a and 4.2.4.a 
         //and 4.2.5.a and 4.2.7.a
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element4.CSB.bad.attributes.xml");
-        String badResults = new MiringValidator(xml).validate();
+        String badResults = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a description attribute."));
         assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a start attribute."));
         assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a end attribute."));
@@ -136,7 +136,7 @@ public class MiringTier1Test
         assertTrue(Utilities.containsErrorNode(badResults, "The node consensus-sequence-block is missing a continuity attribute."));
         
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element4.CSB.good.attributes.xml");
-        String goodResults = new MiringValidator(xml).validate();
+        String goodResults = new MiringValidator(xml,"1.0.1").validate();
         assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a description attribute."));
         assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a start attribute."));
         assertFalse(Utilities.containsErrorNode(goodResults, "The node consensus-sequence-block is missing a end attribute."));
@@ -151,13 +151,13 @@ public class MiringTier1Test
         
         //5.3.a and 5.6.a and 5.7.a
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element5.variant.bad.attributes.xml");
-        String badResults = new MiringValidator(xml).validate();
+        String badResults = new MiringValidator(xml,"1.0.1").validate();
         assertTrue(Utilities.containsErrorNode(badResults, "The node variant is missing a id attribute."));
         assertTrue(Utilities.containsErrorNode(badResults, "The node variant is missing a quality-score attribute."));
         assertTrue(Utilities.containsErrorNode(badResults, "The node variant is missing a filter attribute."));
 
         xml = Utilities.readXmlResource("/org/nmdp/miring/hml/Element5.variant.good.attributes.xml");
-        String goodResults = new MiringValidator(xml).validate();
+        String goodResults = new MiringValidator(xml,"1.0.1").validate();
         assertFalse(Utilities.containsErrorNode(goodResults, "The node variant is missing a id attribute."));
         assertFalse(Utilities.containsErrorNode(goodResults, "The node variant is missing a quality-score attribute."));
         assertFalse(Utilities.containsErrorNode(goodResults, "The node variant is missing a filter attribute."));

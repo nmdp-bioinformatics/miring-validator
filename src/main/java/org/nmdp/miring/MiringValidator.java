@@ -49,16 +49,18 @@ public class MiringValidator
     ValidationResult[] tier2ValidationErrors;
     ValidationResult[] hmlValidationErrors;
     Sample[] sampleIDs;
+    String version;
     
     /**
      * Constructor for a MiringValidator object
      *
      * @param xml a String containing the xml text
      */
-    public MiringValidator(String xml)
+    public MiringValidator(String xml,String version)
     {
         this.xml = xml;
         this.report = null;
+        this.version=version;
     }
     
     /**
@@ -73,26 +75,17 @@ public class MiringValidator
             logger.error("XML is null or length 0.");
             return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null or length 0.",Severity.FATAL), new ValidationResult("XML is null or length 0.", Severity.HMLFATAL)}, null, null,null,null,0);
         }
-        //Retrieve version number submitted by user
-        //worry in space and optimization
-        /**
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document document = db.parse(new File(xml));
-        NodeList nodeList = document.getElementsByTagName("hml");
-        String versionNumber = nodeList.item(x).getAttributes().getNamedItem("version").getNodeValue();
-         
-        logger.debug("Version Number: "+ cd.getData());*/
         
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         logger.debug("Attempting HML Validation");
-        hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-1.0.1.xsd");
+        //Make method called version control
+        hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-"+version+".xsd");
         //If there are any fatal issues with HML do not continue
         if(!Utilities.hasHMLFatalErrors(hmlValidationErrors)&&!Utilities.hasRejects(hmlValidationErrors))
         {
         	//Tier 1
             logger.debug("Attempting Tier 1 Validation");
-            tier1ValidationErrors = SchemaValidator.validate(xml, "/org/nmdp/miring/schema/MiringTier1.xsd");
+            tier1ValidationErrors = SchemaValidator.validate(xml, getMiring());
             sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
             //Tier 2
             //If tier 1 has fatal errors, we should not continue to tier 2.
@@ -149,8 +142,14 @@ public class MiringValidator
         this.xml = xml;
     }
 
+    
     public String getReport()
     {
         return report;
+    }
+    public String getMiring()
+    {
+        
+        return (version.equals("1.0.1")?"/org/nmdp/miring/schema/MiringTier1.xsd":"/org/nmdp/miring/schema/MiringTier1-1.0.xsd");
     }
 }

@@ -27,6 +27,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.List;
 
 import org.nmdp.miring.ValidationResult.Severity;
 
@@ -50,28 +51,30 @@ public class MiringValidatorService
      */
     @POST
     @Produces("application/xml")
-    public String validateMiring(@FormParam("xml") String xml)
+    public String validateMiring(@FormParam("xml[]") List <String> xml)
     {
         //System.out.println("Web Service Call Received.  ");
         //System.out.println("XML length=" + xml==null?"NULL":(xml.length() + " : " + xml.substring(0,20) + " ... " + xml.substring(xml.length()-20, xml.length())));
+        String[] xmlList=xml.toArray(new String[0]);
         logger.debug( "Received Miring Validation web service call.");
         //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
-        if(xml == null)
+        if(xmlList[0] == null)
         {
             logger.error("XML is Null.");
             return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL),new ValidationResult("XML is null.",Severity.HMLFATAL)}, null, null,null,null,0);
         }
-        else if(xml.length() == 0)
+        else if(xmlList[0].length() == 0)
         {
             logger.error("XML is Empty.");
             return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL),new ValidationResult("XML is length 0.",Severity.HMLFATAL)}, null, null,null,null,0);
         }
         else
         {
-            logger.debug("XML Length = " + xml.length());
+            logger.debug("XML Length = " + xmlList[0].length());
+            System.out.println("Version caught "+ xmlList[1]);
 
-            MiringValidator myValidator = new MiringValidator(xml);
+            MiringValidator myValidator = new MiringValidator(xmlList[0],xmlList[1]);
             myValidator.validate();
 
             String report = myValidator.getReport();

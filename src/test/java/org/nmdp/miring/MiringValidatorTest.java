@@ -42,8 +42,8 @@ public class MiringValidatorTest
         String demoGoodXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demogood.xml");
         String demoBadXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demobad.xml");
         
-        MiringValidator goodValidator = new MiringValidator(demoGoodXML);
-        MiringValidator badValidator = new MiringValidator(demoBadXML);
+        MiringValidator goodValidator = new MiringValidator(demoGoodXML,"1.0.1");
+        MiringValidator badValidator = new MiringValidator(demoBadXML,"1.0.1");
         
         String goodValidatorResults = goodValidator.validate();
         String badValidatorResults = badValidator.validate();

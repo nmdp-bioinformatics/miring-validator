@@ -127,13 +127,16 @@ function readSingleFile(fileElement)
             callValidatorService();
         }
         r.readAsText(f);
+        
     } 
     else 
     { 
         alert("Failed to load file");
     }
-    //Still need to figure out a way to allow for multiple submissions of same file. Lowest priority though.
-    fileElement.files[0]='';
+    fileElement.files[0]=null;
+    r=null;
+    contents=null;
+    f=null;
     
 }
 
@@ -161,10 +164,17 @@ function callValidatorService()
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);
     var xmlText = document.getElementById("inputText").value;
+    var version=document.getElementById("versionNumber").value;
+    var xmlplusversion=[xmlText,version];
+    if(version==0)
+    {
+        alert("Please select a version number");
+    }
+    else{
     //alert("xml = " + xmlText);
   
     var results = $.post(request,
-        {xml:xmlText},
+        {xml:xmlplusversion},
         function(response)
         {
             //alert("This is called if there was a successful request.  Storing the response in the right text box.");
@@ -220,13 +230,14 @@ function callValidatorService()
          //Alerts user about critical server errors due to the file
             alert( "Error.  Something wrong happened: Check in results text area ");
               clearText();
-              document.getElementById("resultsText").value = "Please contact the System Admin: bioinformatics-web@nmdp.org             \n"+ response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," ");
+              document.getElementById("resultsText").value = "Please contact the System Admin: bioinformatics-web@nmdp.org in your message attach your hml and note your version number.             \n"+ response.responseText.replace(/{(.*?)}|<(.*?)>/g,"").replace(/^.*com.*$/gm,"").replace(/^.*org.*$/gm,"").replace(/\r?\n|\r/gm," ");
         })
         .always(function() 
         {
             //alert( "Finished Attempt.  This should always be called after success or failure." );
         }
     );
+    }
 }
 
 function clearText()
