@@ -182,12 +182,20 @@ function callValidatorService()
             resultXml = decodeURIComponent(resultXml);
             document.getElementById("resultsText").value = resultXml;
             
-            if(isMiringCompliant(resultXml))
+            if(isMiringCompliant(resultXml)=="warnings")
+            {
+                document.getElementById("yellowCheck").style.display='block'
+                         document.getElementById("greenCheck").style.display = 'none';
+                         document.getElementById("redX").style.display = 'none';
+                         document.getElementById("reject").style.display='none';
+            }
+            else if(isMiringCompliant(resultXml)=="true")
             {
                 //alert("MIRING Compliant.");
                 document.getElementById("greenCheck").style.display = 'block';
                 document.getElementById("redX").style.display = 'none';
                          document.getElementById("reject").style.display='none';
+                         document.getElementById("yellowCheck").style.display='block'
             }
             else
             {
@@ -195,6 +203,7 @@ function callValidatorService()
                 document.getElementById("greenCheck").style.display = 'none';
                 document.getElementById("redX").style.display = 'block';
                          document.getElementById("reject").style.display='none';
+                         document.getElementById("yellowCheck").style.display='block'
             }
             if(isHMLCompliant(resultXml)=="reject")
             {
@@ -249,6 +258,7 @@ function clearText()
     document.getElementById("HMLcheck").style.display='none';
     document.getElementById("HMLX").style.display='none';
     document.getElementById("reject").style.display='none';
+    document.getElementById("yellowCheck").style.display='none';
    
 }
 
@@ -289,15 +299,19 @@ function isMiringCompliant(xml)
     
     if(compliantBoolean == "true" )
     {
-        return true;
+        return "true";
     }
     else if (compliantBoolean == "false")
     {
-        return false;
+        return "false";
     }
     else if (compliantBoolean == "reject")
     {
-        return false;
+        return "reject";
+    }
+    else if(compliantBoolean == "warnings")
+    {
+        return "warnings";
     }
     else
     {

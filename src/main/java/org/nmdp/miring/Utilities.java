@@ -524,6 +524,20 @@ public class Utilities
         }
         return false;
     }
+    public static boolean hasWarnings(ValidationResult[] errors)
+    {
+        for(int i = 0; i < errors.length; i++)
+        {
+            if(errors[i] != null)
+            {
+                if(errors[i].getSeverity()==Severity.WARNING||errors[i].getSeverity()==Severity.HMLWARNING)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Does this array have any rejections Any Validation Errors with Severity=REJECT will return true.
      *

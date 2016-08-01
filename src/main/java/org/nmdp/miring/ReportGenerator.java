@@ -150,6 +150,7 @@ public class ReportGenerator
             :(validationResults.length==0)?"true"
             :(Utilities.hasRejects(validationResults))?"reject"
             :(Utilities.hasHMLFatalErrors(validationResults))?"false"
+            :(Utilities.hasWarnings(validationResults))?"warnings"
             :(Utilities.isMiringCompliant(validationResults))?"true"
             :"false"
         );
