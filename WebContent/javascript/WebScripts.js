@@ -143,6 +143,7 @@ function readSingleFile(fileElement)
 function loadSample()
 {
     //load some sample HML and validate it.
+    if(document.getElementById("versionNumber").value=="1.0.1"){
     getFileFromServer("hml/hml_1_0_1_example_miring.xml", function(text) 
     {
         if (text === null) 
@@ -157,9 +158,28 @@ function loadSample()
             callValidatorService();
         }
     });
+    }
+    else
+    {
+        getFileFromServer("hml/hml_1_0_example_miring.xml", function(text)
+                          {
+                          if (text === null)
+                          {
+                          alert("Problem getting hml_1_0_1_example_miring.xml from the server");
+                          }
+                          else
+                          {
+                          sampleXML = text;
+                          
+                          document.getElementById("inputText").value = sampleXML;
+                          callValidatorService();
+                          }
+                          });
+
+    }
 }
 
-function callValidatorService() 
+function callValidatorService()
 {
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);
