@@ -143,7 +143,6 @@ function readSingleFile(fileElement)
 function loadSample()
 {
     //load some sample HML and validate it.
-    if(document.getElementById("versionNumber").value=="1.0.1"){
     getFileFromServer("hml/hml_1_0_1_example_miring.xml", function(text) 
     {
         if (text === null) 
@@ -158,43 +157,17 @@ function loadSample()
             callValidatorService();
         }
     });
-    }
-    else
-    {
-        getFileFromServer("hml/hml_1_0_example_miring.xml", function(text)
-                          {
-                          if (text === null)
-                          {
-                          alert("Problem getting hml_1_0_1_example_miring.xml from the server");
-                          }
-                          else
-                          {
-                          sampleXML = text;
-                          
-                          document.getElementById("inputText").value = sampleXML;
-                          callValidatorService();
-                          }
-                          });
-
-    }
-}
+   }
 
 function callValidatorService()
 {
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);
     var xmlText = document.getElementById("inputText").value;
-    var version=document.getElementById("versionNumber").value;
-    var xmlplusversion=[xmlText,version];
-    if(version==0)
-    {
-        alert("Please select a version number");
-    }
-    else{
     //alert("xml = " + xmlText);
   
     var results = $.post(request,
-        {xml:xmlplusversion},
+        {xml:xmlText},
         function(response)
         {
             //alert("This is called if there was a successful request.  Storing the response in the right text box.");
@@ -215,7 +188,7 @@ function callValidatorService()
                 document.getElementById("greenCheck").style.display = 'block';
                 document.getElementById("redX").style.display = 'none';
                          document.getElementById("reject").style.display='none';
-                         document.getElementById("yellowCheck").style.display='block'
+                         document.getElementById("yellowCheck").style.display='none'
             }
             else
             {
@@ -223,7 +196,7 @@ function callValidatorService()
                 document.getElementById("greenCheck").style.display = 'none';
                 document.getElementById("redX").style.display = 'block';
                          document.getElementById("reject").style.display='none';
-                         document.getElementById("yellowCheck").style.display='block'
+                         document.getElementById("yellowCheck").style.display='none'
             }
             if(isHMLCompliant(resultXml)=="reject")
             {
@@ -266,7 +239,7 @@ function callValidatorService()
             //alert( "Finished Attempt.  This should always be called after success or failure." );
         }
     );
-    }
+    
 }
 
 function clearText()

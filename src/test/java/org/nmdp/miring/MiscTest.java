@@ -58,7 +58,7 @@ public class MiscTest
         String hml = Utilities.readXmlResource("/org/nmdp/miring/hml/HMLWithCustomNamespace.xml");
         assertTrue(hml.length()>0);
 
-        String results = new MiringValidator(hml,"1.0.1").validate();
+        String results = new MiringValidator(hml).validate();
 
         //System.out.println("Validating these results against the report schema:");
         //System.out.println(results);
@@ -79,9 +79,9 @@ public class MiscTest
         logger.debug("Starting a testInvalidProlog");
 
         String xml = Utilities.readXmlResource("/org/nmdp/miring/hml/invalid.prolog.xml.txt");
-        MiringValidator validator = new MiringValidator(xml,"1.0.1");
+        MiringValidator validator = new MiringValidator(xml);
         String results = validator.validate();
-        logger.debug("Results= "+ results);
+        System.out.println("Invalid Prolog again= " + results);
         assertTrue(Utilities.containsErrorNode(results, "[1,1] Content is not allowed in prolog."));
     }
 
@@ -94,7 +94,7 @@ public class MiscTest
         assertTrue(xml.length()>0);
 
         String results;
-        results = new MiringValidator(xml,"1.0.1").validate();
+        results = new MiringValidator(xml).validate();
         //System.out.println(results);
 
         assertTrue(results.length() > 1);

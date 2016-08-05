@@ -126,6 +126,10 @@ public class SchemaValidator
                 MiringValidationContentHandler.clearModel();//except here
 
             }
+            else if(schemaFileName.equals("/schema/miringreport.xsd"))
+            {
+                
+            }
 
             else
             {
@@ -669,10 +673,14 @@ public class SchemaValidator
             String errorMessage = exception.getMessage();
             String[] exceptionTokens = Utilities.tokenizeString(errorMessage, " ");
             String error="["+Integer.toString(exception.getLineNumber())+","+Integer.toString(exception.getColumnNumber())+"]";
+            for(int i =cvcOrNumberCheck(exceptionTokens[0]); i<exceptionTokens.length;i++)
+            {
+                error+=" "+exceptionTokens[i];
+            }
             
             if(errorMessage.equals("Content is not allowed in prolog."))
             {
-                ve = new ValidationResult("Content is not allowed in prolog.",Severity.FATAL);
+                ve = new ValidationResult(error,Severity.HMLFATAL);
                 ve.setSolutionText("This most likely means that there is some text before the initial xml node begins.  Get rid of it and try again." );
             }
             //MISSING NODE

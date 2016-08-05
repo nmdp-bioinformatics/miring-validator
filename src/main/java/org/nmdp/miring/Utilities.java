@@ -481,7 +481,7 @@ public class Utilities
         //Does this list contain any fatal/MIRING errors?
         for(int i = 0; i < errors.length; i++)
         {
-            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.MIRING || errors[i].getMiringRule()=="Node")
+            if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.WARNING || errors[i].getSeverity()==Severity.MIRING || errors[i].getMiringRule()=="Node")
             {
                 return false;
             }
@@ -510,6 +510,22 @@ public class Utilities
         }
         return false;
     }
+    public static boolean hasMiringErrors(ValidationResult[] errors)
+    {
+        //Does this list contain any fatal errors?
+        for(int i = 0; i < errors.length; i++)
+        {
+            if(errors[i] != null)
+            {
+                if(errors[i].getSeverity()==Severity.MIRING)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean hasHMLFatalErrors(ValidationResult[] errors)
     {
         for(int i = 0; i < errors.length; i++)
