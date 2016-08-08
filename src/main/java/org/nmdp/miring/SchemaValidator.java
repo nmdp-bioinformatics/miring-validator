@@ -929,6 +929,9 @@ public class SchemaValidator
             }
             nodeCount = 0;
         }
+          /*
+           Checks for the cvc error messages. Takes it out if it starts with "cvc"
+           */
           private static int cvcOrNumberCheck(String exceptionName)
           {
               logger.debug("ExceptionName= "+exceptionName.substring(0,3));
