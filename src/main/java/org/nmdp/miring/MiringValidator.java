@@ -164,6 +164,8 @@ public class MiringValidator
     {
         return report;
     }
+    /* Gets the version of HML used to validate
+     */
     public String getVersion()
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -173,14 +175,15 @@ public class MiringValidator
             builder = factory.newDocumentBuilder();
              xmlDOM = builder.parse(new InputSource(new StringReader(xml)));
             
-        } catch (Exception e) {
+        }
+        //I am returning 1.0.1 due to server error if it returns a null.
+        catch (Exception e) {
             System.out.println("Error in handle Grabbing ");
             return "1.0.1";
         }
         NodeList xmlAttributes = xmlDOM.getElementsByTagName("*");
         NamedNodeMap xmlAttribute = xmlAttributes.item(0).getAttributes();
         for(int i = 0; i<xmlAttribute.getLength();i++){
-            System.out.println("Custom Name Space Test "+xmlAttribute.item(i).getNodeName().toString());
             if(xmlAttribute.item(i).getNodeName().equals("version"))
             {
                 return xmlAttribute.item(i).getNodeValue();
@@ -191,6 +194,8 @@ public class MiringValidator
         
         
     }
+    /* Based on version choose correct miring schema (They are the same except for the name space)
+     */
     public String getMiring(String version)
     {
         return (version.equals("1.0.1"))? "/org/nmdp/miring/schema/MiringTier1.xsd":"/org/nmdp/miring/schema/MiringTier1-1.0.xsd";

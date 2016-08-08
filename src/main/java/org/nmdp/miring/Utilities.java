@@ -478,7 +478,7 @@ public class Utilities
    
     public static boolean isMiringCompliant(ValidationResult[] errors)
     {
-        //Does this list contain any fatal/MIRING errors?
+        //Does this list contain any fatal/MIRING/Warnings errors?
         for(int i = 0; i < errors.length; i++)
         {
             if(errors[i].getSeverity()==Severity.FATAL  || errors[i].getSeverity()==Severity.WARNING || errors[i].getSeverity()==Severity.MIRING || errors[i].getMiringRule()=="Node")
