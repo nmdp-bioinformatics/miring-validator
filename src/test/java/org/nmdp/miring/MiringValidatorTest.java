@@ -42,11 +42,12 @@ public class MiringValidatorTest
         String demoGoodXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demogood.xml");
         String demoBadXML = Utilities.readXmlResource("/org/nmdp/miring/hml/demobad.xml");
         
-        MiringValidator goodValidator = new MiringValidator(demoGoodXML,"1.0.1");
-        MiringValidator badValidator = new MiringValidator(demoBadXML,"1.0.1");
-        
+        MiringValidator goodValidator = new MiringValidator(demoGoodXML);
+        MiringValidator badValidator = new MiringValidator(demoBadXML);
         String goodValidatorResults = goodValidator.validate();
         String badValidatorResults = badValidator.validate();
+        System.out.println("Miring Validation Test Gresutls= "+goodValidatorResults);
+        System.out.println("Miring Validation Test Bresutls= "+badValidatorResults);
 
         assertFalse(Utilities.containsErrorNode(goodValidatorResults, "There is a missing hmlid node underneath the hml node."));
         assertTrue(Utilities.containsErrorNode(badValidatorResults, "There is a missing hmlid node underneath the hml node."));

@@ -151,6 +151,8 @@ public class ReportGenerator
             :(Utilities.hasRejects(validationResults))?"reject"
             :(Utilities.hasHMLFatalErrors(validationResults))?"false"
             :(Utilities.isMiringCompliant(validationResults))?"true"
+            :(Utilities.hasMiringErrors(validationResults))?"false"
+            :(Utilities.hasWarnings(validationResults))?"warnings"
             :"false"
         );
 

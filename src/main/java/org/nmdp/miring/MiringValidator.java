@@ -23,19 +23,28 @@
 package org.nmdp.miring;
 
 import java.util.HashMap;
+import java.util.*;
+import java.util.Map.*;
+import java.io.StringReader;
 
 import org.nmdp.miring.ValidationResult.Severity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.w3c.dom.Document;
-//import org.w3c.dom.DocumentBuilder;
-//import org.w3c.dom.DocumentBuilderFactory;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 
 /** 
  * This class is used to validate an XML file against a MIRING checklist.  Both tier 1 and tier 2 are included in the validation.
@@ -49,18 +58,17 @@ public class MiringValidator
     ValidationResult[] tier2ValidationErrors;
     ValidationResult[] hmlValidationErrors;
     Sample[] sampleIDs;
-    String version;
+    public static Document xmlDom;
     
     /**
      * Constructor for a MiringValidator object
      *
      * @param xml a String containing the xml text
      */
-    public MiringValidator(String xml,String version)
+    public MiringValidator(String xml)
     {
         this.xml = xml;
         this.report = null;
-        this.version=version;
     }
     
     /**
@@ -78,6 +86,14 @@ public class MiringValidator
         
         HashMap<String,String> properties = Utilities.getPropertiesFromRootHml(xml);
         logger.debug("Attempting HML Validation");
+        String version = getVersion();
+        System.out.println("Version Number = "+version);
+        if(version==null)
+        {
+            report = ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("No Version Number Detected Please have a version number under then HML node",Severity.FATAL),new ValidationResult("No Version Number Detected Please have a version number under then HML node",Severity.HMLFATAL)}, null, null,null,null,0);
+        }
+        else
+        {
         //Make method called version control
         hmlValidationErrors = SchemaValidator.validate(xml,"/org/nmdp/miring/schema/hml-"+version+".xsd");
         //If there are any fatal issues with HML do not continue
@@ -85,7 +101,7 @@ public class MiringValidator
         {
         	//Tier 1
             logger.debug("Attempting Tier 1 Validation");
-            tier1ValidationErrors = SchemaValidator.validate(xml, getMiring());
+            tier1ValidationErrors = SchemaValidator.validate(xml, getMiring(version));
             sampleIDs = SchemaValidator.samples.toArray(new Sample[SchemaValidator.samples.size()]);
             //Tier 2
             //If tier 1 has fatal errors, we should not continue to tier 2.
@@ -127,6 +143,7 @@ public class MiringValidator
 
             logger.error("Did not perform Tier 1 validation, fatal errors in HML or malformed HML");
         }
+        }
         
         
         return report;
@@ -147,9 +164,40 @@ public class MiringValidator
     {
         return report;
     }
-    public String getMiring()
+    /* Gets the version of HML used to validate
+     */
+    public String getVersion()
     {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document xmlDOM=null;
+        try {
+            builder = factory.newDocumentBuilder();
+             xmlDOM = builder.parse(new InputSource(new StringReader(xml)));
+            
+        }
+        //I am returning 1.0.1 due to server error if it returns a null.
+        catch (Exception e) {
+            System.out.println("Error in handle Grabbing ");
+            return "1.0.1";
+        }
+        NodeList xmlAttributes = xmlDOM.getElementsByTagName("*");
+        NamedNodeMap xmlAttribute = xmlAttributes.item(0).getAttributes();
+        for(int i = 0; i<xmlAttribute.getLength();i++){
+            if(xmlAttribute.item(i).getNodeName().equals("version"))
+            {
+                return xmlAttribute.item(i).getNodeValue();
+            }
+        }
+        return null;
         
-        return (version.equals("1.0.1")?"/org/nmdp/miring/schema/MiringTier1.xsd":"/org/nmdp/miring/schema/MiringTier1-1.0.xsd");
+        
+        
+    }
+    /* Based on version choose correct miring schema (They are the same except for the name space)
+     */
+    public String getMiring(String version)
+    {
+        return (version.equals("1.0.1"))? "/org/nmdp/miring/schema/MiringTier1.xsd":"/org/nmdp/miring/schema/MiringTier1-1.0.xsd";
     }
 }

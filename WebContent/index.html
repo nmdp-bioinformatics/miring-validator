@@ -78,6 +78,11 @@
         display:none;
         color:red;
     }
+    i#yellowCheck
+    {
+        display:none;
+        color:gold;
+    }
     select {
         
         padding: 0 0 0 1000px;
@@ -90,21 +95,11 @@
   <body>
     <div class="container-fluid">
       <h1 align="center">MIRING Validator for HML</h1>
-      <h5 align = "center"> Version 1.1.3 </h5>
+      <h5 align = "center"> Version 1.1.5 </h5>
       <p align="center">Paste some XML, compliant with <a href="http://schemas.nmdp.org">HML Version</a> that corresponds to your HML into the HML field and hit [ VALIDATE ].</p>
       <p align="center">Or, use the [ BROWSE ] button find an HML document on your computer.</p>
       <p align="center">A <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report</a> will appear below.</p>
-      <p align="center"> Please choose the version of HML you are using </p>
-      <div style="text-align:center">
-      <select id="versionNumber">
-          <option value="0">HML Version selection</option>
-          <option value="1.0.1">HML 1.0.1</option>
-          <option value="1.0.2">HML 1.0.2</option>
-      </select>
-      </div>
-
-
-      <br/>
+        <br/>
       <h3 align="center">HML Input</h3>
       <textarea id="inputText" class="form-control" rows="15"></textarea>
       <br/>
@@ -143,8 +138,9 @@
       <br/>
       <h3 align="center">MIRING Results</h3>
       <h4 align="center"><i id="reject" class="fa fa-times-circle"> INVALID HML </i></h4>
-      <h4 align="center"><i id="HMLcheck" class="fa fa-check"> HML Compliant</i></h4>
+      <h4 align="center"><i id="HMLcheck" class="fa fa-check"> Passed XML Schema Validation for HML 1.0</i></h4>
       <h4 align="center"><i id="HMLX" class="fa fa-times-circle"> NOT HML Compliant</i></h4>
+      <h4 align="center"><i id="yellowCheck" class="fa fa-check"> MIRING Compliant, with warnings</i></h4>
       <h4 align="center"><i id="greenCheck" class="fa fa-check"> MIRING Compliant</i></h4>
       <h4 align="center"><i id="redX" class="fa fa-times-circle"> NOT MIRING Compliant</i></h4>
 
@@ -166,7 +162,7 @@
       <p align="center">The MIRING HML Validator is a REST service, available to the public, hosted at miring.b12x.org/validator/ValidateMiring/</p>
       <p align="center">You can use this service programmatically using a POST request, with a single form parameter, "xml", containing the HML text.</p>
       <p align="center">Try this example using <a href = "http://curl.haxx.se/">cURL:</a></p>
-      <p align="center"><code>$ curl -X POST --data-urlencode 'xml=&lt;hml>...&lt;/hml>' http://miring.b12x.org/validator/ValidateMiring/</code></p>
+      <p align="center"><code>$ curl -X POST --data-urlencode 'xml[]=&lt;hml>...&lt;/hml>' http://miring.b12x.org/validator/ValidateMiring/</code></p>
       <p align="center" >Validator source is on <a href="https://github.com/nmdp-bioinformatics/MiringValidator">GITHUB</a></p>
       <br/>
 
@@ -174,7 +170,7 @@
         <a href="MoreInfo.html">More information on MIRING, HML, and validation</a><br/>
       </h4>
       <h6>
-          Miring Validator Version 1.1.3
+          Miring Validator Version 1.1.5
           </h6>
 
     </div>

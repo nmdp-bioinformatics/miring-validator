@@ -157,24 +157,17 @@ function loadSample()
             callValidatorService();
         }
     });
-}
+   }
 
-function callValidatorService() 
+function callValidatorService()
 {
     var request = window.location.href + "validator/ValidateMiring/";
     //alert("the request location is: " + request);
     var xmlText = document.getElementById("inputText").value;
-    var version=document.getElementById("versionNumber").value;
-    var xmlplusversion=[xmlText,version];
-    if(version==0)
-    {
-        alert("Please select a version number");
-    }
-    else{
     //alert("xml = " + xmlText);
   
     var results = $.post(request,
-        {xml:xmlplusversion},
+        {xml:xmlText},
         function(response)
         {
             //alert("This is called if there was a successful request.  Storing the response in the right text box.");
@@ -182,12 +175,20 @@ function callValidatorService()
             resultXml = decodeURIComponent(resultXml);
             document.getElementById("resultsText").value = resultXml;
             
-            if(isMiringCompliant(resultXml))
+            if(isMiringCompliant(resultXml)=="warnings")
+            {
+                document.getElementById("yellowCheck").style.display='block'
+                         document.getElementById("greenCheck").style.display = 'none';
+                         document.getElementById("redX").style.display = 'none';
+                         document.getElementById("reject").style.display='none';
+            }
+            else if(isMiringCompliant(resultXml)=="true")
             {
                 //alert("MIRING Compliant.");
                 document.getElementById("greenCheck").style.display = 'block';
                 document.getElementById("redX").style.display = 'none';
                          document.getElementById("reject").style.display='none';
+                         document.getElementById("yellowCheck").style.display='none'
             }
             else
             {
@@ -195,6 +196,7 @@ function callValidatorService()
                 document.getElementById("greenCheck").style.display = 'none';
                 document.getElementById("redX").style.display = 'block';
                          document.getElementById("reject").style.display='none';
+                         document.getElementById("yellowCheck").style.display='none'
             }
             if(isHMLCompliant(resultXml)=="reject")
             {
@@ -237,7 +239,7 @@ function callValidatorService()
             //alert( "Finished Attempt.  This should always be called after success or failure." );
         }
     );
-    }
+    
 }
 
 function clearText()
@@ -249,6 +251,7 @@ function clearText()
     document.getElementById("HMLcheck").style.display='none';
     document.getElementById("HMLX").style.display='none';
     document.getElementById("reject").style.display='none';
+    document.getElementById("yellowCheck").style.display='none';
    
 }
 
@@ -289,15 +292,19 @@ function isMiringCompliant(xml)
     
     if(compliantBoolean == "true" )
     {
-        return true;
+        return "true";
     }
     else if (compliantBoolean == "false")
     {
-        return false;
+        return "false";
     }
     else if (compliantBoolean == "reject")
     {
-        return false;
+        return "reject";
+    }
+    else if(compliantBoolean == "warnings")
+    {
+        return "warnings";
     }
     else
     {
