@@ -16,10 +16,15 @@
 		   <param-name>com.sun.jersey.config.property.packages</param-name>
 		   <param-value>org.nmdp.miring</param-value>
 		</init-param>
+      <init-param>
+          <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+          <param-value>org.nmdp.miring.CORSFilter</param-value>
+      </init-param>
         <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>Miring Validator</servlet-name>
     <url-pattern>/validator/*</url-pattern>
   </servlet-mapping>
+
 </web-app>

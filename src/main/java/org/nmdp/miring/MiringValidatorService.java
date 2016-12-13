@@ -22,22 +22,20 @@
 */
 package org.nmdp.miring;
 
+import org.nmdp.miring.ValidationResult.Severity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.util.List;
-
-import org.nmdp.miring.ValidationResult.Severity;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** 
  * This class provides a REST service to access the MIRING Validator.  
  * It expects a POST request with a single form parameter called xml.
 */
+
 @Path("/ValidateMiring")
 public class MiringValidatorService
 {
@@ -76,8 +74,7 @@ public class MiringValidatorService
             MiringValidator myValidator = new MiringValidator(xml);
             myValidator.validate();
 
-            String report = myValidator.getReport();
-            return report;
+            return myValidator.getReport();
         }
     }
 }
