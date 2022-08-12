@@ -24,8 +24,9 @@ RUN cd /opt && git clone https://github.com/bmatern-nmdp/MiringValidator
 #Expose my port
 EXPOSE 8080
 
-#Build and Run Miring Validator
-RUN cd /opt/MiringValidator && mvn clean install tomcat7:run-war
+##Build and Run Miring Validator
+COPY entryscript.sh /opt/MiringValidator
 
+ENTRYPOINT /opt/MiringValidator/entryscript.sh
 
 
