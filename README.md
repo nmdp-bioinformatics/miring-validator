@@ -48,7 +48,7 @@ The validator further divides these elements into rules.  For more information o
   
 This validator engine is powered by [SAX Parser](http://docs.oracle.com/javase/7/docs/api/javax/xml/parsers/SAXParser.html) and [Probatron4j](http://www.probatron.org/probatron4j.html), an excellent implementation of [Schematron](http://www.schematron.com/)
 
-
+~
 
 
 
