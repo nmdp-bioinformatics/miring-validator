@@ -1,6 +1,6 @@
 #FROM ubuntu:14.04
 FROM tomcat:8.0-jre8
-MAINTAINER Ben Matern <bmatern@nmdp.org>
+MAINTAINER Jason Brelsford jbrelsf2@nmdp.org; Ben Matern <bmatern@nmdp.org>
 
 #Backend apt-get stuff
 RUN apt-get -y update 
