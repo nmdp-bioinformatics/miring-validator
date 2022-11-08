@@ -1,0 +1,112 @@
+include:
+  - project: bethematch/appdev/ci/build
+    file: "Environments.gitlab-ci.yml"
+    ref: develop
+  #  - project: bethematch/appdev/ci/build
+  #    file: "Docker.gitlab-ci.yml"
+  #    ref: ${TEMPLATE_BRANCH}
+  # - project: bethematch/library/gitlab-ci
+  #   file:
+  #     - Jobs/NMDP-SAST.gitlab-ci.yml
+  - project: bethematch/library/gitlab-ci
+    ref: v22.06-04
+    file:
+    #   - job-helm-build.yaml
+    #   - job-helm-deploy.yaml 
+      - job-image-build.yaml
+
+workflow:
+  rules:
+    # Tag workflow
+    - if: '$CI_COMMIT_TAG != null && $CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        MANUAL_DEPLOY: "true"
+        SKIP_DEPLOY: "false"
+        BUILD_STACK: "prod"
+        # DOCKER_PUSH: "1"
+        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+    # Feature branch commits only do a build
+    - if: '$CI_COMMIT_BRANCH =~ /feature/ && $CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        SKIP_DEPLOY: "true"
+        # DOCKER_PUSH: "0"
+        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+    - if: '$CI_COMMIT_BRANCH =~ /develop/ && $CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        SKIP_DEPLOY: "false"
+        # DOCKER_PUSH: "0"
+        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+    - if: '$CI_COMMIT_BRANCH =~ /master/ && $CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        VERSION: $CI_JOB_ID-SNAPSHOT
+        MANUAL_DEPLOY: "true"
+        SKIP_DEPLOY: "false"
+        DOCKER_BUILD: "true"
+        # DOCKER_PUSH: "0"
+        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+
+stages:
+  - docker
+#   - helm
+#   - deploy
+
+docker_build:
+  stage: docker
+  extends: .docker_build
+  secrets:
+    SVC_USER:
+      vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/username@rancher
+    SVC_PASS:
+      vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/password@rancher 
+  variables: 
+    DOCKER_REPO: cibmtr-frequency
+    VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+  environment:
+    name: helm
+
+# helm_build:
+#   stage: helm
+#   extends: .helm_build
+#   rules:
+#     - when: "always"
+#   secrets:
+#     SVC_USER:
+#       vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/username@rancher
+#     SVC_PASS:
+#       vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/password@rancher
+#   variables:
+#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+#     HELM_CHART_NAME: frequency-download
+#   environment:
+#     name: helm
+
+# dev1:
+#   stage: deploy
+#   extends: .helm_deploy
+#   secrets:
+#     KUBE_YAML:
+#       vault: rancher.nmdp.org/cibmtr/frequency/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
+#   variables: 
+#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
+#     HELM_CHART_NAME: frequency
+#     HELM_VALUES_FILE: ./charts/frequency-download/env/${CI_ENVIRONMENT_NAME}.yaml
+#     MANUAL_DEPLOY: "true"
+#   environment:
+#     name: dev1
+#     url: https://dev1.frequency.nmdp.org
+
+# qa1:
+#   stage: deploy
+#   extends: .helm_deploy
+#   secrets:
+#     KUBE_YAML:
+#       vault: rancher.nmdp.org/cibmtr/frequency/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
+#   variables: 
+#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
+#     HELM_CHART_NAME: frequency
+#     HELM_VALUES_FILE: ./charts/frequency-download/env/${CI_ENVIRONMENT_NAME}.yaml
+#     MANUAL_DEPLOY: "true"
+#   environment:
+#     name: qa1
+#     url: https://qa1.frequency.nmdp.org
+
