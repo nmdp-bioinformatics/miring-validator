@@ -2,18 +2,18 @@ include:
   - project: bethematch/appdev/ci/build
     file: "Environments.gitlab-ci.yml"
     ref: develop
-  #  - project: bethematch/appdev/ci/build
-  #    file: "Docker.gitlab-ci.yml"
-  #    ref: ${TEMPLATE_BRANCH}
+   - project: bethematch/appdev/ci/build
+     file: "Docker.gitlab-ci.yml"
+     ref: ${TEMPLATE_BRANCH}
   # - project: bethematch/library/gitlab-ci
   #   file:
   #     - Jobs/NMDP-SAST.gitlab-ci.yml
-  - project: bethematch/library/gitlab-ci
-    ref: v22.06-04
-    file:
+  # - project: bethematch/library/gitlab-ci
+  #   ref: v22.06-04
+  #   file:
     #   - job-helm-build.yaml
     #   - job-helm-deploy.yaml 
-      - job-image-build.yaml
+      # - job-image-build.yaml
 
 workflow:
   rules:
@@ -55,11 +55,11 @@ docker_build:
   extends: .docker_build
   secrets:
     SVC_USER:
-      vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/username@rancher
+      vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
     SVC_PASS:
-      vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/password@rancher 
+      vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher 
   variables: 
-    DOCKER_REPO: cibmtr-frequency
+    DOCKER_REPO: miring
     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
   environment:
     name: helm
