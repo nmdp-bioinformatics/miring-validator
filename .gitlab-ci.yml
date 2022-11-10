@@ -52,7 +52,7 @@ stages:
 
 docker_build:
   stage: docker
-  extends: .docker_build
+  extends: .docker-build
   secrets:
     SVC_USER:
       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
