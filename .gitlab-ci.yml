@@ -2,18 +2,18 @@ include:
   - project: bethematch/appdev/ci/build
     file: "Environments.gitlab-ci.yml"
     ref: develop
-  - project: bethematch/appdev/ci/build
-    file: "Docker.gitlab-ci.yml"
-    ref: ${TEMPLATE_BRANCH}
+  # - project: bethematch/appdev/ci/build
+    # file: "Docker.gitlab-ci.yml"
+    # ref: ${TEMPLATE_BRANCH}
   # - project: bethematch/library/gitlab-ci
   #   file:
   #     - Jobs/NMDP-SAST.gitlab-ci.yml
-  # - project: bethematch/library/gitlab-ci
-  #   ref: v22.06-04
-  #   file:
+  - project: bethematch/library/gitlab-ci
+    ref: v22.06-04
+    file:
     #   - job-helm-build.yaml
     #   - job-helm-deploy.yaml 
-      # - job-image-build.yaml
+      - job-image-build.yaml
 
 workflow:
   rules:
@@ -50,9 +50,9 @@ stages:
 #   - helm
 #   - deploy
 
-docker_build:
+docker-build:
   stage: docker
-  extends: .docker-build
+  extends: .docker_build
   secrets:
     SVC_USER:
       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
