@@ -2,9 +2,9 @@ include:
   - project: bethematch/appdev/ci/build
     file: "Environments.gitlab-ci.yml"
     ref: develop
-   - project: bethematch/appdev/ci/build
-     file: "Docker.gitlab-ci.yml"
-     ref: ${TEMPLATE_BRANCH}
+  - project: bethematch/appdev/ci/build
+    file: "Docker.gitlab-ci.yml"
+    ref: ${TEMPLATE_BRANCH}
   # - project: bethematch/library/gitlab-ci
   #   file:
   #     - Jobs/NMDP-SAST.gitlab-ci.yml
