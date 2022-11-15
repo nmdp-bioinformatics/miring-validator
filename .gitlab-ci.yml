@@ -47,8 +47,8 @@ workflow:
 
 stages:
   - docker
-#   - helm
-#   - deploy
+# - helm
+# - deploy
 
 # docker-build:
 #   stage: docker
@@ -71,12 +71,12 @@ stages:
 #     - when: "always"
 #   secrets:
 #     SVC_USER:
-#       vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/username@rancher
+#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
 #     SVC_PASS:
-#       vault: rancher.nmdp.org/cibmtr/frequency/dev1/serviceaccount/password@rancher
+#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher
 #   variables:
 #     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: frequency-download
+#     HELM_CHART_NAME: miring
 #   environment:
 #     name: helm
 
