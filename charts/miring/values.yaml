@@ -62,5 +62,3 @@ appdynamics:
   tiername: nmdp/miring
 
 podEnv:
-  cra_frontend:
-    test: test
