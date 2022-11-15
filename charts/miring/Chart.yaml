@@ -1,0 +1,14 @@
+apiVersion: v2
+name: miring
+description: Helm Chart for Miring Validator
+type: application
+version: 0.1.2
+appVersion: 0.1.0
+keywords:
+  - app_keyword
+maintainers:
+  - name: BIO
+    email: dcsdevops@nmdp.org
+sources:
+  - https://someurl.org
+icon: https://kubernetes.io/images/kubernetes-192x192.png

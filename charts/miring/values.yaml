@@ -1,0 +1,66 @@
+nmdp:
+  environment:
+  namespace:
+  nameoverride: miring
+  team: bio
+
+image:
+  registry: reg.nmdp.org
+  repo: nmdp/miring
+  tag: latest
+  registrycreds:
+    required: true
+
+serviceaccount:
+  annotations: {}
+  required: true
+
+deployment:
+  annotations: {}
+  env_variables:
+    DEVICE_VERSION: ""
+  debugmode: false
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: "nginx-public"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 20G
+    tls_name:
+    path: /
+    pathtype: Prefix
+  ports:
+    port1:
+      name: http
+      containerport: 8080
+      targetport: 8080
+      protocol: TCP
+      ingress:
+        uri:
+      service:
+        annotations: {}
+        type: ClusterIP
+  replicas: 1
+  resources: {}
+
+configmaps:
+  annotations: {}
+
+vault:
+  path: {}
+
+appdynamics:
+  image:
+    registry: reg.nmdp.org
+    repo: appdynamics/appserveragent-1.8
+    tag: latest
+  environment:
+  required: false
+  accesskey:
+  applicationname:
+  tiername: nmdp/miring
+
+podEnv:
+  cra_frontend:
+    test: test

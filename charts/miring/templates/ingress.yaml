@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "cra-frontend.name" . }}.ingress
+  namespace: {{ include "cra-frontend.namespace" . }}
+  labels:
+    {{- include "cra-frontend.labels" . | nindent 4 }}
+  {{- with .Values.deployment.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  tls:
+  - hosts:
+      - {{ .Values.deployment.ports.port1.ingress.uri }}
+    secretName: {{ .Values.deployment.ingress.tls_name }}
+  rules:
+  - host: {{ .Values.deployment.ports.port1.ingress.uri }}
+    http:
+      paths:
+      - path: {{ .Values.deployment.ingress.path }}
+        pathType: {{ .Values.deployment.ingress.pathtype }}
+        backend:
+          service:
+            name:  {{ include "cra-frontend.name" . }}-svc
+            port:
+              number: {{ .Values.deployment.ports.port1.containerport }}

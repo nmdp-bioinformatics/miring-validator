@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "cra-frontend.name" . }}
+  namespace: {{ include "cra-frontend.namespace" . }}
+  labels:
+    {{- include "cra-frontend.labels" . | nindent 4 }}
+  {{- with .Values.deployment.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "cra-frontend.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.deployment.replicas }}
+  serviceName: {{ include "cra-frontend.name" . }}
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        {{- include "cra-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ include "cra-frontend.serviceaccountname" . }}
+      serviceAccountName: {{ include "cra-frontend.serviceaccountname" . }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "nmdp.org/instance"
+                    operator: In
+                    values:
+                    - {{ .Release.Name }}
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: {{ include "cra-frontend.name" . }}
+        {{- if .Values.deployment.debugmode }}
+        command: ["/usr/bin/tail"]
+        args: ["-f", "/etc/os-release"]
+        {{- end }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        env:
+        {{- if .Values.podEnv.cra_frontend }}
+        {{- range $k, $v := .Values.podEnv.cra_frontend }}
+          - name: {{ $k }}
+            value: {{ $v | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.appdynamics.required }}
+        - name: JAVA_TOOL_OPTIONS
+          value: -javaagent:/opt/appdynamics/javaagent.jar
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+          value: "{{ .Values.appdynamics.accesskey }}"
+        - name: APPDYNAMICS_AGENT_APPLICATION_NAME
+          value: "{{ .Values.appdynamics.applicationname }}"
+        - name: APPDYNAMICS_AGENT_TIER_NAME
+          value: "{{ .Values.appdynamics.tiername }}"
+        - name: APPDYNAMICS_AGENT_NODE_NAME
+          value: $(POD_NAME)
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "cra-frontend.name" . }}
+          {{- if .Values.appdynamics.required }}
+          - secretRef:
+              name: {{ include "cra-frontend.name" . }}.appdynamics
+          {{- end }}
+        {{- with .Values.deployment.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        ports:
+          - name: {{ .Values.deployment.ports.port1.name }}
+            containerPort: {{ .Values.deployment.ports.port1.containerport }}
+            protocol: {{ .Values.deployment.ports.port1.protocol }}
+        readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 1
+          successThreshold: 1
+          httpGet:
+            path: /actuator
+            port: {{ .Values.deployment.ports.port1.containerport }}
+        livenessProbe:
+          periodSeconds: 30
+          failureThreshold: 1
+          successThreshold: 1
+          httpGet:
+            path: /actuator
+            port: {{ .Values.deployment.ports.port1.containerport }}
+        volumeMounts:
+        {{- if .Values.appdynamics.required }}
+        - name: appdynamics
+          mountPath: /opt/appdynamics
+        {{- end }}
+      restartPolicy: Always
+      initContainers:
+      {{- if .Values.appdynamics.required }}
+      ##### Must have configs running first #####
+      - name: appdynamics-appserveragent
+        image: "{{ .Values.appdynamics.image.registry }}/{{ .Values.appdynamics.image.repo }}:{{ .Values.appdynamics.image.tag }}"
+        command: ["/bin/sh","-c"]
+        args: ["/bin/cp -r ${APPD_HOME}/* ${APPD_HOME_SHARED}; /bin/chmod -R 777 ${APPD_HOME_SHARED}"]
+        imagePullPolicy: Always
+        env:
+        - name: APPD_HOME_SHARED
+          value: "/opt/appdynamics"
+        volumeMounts:
+        - name: appdynamics
+          mountPath: /opt/appdynamics
+      {{- end }}
+      volumes:
+      {{- if .Values.appdynamics.required }}
+      - name: appdynamics
+        emptyDir: {}
+      {{- end }}
+  volumeClaimTemplates: []
