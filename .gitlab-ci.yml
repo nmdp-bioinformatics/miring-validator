@@ -8,11 +8,11 @@ include:
   # - project: bethematch/library/gitlab-ci
   #   file:
   #     - Jobs/NMDP-SAST.gitlab-ci.yml
-  # - project: bethematch/library/gitlab-ci
-  #   ref: v22.06-04
-  #   file:
-    #   - job-helm-build.yaml
-    #   - job-helm-deploy.yaml 
+  - project: bethematch/library/gitlab-ci
+    ref: v22.06-04
+    file:
+      - job-helm-build.yaml
+      # - job-helm-deploy.yaml 
       # - job-image-build.yaml
 
 workflow:
@@ -47,7 +47,7 @@ workflow:
 
 stages:
   - docker
-# - helm
+  - helm
 # - deploy
 
 # docker-build:
@@ -64,49 +64,49 @@ stages:
 #   environment:
 #     name: helm
 
-# helm_build:
-#   stage: helm
-#   extends: .helm_build
-#   rules:
-#     - when: "always"
-#   secrets:
-#     SVC_USER:
-#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
-#     SVC_PASS:
-#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher
-#   variables:
-#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: miring
-#   environment:
-#     name: helm
+helm_build:
+  stage: helm
+  extends: .helm_build
+  rules:
+    - when: "always"
+  secrets:
+    SVC_USER:
+      vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
+    SVC_PASS:
+      vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher
+  variables:
+    VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
+    HELM_CHART_NAME: miring
+  environment:
+    name: helm
 
 # dev1:
 #   stage: deploy
 #   extends: .helm_deploy
 #   secrets:
 #     KUBE_YAML:
-#       vault: rancher.nmdp.org/cibmtr/frequency/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
+#       vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
 #   variables: 
 #     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: frequency
-#     HELM_VALUES_FILE: ./charts/frequency-download/env/${CI_ENVIRONMENT_NAME}.yaml
+#     HELM_CHART_NAME: miring
+#     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
 #     MANUAL_DEPLOY: "true"
 #   environment:
 #     name: dev1
-#     url: https://dev1.frequency.nmdp.org
+#     url: https://dev1.miring.nmdp.org
 
 # qa1:
 #   stage: deploy
 #   extends: .helm_deploy
 #   secrets:
 #     KUBE_YAML:
-#       vault: rancher.nmdp.org/cibmtr/frequency/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
+#       vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
 #   variables: 
 #     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: frequency
-#     HELM_VALUES_FILE: ./charts/frequency-download/env/${CI_ENVIRONMENT_NAME}.yaml
+#     HELM_CHART_NAME: miring
+#     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
 #     MANUAL_DEPLOY: "true"
 #   environment:
 #     name: qa1
-#     url: https://qa1.frequency.nmdp.org
+#     url: https://qa1.miring.nmdp.org
 
