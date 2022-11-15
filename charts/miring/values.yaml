@@ -1,6 +1,6 @@
 nmdp:
-  environment:
-  namespace:
+  environment: dev1
+  namespace: miring-dev1
   nameoverride: miring
   team: bio
 
