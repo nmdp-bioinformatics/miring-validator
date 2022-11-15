@@ -29,3 +29,5 @@ appdynamics:
   applicationname: FHIR-DEV
 
 podEnv:
+  miring:
+    test

@@ -61,4 +61,7 @@ appdynamics:
   applicationname:
   tiername: nmdp/miring
 
+
 podEnv:
+  miring:
+    test: test
