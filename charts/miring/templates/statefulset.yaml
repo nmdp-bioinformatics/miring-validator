@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "cra-frontend.name" . }}
-  namespace: {{ include "cra-frontend.namespace" . }}
+  name: {{ include "miring.name" . }}
+  namespace: {{ include "miring.namespace" . }}
   labels:
-    {{- include "cra-frontend.labels" . | nindent 4 }}
+    {{- include "miring.labels" . | nindent 4 }}
   {{- with .Values.deployment.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -12,19 +12,19 @@ metadata:
 spec:
   selector:
     matchLabels:
-      {{- include "cra-frontend.selectorLabels" . | nindent 6 }}
+      {{- include "miring.selectorLabels" . | nindent 6 }}
   replicas: {{ .Values.deployment.replicas }}
-  serviceName: {{ include "cra-frontend.name" . }}
+  serviceName: {{ include "miring.name" . }}
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
   template:
     metadata:
       labels:
-        {{- include "cra-frontend.selectorLabels" . | nindent 8 }}
+        {{- include "miring.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccount: {{ include "cra-frontend.serviceaccountname" . }}
-      serviceAccountName: {{ include "cra-frontend.serviceaccountname" . }}
+      serviceAccount: {{ include "miring.serviceaccountname" . }}
+      serviceAccountName: {{ include "miring.serviceaccountname" . }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -36,7 +36,7 @@ spec:
                     - {{ .Release.Name }}
               topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: {{ include "cra-frontend.name" . }}
+      - name: {{ include "miring.name" . }}
         {{- if .Values.deployment.debugmode }}
         command: ["/usr/bin/tail"]
         args: ["-f", "/etc/os-release"]
@@ -68,10 +68,10 @@ spec:
         {{- end }}
         envFrom:
           - configMapRef:
-              name: {{ include "cra-frontend.name" . }}
+              name: {{ include "miring.name" . }}
           {{- if .Values.appdynamics.required }}
           - secretRef:
-              name: {{ include "cra-frontend.name" . }}.appdynamics
+              name: {{ include "miring.name" . }}.appdynamics
           {{- end }}
         {{- with .Values.deployment.resources }}
         resources:

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "cra-frontend.name" . }}-svc
-  namespace: {{ include "cra-frontend.namespace" . }}
+  name: {{ include "miring.name" . }}-svc
+  namespace: {{ include "miring.namespace" . }}
   labels:
-    {{- include "cra-frontend.labels" . | nindent 4 }}
+    {{- include "miring.labels" . | nindent 4 }}
   {{- with .Values.deployment.ports.port1.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,5 +16,5 @@ spec:
     protocol: {{ .Values.deployment.ports.port1.protocol }}
     targetPort: {{ .Values.deployment.ports.port1.targetport }}
   selector:
-    {{- include "cra-frontend.selectorLabels" . | nindent 4 }}
+    {{- include "miring.selectorLabels" . | nindent 4 }}
   type: {{ .Values.deployment.ports.port1.service.type }}
