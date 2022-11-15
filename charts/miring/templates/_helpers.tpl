@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "cra-frontend.name" -}}
+{{- define "miring.name" -}}
 {{- default .Chart.Name .Values.nmdp.nameoverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "cra-frontend.fullname" -}}
+{{- define "miring.fullname" -}}
 {{- if .Values.nmdp.fullnameoverride }}
 {{- .Values.nmdp.fullnameoverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "cra-frontend.chart" -}}
+{{- define "miring.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "cra-frontend.labels" -}}
-helm.sh/chart: {{ include "cra-frontend.chart" . }}
-{{ include "cra-frontend.selectorLabels" . }}
+{{- define "miring.labels" -}}
+helm.sh/chart: {{ include "miring.chart" . }}
+{{ include "miring.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 nmdp.org/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,8 +45,8 @@ nmdp.org/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "cra-frontend.selectorLabels" -}}
-nmdp.org/name: {{ include "cra-frontend.name" . }}
+{{- define "miring.selectorLabels" -}}
+nmdp.org/name: {{ include "miring.name" . }}
 nmdp.org/instance: {{ .Release.Name }}
 nmdp.org/environment: {{ .Values.nmdp.environment }}
 nmdp.org/team: {{ .Values.nmdp.team }}
@@ -55,21 +55,21 @@ nmdp.org/team: {{ .Values.nmdp.team }}
 {{/*
 Define application namespace
 */}}
-{{- define "cra-frontend.namespace" -}}
+{{- define "miring.namespace" -}}
 {{- $ns := .Values.nmdp.namespace -}}
 {{- if $ns }}
 {{- printf "%s" .Values.nmdp.namespace -}}
 {{ else }}
-{{- printf "%s-%s" (include "cra-frontend.name" .) .Values.nmdp.environment -}}
+{{- printf "%s-%s" (include "miring.name" .) .Values.nmdp.environment -}}
 {{ end }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "cra-frontend.serviceaccountname" -}}
+{{- define "miring.serviceaccountname" -}}
 {{- if .Values.serviceaccount.required }}
-{{- default (include "cra-frontend.name" .) .Values.serviceaccount.name }}
+{{- default (include "miring.name" .) .Values.serviceaccount.name }}
 {{- else }}
 {{- default "default" ( .Chart.Name ) }}
 {{- end }}
