@@ -22,9 +22,9 @@ secrets:
   SVC_PASS:
     vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher
 
-podEnv:
-  miring:
-    test
+# podEnv:
+#   miring:
+#     test
   
 appdynamics:
   environment: le
