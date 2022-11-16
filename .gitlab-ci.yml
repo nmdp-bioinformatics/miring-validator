@@ -80,7 +80,7 @@ helm_build:
   environment:
     name: helm
 
-dev1:
+dev:
   stage: deploy
   extends: .helm_deploy
   secrets:
@@ -94,6 +94,30 @@ dev1:
   environment:
     name: dev1
     url: https://dev1.miring.nmdp.org
+
+# DEV Deploy
+dev1:
+  stage: deploy
+  extends:
+    - .helm_deploy
+  environment:
+    name: dev1
+    url: https://dev1.miring.nmdp.org
+  resource_group: miring_${CI_ENVIRONMENT_NAME}
+  variables:
+    HELM_CHART_NAME: miring
+    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
+    K8S_NS: miring-${CI_ENVIRONMENT_NAME}
+    HELM_ENV: ${CI_ENVIRONMENT_NAME}
+    HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
+    MANUAL_DEPLOY: "true"
+    HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
+  tags:
+    - nmdp-prod-k8s
+  secrets:
+    KUBE_YAML:
+      vault: rancher.nmdp.org/bio/miring/dev1/kube_config/kube_config@rancher
+
 
 # qa1:
 #   stage: deploy
