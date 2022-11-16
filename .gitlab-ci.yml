@@ -138,7 +138,7 @@ dev1:
     - nmdp-prod-k8s
   secrets:
     KUBE_YAML:
-      vault: rancher.nmdp.org/bio/miring/dev1/kube_config/kube_config@rancher
+      vault: rancher.nmdp.org/appdev/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher
 
 
 # qa1:
