@@ -132,7 +132,7 @@ dev1:
     K8S_NS: miring-${CI_ENVIRONMENT_NAME}
     HELM_ENV: ${CI_ENVIRONMENT_NAME}
     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
-    MANUAL_DEPLOY: "true"
+    MANUAL_DEPLOY: "false"
     HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
   tags:
     - nmdp-prod-k8s
