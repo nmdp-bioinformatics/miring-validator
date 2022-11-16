@@ -1,7 +1,7 @@
 include:
   - project: bethematch/appdev/ci/build
     file: "Environments.gitlab-ci.yml"
-    ref: develop
+    ref: ${TEMPLATE_BRANCH}
   - project: bethematch/appdev/ci/build
     file: "Docker.gitlab-ci.yml"
     ref: ${TEMPLATE_BRANCH}
@@ -14,6 +14,28 @@ include:
       - job-helm-build.yaml
       - job-helm-deploy.yaml 
       # - job-image-build.yaml
+
+variables:
+    GIT_DEPTH: 3
+    GIT_STRATEGY: fetch
+    BUILD_STACK:
+        value: "prod"
+        description: "Change this variable to 'dev' to test out Sonar and Nexus in the dev environment"
+    MAVEN_TEST_GOAL:
+        value: "verify"
+        description: "Test goal for integration branches. You can also add additional maven args: e.g. 'verify -Dfoo=bar'"
+    MAVEN_BUILD_GOAL:
+        value: "deploy"
+        description: "Test goal for mainline branches. You can also add additional maven args: e.g. 'deploy -Dfoo=bar'"
+    SONAR_SCANNING:
+        value: "true"
+        description: "Change this variable to 'false' to disable Sonar scanning"
+    DOCKER_BUILD:
+        value: "true"
+        description: "Change this to 'false' to disable docker builds"
+    DOCKER_PUSH:
+        value: "true"
+        description: "Change this to 'false' to disable docker pushes"
 
 workflow:
   rules:
