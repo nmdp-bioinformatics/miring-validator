@@ -128,7 +128,7 @@ dev1:
   resource_group: miring_${CI_ENVIRONMENT_NAME}
   variables:
     HELM_CHART_NAME: miring
-    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
+    # VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
     K8S_NS: miring-${CI_ENVIRONMENT_NAME}
     HELM_ENV: ${CI_ENVIRONMENT_NAME}
     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
