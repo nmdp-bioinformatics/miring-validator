@@ -80,20 +80,20 @@ helm_build:
   environment:
     name: helm
 
-dev:
-  stage: deploy
-  extends: .helm_deploy
-  secrets:
-    KUBE_YAML:
-      vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
-  variables: 
-    VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
-    HELM_CHART_NAME: miring
-    HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
-    MANUAL_DEPLOY: "true"
-  environment:
-    name: dev1
-    url: https://dev1.miring.nmdp.org
+# dev:
+#   stage: deploy
+#   extends: .helm_deploy
+#   secrets:
+#     KUBE_YAML:
+#       vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
+#   variables: 
+#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
+#     HELM_CHART_NAME: miring
+#     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
+#     MANUAL_DEPLOY: "true"
+#   environment:
+#     name: dev1
+#     url: https://dev1.miring.nmdp.org
 
 # DEV Deploy
 dev1:
