@@ -43,13 +43,7 @@ spec:
         {{- end }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.repo }}:{{ .Values.image.tag }}"
         imagePullPolicy: Always
-        env:
-        {{- if .Values.podEnv.cra_frontend }}
-        {{- range $k, $v := .Values.podEnv.cra_frontend }}
-          - name: {{ $k }}
-            value: {{ $v | quote }}
-        {{- end }}
-        {{- end }}
+        env:      
         {{- if .Values.appdynamics.required }}
         - name: JAVA_TOOL_OPTIONS
           value: -javaagent:/opt/appdynamics/javaagent.jar
