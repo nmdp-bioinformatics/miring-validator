@@ -75,21 +75,21 @@ spec:
           - name: {{ .Values.deployment.ports.port1.name }}
             containerPort: {{ .Values.deployment.ports.port1.containerport }}
             protocol: {{ .Values.deployment.ports.port1.protocol }}
-        # readinessProbe:
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 10
-        #   failureThreshold: 1
-        #   successThreshold: 1
-        #   httpGet:
-        #     path: /actuator
-        #     port: {{ .Values.deployment.ports.port1.containerport }}
-        # livenessProbe:
-        #   periodSeconds: 30
-        #   failureThreshold: 1
-        #   successThreshold: 1
-        #   httpGet:
-        #     path: /actuator
-        #     port: {{ .Values.deployment.ports.port1.containerport }}
+        readinessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 2
+          successThreshold: 1
+          httpGet:
+            path: /MiringValidator
+            port: {{ .Values.deployment.ports.port1.containerport }}
+        livenessProbe:
+          periodSeconds: 60
+          failureThreshold: 2
+          successThreshold: 1
+          httpGet:
+            path: /MiringValidator
+            port: {{ .Values.deployment.ports.port1.containerport }}
         volumeMounts:
         {{- if .Values.appdynamics.required }}
         - name: appdynamics
