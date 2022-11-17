@@ -1,6 +1,6 @@
 nmdp:
   environment: dev
-  namespace: miring-dev
+  namespace: miring-dev1
 
 deployment:
   env_variables:
