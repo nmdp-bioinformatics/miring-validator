@@ -5,11 +5,17 @@ metadata:
   namespace: {{ include "miring.namespace" . }}
   labels:
     {{- include "miring.labels" . | nindent 4 }}
-  {{- with .Values.deployment.ingress.annotations }}
   annotations:
+  {{- if semverCompare "<1.0" .Values.deployment.ingress.nginx.version }}
+    kubernetes.io/ingress.class: "{{ .Values.deployment.ingress.nginx.classname }}"
+  {{- end }}
+  {{- with .Values.deployment.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if semverCompare ">=1.0" .Values.deployment.ingress.nginx.version }}
+  ingressClassName: {{ .Values.deployment.ingress.nginx.classname }}
+  {{- end }}
   tls:
   - hosts:
       - {{ .Values.deployment.ports.port1.ingress.uri }}

@@ -8,6 +8,8 @@ deployment:
   debugmode: false
   ingress:
     tls_name: dev1-miring-nmdp-org-tls
+    nginx:
+      classname: nginx-public
   ports:
     port1:
       ingress:
