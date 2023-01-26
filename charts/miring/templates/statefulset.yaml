@@ -81,14 +81,14 @@ spec:
           failureThreshold: 2
           successThreshold: 1
           httpGet:
-            path: /MiringValidator
+            path: /
             port: {{ .Values.deployment.ports.port1.containerport }}
         livenessProbe:
           periodSeconds: 60
           failureThreshold: 2
           successThreshold: 1
           httpGet:
-            path: /MiringValidator
+            path: /
             port: {{ .Values.deployment.ports.port1.containerport }}
         volumeMounts:
         {{- if .Values.appdynamics.required }}

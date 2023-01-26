@@ -101,15 +101,15 @@
       <p align="center">A <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report</a> will appear below.</p>
         <br/>
       <h3 align="center">HML Input</h3>
+      
       <textarea id="inputText" class="form-control" rows="15"></textarea>
-      <br/>
-
+            <br/>
       <!-- 
         file input elements are ugly, so they are hidden (see CSS above).
         We'll use a nice looking button to handle the file browse instead.
       -->
       <input type="file" id="fileInput" multiple onchange="readSingleFile(this)">
-
+      
       <p align="center">
         <button class='btn btn-primary' onclick="javascript:callValidatorService();">VALIDATE</button>
         <button class='btn btn-primary' id="fileSelectButton">BROWSE</button>
@@ -145,7 +145,9 @@
       <h4 align="center"><i id="redX" class="fa fa-times-circle"> NOT MIRING Compliant</i></h4>
 
 
+      
       <textarea id="resultsText" class="form-control" rows="15"></textarea>
+     
       <br/>
       <p align="center">
       <button class='btn btn-primary' onclick="javascript:downloadResults();">DOWNLOAD RESULTS</button>
