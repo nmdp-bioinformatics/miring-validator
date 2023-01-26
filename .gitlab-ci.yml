@@ -9,7 +9,7 @@ include:
   #   file:
   #     - Jobs/NMDP-SAST.gitlab-ci.yml
   - project: bethematch/library/gitlab-ci
-    ref: v22.06-04
+    ref: v23.01-04
     file:
       - job-helm-build.yaml
       - job-helm-deploy.yaml 
