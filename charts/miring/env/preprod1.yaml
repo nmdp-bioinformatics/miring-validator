@@ -1,6 +1,6 @@
 nmdp:
   environment: preprod
-  namespace: miring-preprod
+  namespace: miring-preprod1
 
 deployment:
   env_variables:
@@ -30,6 +30,6 @@ appdynamics:
   accesskey: 0d998b08-d32d-475c-93fa-0d4e790ce8cb
   applicationname: FHIR-DEV
 
-podEnv:
-  miring:
-    test
+# podEnv:
+#   miring:
+#     test

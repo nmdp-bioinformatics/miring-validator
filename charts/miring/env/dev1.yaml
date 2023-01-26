@@ -13,7 +13,7 @@ deployment:
   ports:
     port1:
       ingress:
-        uri: dev1.miring.nmdp.org/MiringValidator/
+        uri: dev1.miring.nmdp.org
   replicas: 1
 
 vault:

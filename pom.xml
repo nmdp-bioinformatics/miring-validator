@@ -24,9 +24,26 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nmdp.miring</groupId>
   <artifactId>miringvalidator</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>war</packaging>
-  
+
+  <distributionManagement>
+      <site>
+          <id>nexus</id>
+          <url>${topSiteURL}${project.version}</url>
+      </site>
+      <snapshotRepository>
+          <id>private</id>
+          <name>NMDP Nexus Snapshots</name>
+          <url>https://artifacts.nmdp.org/repository/maven-snapshots/</url>
+      </snapshotRepository>
+      <repository>
+          <id>private</id>
+          <name>NMDP Nexus Release Repository</name>
+          <url>https://artifacts.nmdp.org/repository/maven-releases/</url>
+      </repository>
+  </distributionManagement>
+ 
   <build>
     <sourceDirectory>./src/main/java</sourceDirectory>
     <testSourceDirectory>./src/test/java</testSourceDirectory>

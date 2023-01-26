@@ -1,127 +1,266 @@
-include:
-  - project: bethematch/appdev/ci/build
-    file: "Environments.gitlab-ci.yml"
-    ref: ${TEMPLATE_BRANCH}
-  - project: bethematch/appdev/ci/build
-    file: "Docker.gitlab-ci.yml"
-    ref: ${TEMPLATE_BRANCH}
-  # - project: bethematch/library/gitlab-ci
-  #   file:
-  #     - Jobs/NMDP-SAST.gitlab-ci.yml
-  - project: bethematch/library/gitlab-ci
-    ref: v23.01-04
-    file:
-      - job-helm-build.yaml
-      - job-helm-deploy.yaml 
-      # - job-image-build.yaml
-
-variables:
-    GIT_DEPTH: 3
-    GIT_STRATEGY: fetch
-    BUILD_STACK:
-        value: "prod"
-        description: "Change this variable to 'dev' to test out Sonar and Nexus in the dev environment"
-    MAVEN_TEST_GOAL:
-        value: "verify"
-        description: "Test goal for integration branches. You can also add additional maven args: e.g. 'verify -Dfoo=bar'"
-    MAVEN_BUILD_GOAL:
-        value: "deploy"
-        description: "Test goal for mainline branches. You can also add additional maven args: e.g. 'deploy -Dfoo=bar'"
-    SONAR_SCANNING:
-        value: "true"
-        description: "Change this variable to 'false' to disable Sonar scanning"
-    DOCKER_BUILD:
-        value: "true"
-        description: "Change this to 'false' to disable docker builds"
-    DOCKER_PUSH:
-        value: "true"
-        description: "Change this to 'false' to disable docker pushes"
-
-workflow:
-  rules:
-    # Tag workflow
-    - if: '$CI_COMMIT_TAG != null && $CI_COMMIT_REF_PROTECTED == "true"'
-      variables:
-        MANUAL_DEPLOY: "true"
-        SKIP_DEPLOY: "false"
-        BUILD_STACK: "prod"
-        # DOCKER_PUSH: "1"
-        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-    # Feature branch commits only do a build
-    - if: '$CI_COMMIT_BRANCH =~ /feature/ && $CI_COMMIT_REF_PROTECTED == "true"'
-      variables:
-        SKIP_DEPLOY: "true"
-        # DOCKER_PUSH: "0"
-        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-    - if: '$CI_COMMIT_BRANCH =~ /develop/ && $CI_COMMIT_REF_PROTECTED == "true"'
-      variables:
-        SKIP_DEPLOY: "false"
-        # DOCKER_PUSH: "0"
-        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-    - if: '$CI_COMMIT_BRANCH =~ /master/ && $CI_COMMIT_REF_PROTECTED == "true"'
-      variables:
-        VERSION: $CI_JOB_ID-SNAPSHOT
-        MANUAL_DEPLOY: "true"
-        SKIP_DEPLOY: "false"
-        DOCKER_BUILD: "true"
-        # DOCKER_PUSH: "0"
-        VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-
 stages:
+  - maven
+  - sonar-trigger
   - docker
   - helm
   - deploy
 
-# docker-build:
-#   stage: docker
-#   extends: .docker_build
-#   secrets:
-#     SVC_USER:
-#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
-#     SVC_PASS:
-#       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher 
-#   variables: 
-#     DOCKER_REPO: miring
-#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-#   environment:
-#     name: helm
+default:
+  interruptible: true
 
-helm_build:
+include:
+  - project: bethematch/appdev/ci/build
+    file: "Environments.gitlab-ci.yml"
+    ref: ${TEMPLATE_BRANCH}
+  - project: bethematch/appdev/ci/sonar
+    file: "Sonar-Trigger.gitlab-ci.yml"
+    ref: ${TEMPLATE_BRANCH}
+  - project: bethematch/appdev/ci/build
+    file: "Docker.gitlab-ci.yml"
+    ref: ${TEMPLATE_BRANCH}
+  - project: bethematch/library/gitlab-ci
+    ref: v23.01-04
+    file:
+      - job-helm-build.yaml
+      - job-helm-deploy.yaml
+
+variables:
+    HELM_CHART_NAME: miring
+    HELM_VALUES_FILE: ./charts/${HELM_CHART_NAME}/env/${CI_ENVIRONMENT_NAME}.yaml
+    K8S_NS: miring-${CI_ENVIRONMENT_NAME}
+
+# Added this so that helm_build can get the correct Vault role for the branch it is running on
+workflow:
+  rules:
+    # Tag workflow
+    - if: $CI_COMMIT_TAG != null
+      variables:
+        VAULT_AUTH_ROLE: gitlab.$CI_PROJECT_ID.tag
+    # branch roles
+    - if: $CI_COMMIT_BRANCH =~ /^develop|^release|^master/
+      variables:
+        VAULT_AUTH_ROLE: gitlab.$CI_PROJECT_ID.$CI_COMMIT_BRANCH
+    # feature branches
+    - if: $CI_COMMIT_BRANCH =~ /^feature/
+      variables:
+        VAULT_AUTH_ROLE: gitlab.$CI_PROJECT_ID.feature
+    # bugfix and hotfix branches
+    - if: $CI_COMMIT_BRANCH =~ /^bugfix|^hotfix/
+      variables:
+        VAULT_AUTH_ROLE: gitlab.$CI_PROJECT_ID.develop
+
+.maven:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:${MAVEN_VERSION}
+  stage: maven
+  variables:
+    MAVEN_CLI_OPS: "${MAVEN_CLI_OPS}"
+  before_script:
+    - ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+    - mkdir -p /cache/${CI_PROJECT_PATH}/maven/repository
+    - echo "${MAVEN_SETTINGS_XML}" > /usr/share/maven/conf/settings.xml
+  timeout: 6h
+
+.maven-test:
+  extends:
+    - .maven
+  interruptible: false
+  script:
+    # compiled classes incompatible for sonarqube using mvn verify
+    #- echo "JOB_NAME=${CI_JOB_NAME}" >> maven.env
+    # jacoco report not yet available with failing unit tests
+    # - mvn clean -DskipTests -B -U -ff jacoco:prepare-agent verify jacoco:report
+    - mvn clean -DskipTests -B -U -ff verify
+  #artifacts:
+  #  paths:
+      # artifacts for downstream sonar pipeline
+      # source code to be analyzed
+      #- "**/src/*"
+      #- "**/pom.xml"
+      #- "pom.xml"
+      #- "**/target/classes/org/nmdpresearch/ipr/*"
+      #- "**/target/classes/org/nmdp/b12s/ipr/*"
+      # coverage report and unit test count for sonarqube
+      #- "**/target/site/jacoco/*"
+      #- "**/target/surefire-reports/*"
+    #expire_in: 3 hrs
+    #public: false
+    #reports:
+    #  dotenv: maven.env
+      # junit: ["**/target/surefire-reports/TEST-*.xml", "**/target/failsafe-reports/TEST-*.xml"]
+
+.maven-build:
+  extends:
+    - .maven
+  script:
+    # jacoco report not yet available with failing unit tests
+    # mvn clean -DskipTests -B -U -ff jacoco:prepare-agent ${MAVEN_BUILD_GOAL} jacoco:report
+    - | 
+      mvn clean -DskipTests -B -U -ff ${MAVEN_BUILD_GOAL} \
+          -DaltSnapshotDeploymentRepository=private::default::${NEXUS_URL}/repository/${MAVEN_REPOSITORY_SNAPSHOTS} \
+          -DaltReleaseDeploymentRepository=private::default::${NEXUS_URL}/repository/${MAVEN_REPOSITORY_RELEASES} 
+
+      REPO=$(mvn -q help:evaluate -Dexpression=settings.localRepository -DforceStdout)
+      GROUP_ID=$(mvn -q help:evaluate -Dexpression=project.groupId -DforceStdout)
+      ARTIFACT_ID=$(mvn -q help:evaluate -Dexpression=project.artifactId -DforceStdout)
+      VERSION=$(mvn -q help:evaluate -Dexpression=project.version -DforceStdout)
+      
+      echo "SONAR_PROJECT_KEY=${GROUP_ID}:${ARTIFACT_ID}" > maven.env
+      
+      JAVA_BINARIES=()
+      LOCAL_ARTIFACTS=()
+      
+      ARTIFACT_HOME=${REPO}/$(echo "${GROUP_ID}" | sed "s/\./\//g")
+      
+      if [[ -d target/classes ]]; then
+          JAVA_BINARIES+=( "target/classes" )
+      fi
+      
+      if [[ -f "Dockerfile" ]]; then
+          PACKAGING=$(mvn -q help:evaluate -Dexpression=project.packaging -DforceStdout)
+          SOURCE=${ARTIFACT_HOME}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}
+          DESTINATION=target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}
+      
+          if [[ -f ${SOURCE} ]]; then
+              LOCAL_ARTIFACTS+=( `echo "${SOURCE}|${DESTINATION}"` )
+          fi
+      fi
+      for MODULE in *; do
+          if [[ -d "${MODULE}/target/classes" ]]; then
+              JAVA_BINARIES+=( "${MODULE}/target/classes" )
+          fi
+      
+          if [[ -f "${MODULE}/Dockerfile" ]]; then
+              SOURCE=${ARTIFACT_HOME}/${MODULE}/${VERSION}/${MODULE}-${VERSION}.jar
+              DESTINATION=${MODULE}/target/${MODULE}-${VERSION}.jar
+      
+              if [[ -f ${SOURCE} ]]; then
+                  LOCAL_ARTIFACTS+=( `echo "${SOURCE}|${DESTINATION}"` )
+              else
+                  ARTIFACT_ID=$(mvn -q -f ${MODULE}/pom.xml help:evaluate -Dexpression=project.artifactId -DforceStdout)
+                  PACKAGING=$(mvn -q -f ${MODULE}/pom.xml help:evaluate -Dexpression=project.packaging -DforceStdout)
+                  SOURCE=${ARTIFACT_HOME}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}
+                  DESTINATION=${MODULE}/target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}
+      
+                  if [[ -f ${SOURCE} ]]; then
+                      LOCAL_ARTIFACTS+=( `echo "${SOURCE}|${DESTINATION}"` )
+                  fi
+              fi
+          fi
+      done
+      
+      echo "JOB_NAME=${CI_JOB_NAME}" >> maven.env
+      echo MAVEN_VERSION=${VERSION} >> maven.env
+      echo VERSION=${VERSION} | sed s/-SNAPSHOT/.${CI_PIPELINE_ID}/ >> maven.env
+      echo "SONAR_JAVA_BINARIES=$(echo "${JAVA_BINARIES[@]}" | tr " " ,)" >> maven.env
+      echo "LOCAL_ARTIFACTS='$(printf "%s " "${LOCAL_ARTIFACTS[@]}")'" >> maven.env
+  artifacts:
+    untracked: true
+    paths:
+      # artifacts for downstream sonar pipeline
+      # source code to be analyzed
+      - "**/src/*"
+      - "**/pom.xml"
+      - "pom.xml"
+      - "**/target/classes/org/nmdp/miring/*"
+      # coverage report and unit test count for sonarqube
+      - "**/target/site/jacoco/*"
+      - "**/target/surefire-reports/*"
+    expire_in: 3 hrs
+    public: false
+    reports:
+      dotenv: maven.env
+      # junit: ["**/target/surefire-reports/TEST-*.xml", "**/target/failsafe-reports/TEST-*.xml"]
+
+
+maven:test:prod:
+  extends:
+    - .maven-test
+    - .env-prod
+  rules:
+    - if: '$BUILD_STACK != "prod"'
+      when: never
+    - if: $CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH =~ /^bugfix/ || $CI_COMMIT_BRANCH =~ /^hotfix/
+maven:build:prod:
+  extends:
+    - .maven-build
+    - .env-prod
+  rules:
+    - if: '$BUILD_STACK != "prod"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE || $CI_COMMIT_BRANCH == $GIT_BRANCH_MASTER'
+
+maven:build:qa:
+  extends:
+    - .maven-build
+    - .env-qa
+  rules:
+    - if: '$BUILD_STACK != "qa"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE || $CI_COMMIT_BRANCH == $GIT_BRANCH_MASTER'
+maven:test:qa:
+  extends:
+    - .maven-test
+    - .env-qa
+  rules:
+    - if: '$BUILD_STACK != "qa"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH =~ /^bugfix/ || $CI_COMMIT_BRANCH =~ /^hotfix/'
+
+maven:build:dev:
+  extends:
+    - .maven-build
+    - .env-dev
+  rules:
+    - if: '$BUILD_STACK != "dev"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE || $CI_COMMIT_BRANCH == $GIT_BRANCH_MASTER'
+maven:test:dev:
+  extends:
+    - .maven-test
+    - .env-dev
+  rules:
+    - if: '$BUILD_STACK != "dev"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH =~ /^bugfix/ || $CI_COMMIT_BRANCH =~ /^hotfix/'
+
+helm:
   stage: helm
   extends: .helm_build
+  variables:
+    # VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.helm
+    VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
   rules:
-    - when: "always"
+      - when: "always"
+    # - changes:
+    #   - charts/${HELM_CHART_NAME}/**/*
+    #   - charts/${HELM_CHART_NAME}/*
+  environment:
+    name: helm
   secrets:
     SVC_USER:
       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/username@rancher
     SVC_PASS:
       vault: rancher.nmdp.org/appdev/miring/dev1/serviceaccount/password@rancher
-  variables:
-    VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}"
-    HELM_CHART_NAME: miring
-  environment:
-    name: helm
 
-# dev:
-#   stage: deploy
-#   extends: .helm_deploy
-#   secrets:
-#     KUBE_YAML:
-#       vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
-#   variables: 
-#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: miring
-#     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
-#     MANUAL_DEPLOY: "true"
-#   environment:
-#     name: dev1
-#     url: https://dev1.miring.nmdp.org
-
-# DEV Deploy
+# DEV1
 dev1:
   stage: deploy
   extends:
     - .helm_deploy
+  needs:
+    - job: docker:build:dev
+      optional: true
+    - job: docker:build:prod
+      optional: true
+    - job: maven:build:dev
+      optional: true
+    - job: maven:build:prod
+      optional: true
+    - job: helm
+      optional: true
+  # environment:
+  #   name: dev1
+
   environment:
     name: dev1
     url: https://dev1.miring.nmdp.org
@@ -132,27 +271,100 @@ dev1:
     K8S_NS: miring-${CI_ENVIRONMENT_NAME}
     HELM_ENV: ${CI_ENVIRONMENT_NAME}
     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
-    MANUAL_DEPLOY: "false"
+    MANUAL_DEPLOY: "true"
     HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
-  tags:
-    - nmdp-prod-k8s
+    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
   secrets:
     KUBE_YAML:
       vault: rancher.nmdp.org/appdev/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher
 
+# QA1
+qa1:
+  stage: deploy
+  extends:
+    - .helm_deploy
+  needs:
+    - job: docker:build:dev
+      optional: true
+    - job: docker:build:prod
+      optional: true
+    - job: maven:build:dev
+      optional: true
+    - job: maven:build:prod
+      optional: true
+    - job: helm
+      optional: true
+  environment:
+    name: qa1
+  variables:
+    HELM_CHART_NAME: miring
+    # VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
+    K8S_NS: miring-${CI_ENVIRONMENT_NAME}
+    HELM_ENV: ${CI_ENVIRONMENT_NAME}
+    HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
+    MANUAL_DEPLOY: "true"
+    HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
+    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
+  secrets:
+    KUBE_YAML:
+      vault: rancher.nmdp.org/appdev/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher
 
-# qa1:
-#   stage: deploy
-#   extends: .helm_deploy
-#   secrets:
-#     KUBE_YAML:
-#       vault: rancher.nmdp.org/bio/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher 
-#   variables: 
-#     VAULT_AUTH_ROLE: "gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}"
-#     HELM_CHART_NAME: miring
-#     HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
-#     MANUAL_DEPLOY: "true"
-#   environment:
-#     name: qa1
-#     url: https://qa1.miring.nmdp.org
+# preprod1
+preprod1:
+  stage: deploy
+  extends:
+    - .helm_deploy
+  needs:
+    - job: docker:build:dev
+      optional: true
+    - job: docker:build:prod
+      optional: true
+    - job: maven:build:dev
+      optional: true
+    - job: maven:build:prod
+      optional: true
+    - job: helm
+      optional: true
+  variables:
+    HELM_CHART_NAME: miring
+    # VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
+    K8S_NS: miring-${CI_ENVIRONMENT_NAME}
+    HELM_ENV: ${CI_ENVIRONMENT_NAME}
+    HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
+    MANUAL_DEPLOY: "true"
+    HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
+    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
+  secrets:
+    KUBE_YAML:
+      vault: rancher.nmdp.org/appdev/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher
 
+# PROD1
+prod1:
+  stage: deploy
+  extends:
+    - .helm_deploy
+  needs:
+    - job: docker:build:dev
+      optional: true
+    - job: docker:build:prod
+      optional: true
+    - job: maven:build:dev
+      optional: true
+    - job: maven:build:prod
+      optional: true
+    - job: helm
+      optional: true
+  environment:
+    name: prod1
+  variables:
+    HELM_CHART_NAME: miring
+    # VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.deploy_${CI_ENVIRONMENT_NAME}
+    K8S_NS: miring-${CI_ENVIRONMENT_NAME}
+    HELM_ENV: ${CI_ENVIRONMENT_NAME}
+    HELM_VALUES_FILE: ./charts/miring/env/${CI_ENVIRONMENT_NAME}.yaml
+    MANUAL_DEPLOY: "true"
+    HELM_RELEASE: "${HELM_CHART_NAME}-${CI_ENVIRONMENT_NAME}"
+    VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
+  secrets:
+    KUBE_YAML:
+      vault: rancher.nmdp.org/appdev/miring/${CI_ENVIRONMENT_NAME}/kube_config/kube_config@rancher

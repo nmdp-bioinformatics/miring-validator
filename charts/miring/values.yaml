@@ -27,7 +27,7 @@ deployment:
       nginx.ingress.kubernetes.io/ssl-passthrough: "false"
       nginx.ingress.kubernetes.io/proxy-body-size: 20G
     tls_name:
-    path: /MiringValidator/
+    path: /
     pathtype: Prefix
     nginx:
       classname:
