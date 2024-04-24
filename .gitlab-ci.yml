@@ -9,9 +9,9 @@ default:
   interruptible: true
 
 include:
-  - project: bethematch/appdev/ci/build
+  - project: bethematch/library/gitlab-templates/common
     file: "Environments.gitlab-ci.yml"
-    ref: ${TEMPLATE_BRANCH}
+    ref: ${SHARED_ENV_TAG}
   - project: bethematch/appdev/ci/sonar
     file: "Sonar-Trigger.gitlab-ci.yml"
     ref: ${TEMPLATE_BRANCH}
