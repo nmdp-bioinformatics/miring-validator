@@ -1,6 +1,6 @@
 stages:
   - maven
-  - sonar
+  # - sonar
   - docker
   - deploy
   - helm_uninstall
@@ -16,9 +16,9 @@ include:
   - project: bethematch/library/gitlab-templates/maven
     file: "Maven.gitlab-ci.yml"
     ref: ${SHARED_MVN_TAG}
-  - project: bethematch/library/gitlab-templates/security/cli-templates
-    file: "Sonar.gitlab-ci.yml"
-    ref: ${SHARED_SECURITY_CLI_TAG}
+  # - project: bethematch/library/gitlab-templates/security/cli-templates
+  #   file: "Sonar.gitlab-ci.yml"
+  #   ref: ${SHARED_SECURITY_CLI_TAG}
   - project: bethematch/library/gitlab-templates/docker
     file: "Docker.gitlab-ci.yml"
     ref: ${SHARED_DOCKER_TAG}
@@ -69,6 +69,8 @@ variables:
   secrets:
     KUBE_YAML:
       vault: ${KUBE_YAML_PATH}/kube_config/kube_config@rancher
+  variables:
+    HELM_CHART_NAME: miring
   tags:
     - nmdp-prod-k8s
 
@@ -83,7 +85,6 @@ variables:
     HELM_CHART_NAME: nmdp-common
     HELM_VALUES_FILE: "./devops/${CI_JOB_NAME}.yml"
     HELM_PULL: "true"
-    HELM_CONFIGS: "./config"
 
 # DEV1
 dev1:
