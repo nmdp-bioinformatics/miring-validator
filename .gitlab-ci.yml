@@ -95,7 +95,7 @@ dev1:
     - job: "docker:build:prod"
       optional: true
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP'
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
       when: manual
       allow_failure: true
   environment:
@@ -157,7 +157,7 @@ helm_uninstall_dev1:
   environment:
     name: dev1
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP'
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
       when: manual
       allow_failure: true
 
@@ -167,7 +167,7 @@ helm_cleanup_dev1:
   environment:
     name: dev1
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP'
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
       when: manual
       allow_failure: true
 
