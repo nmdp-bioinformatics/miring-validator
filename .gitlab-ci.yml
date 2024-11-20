@@ -84,7 +84,6 @@ variables:
     MANUAL_DEPLOY: "true"
     HELM_CHART_NAME: nmdp-common
     HELM_VALUES_FILE: "./devops/${CI_JOB_NAME}.yml"
-    HELM_PULL: "true"
 
 # DEV1
 dev1:
