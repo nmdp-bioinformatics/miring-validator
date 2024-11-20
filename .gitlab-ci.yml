@@ -30,6 +30,8 @@ include:
 variables:
   K8S_NS: bioinfo-${CI_ENVIRONMENT_NAME}
   VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
+  HELM_CHART_NAME: nmdp-common
+  HELM_RELEASE: miring-${CI_ENVIRONMENT_NAME}
 
 .maven-build:
   extends:
@@ -61,15 +63,19 @@ variables:
           "**/target/failsafe-reports/TEST-*.xml",
         ]
 
+.helm_settings:
+  secrets:
+    KUBE_YAML:
+      vault: ${KUBE_YAML_PATH}/kube_config/kube_config@rancher
+  tags:
+    - nmdp-prod-k8s
+
 .helm_deploy:ext:
   before_script:
     - git clone --branch ${CI_ENVIRONMENT_NAME} --depth 1 --no-tags https://${DEPLOY_USER}:${DEPLOY_TOKEN}@gitlab.com/$(echo ${CI_PROJECT_PATH} | rev | cut -d'/' -f2- | rev)/devops/${CI_PROJECT_NAME}.git devops
     - !reference [.helm_deploy, before_script]
   stage: deploy
   extends: [ .helm_deploy, .helm_settings ]
-  secrets:
-    KUBE_YAML:
-      vault: ${KUBE_YAML_PATH}/kube_config/kube_config@rancher
   variables:
     MANUAL_DEPLOY: "true"
     HELM_CHART_NAME: nmdp-common
