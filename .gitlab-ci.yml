@@ -84,11 +84,11 @@ variables:
 dev1:
   stage: deploy
   extends: [ .helm_deploy:ext ]
-    needs:
-      - job: maven:build:prod
-        optional: true
-      - job: "docker:build:prod"
-        optional: true
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
   rules:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_DEVELOP'
       when: manual
@@ -100,11 +100,11 @@ dev1:
 qa1:
   stage: deploy
   extends: [ .helm_deploy:ext ]
-    needs:
-      - job: maven:build:prod
-        optional: true
-      - job: "docker:build:prod"
-        optional: true
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
   rules:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
       when: manual
@@ -116,11 +116,11 @@ qa1:
 preprod1:
   stage: deploy
   extends: [ .helm_deploy:ext ]
-    needs:
-      - job: maven:build:prod
-        optional: true
-      - job: "docker:build:prod"
-        optional: true
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
   rules:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
       when: manual
@@ -132,11 +132,11 @@ preprod1:
 prod1:
   stage: deploy
   extends: [ .helm_deploy:ext ]
-    needs:
-      - job: maven:build:prod
-        optional: true
-      - job: "docker:build:prod"
-        optional: true
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
   rules:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
       when: manual
