@@ -3,6 +3,8 @@ stages:
   - sonar
   - docker
   - deploy
+  - helm_uninstall
+  - helm_cleanup
 
 default:
   interruptible: true
