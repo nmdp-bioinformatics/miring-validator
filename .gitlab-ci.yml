@@ -26,9 +26,6 @@ include:
       - helm-uninstall.yaml
       - helm-cleanup.yaml
       - job-helm-deploy.yaml
-  - local: '/gitlab-ci/.helm_deploys.yml'
-  - local: '/gitlab-ci/.helm_uninstalls.yml'
-  - local: '/gitlab-ci/.helm_cleanups.yml'
 
 variables:
   K8S_NS: bioinfo-${CI_ENVIRONMENT_NAME}
