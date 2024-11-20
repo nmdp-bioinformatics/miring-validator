@@ -1,6 +1,6 @@
 stages:
   - maven
-  # - sonar
+  - sonar
   - docker
   - deploy
   - helm_uninstall
@@ -16,9 +16,9 @@ include:
   - project: bethematch/library/gitlab-templates/maven
     file: "Maven.gitlab-ci.yml"
     ref: ${SHARED_MVN_TAG}
-  # - project: bethematch/library/gitlab-templates/security/cli-templates
-  #   file: "Sonar.gitlab-ci.yml"
-  #   ref: ${SHARED_SECURITY_CLI_TAG}
+  - project: bethematch/library/gitlab-templates/security/cli-templates
+    file: "Sonar.gitlab-ci.yml"
+    ref: ${SHARED_SECURITY_CLI_TAG}
   - project: bethematch/library/gitlab-templates/docker
     file: "Docker.gitlab-ci.yml"
     ref: ${SHARED_DOCKER_TAG}
@@ -38,6 +38,8 @@ variables:
 .maven-build:
   extends:
     - .maven
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
   before_script:
     - ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
     - mkdir -p /cache/${CI_PROJECT_PATH}/maven/repository
@@ -64,6 +66,13 @@ variables:
           "**/target/surefire-reports/TEST-*.xml",
           "**/target/failsafe-reports/TEST-*.xml",
         ]
+
+maven:build:
+  extends:
+    - .maven-build
+    - .env-prod
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH == "master")'
 
 .helm_settings:
   secrets:
@@ -95,7 +104,7 @@ dev1:
     - job: "docker:build:prod"
       optional: true
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
       when: manual
       allow_failure: true
   environment:
@@ -157,7 +166,7 @@ helm_uninstall_dev1:
   environment:
     name: dev1
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
       when: manual
       allow_failure: true
 
@@ -167,7 +176,7 @@ helm_cleanup_dev1:
   environment:
     name: dev1
   rules:
-    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_FEATURE'
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
       when: manual
       allow_failure: true
 
