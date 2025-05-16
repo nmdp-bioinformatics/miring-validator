@@ -157,7 +157,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
       <!-- 
       It does seem like junit should be in test scope, but when I do an mvn clean install,
       all the tests cannot find junit jar and build fails.  
