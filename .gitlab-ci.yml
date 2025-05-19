@@ -105,7 +105,6 @@ dev1:
       optional: true
   rules:
     - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
-      when: manual
       allow_failure: true
   environment:
     name: dev1
