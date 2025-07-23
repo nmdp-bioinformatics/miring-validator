@@ -95,6 +95,9 @@ public class SchemaValidator
                 
                 final SAXParserFactory factory = SAXParserFactory.newInstance();
                 factory.setNamespaceAware(true);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 factory.setSchema(schema);
                 
                 final SAXParser parser = factory.newSAXParser();
@@ -116,6 +119,9 @@ public class SchemaValidator
                 
                 final SAXParserFactory factory = SAXParserFactory.newInstance();
                 factory.setNamespaceAware(true);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 factory.setSchema(schema);
                 
                 final SAXParser parser = factory.newSAXParser();
@@ -143,6 +149,9 @@ public class SchemaValidator
 
                 final SAXParserFactory factory = SAXParserFactory.newInstance();
                 factory.setNamespaceAware(true);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 factory.setSchema(schema);
                 
                 final SAXParser parser = factory.newSAXParser();

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MiringValidator - Security Updates v1.2</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        .version { background: #3498db; color: white; padding: 5px 10px; border-radius: 3px; }
+        .security { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; }
+        .compatibility { background: #27ae60; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; }
+        ul { line-height: 1.6; }
+        code { background: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+        .back-link { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>MiringValidator <span class="version">v1.2</span> - Security Updates</h1>
+    
+    <h2><span class="security">SECURITY</span> XML External Entity (XXE) Protection</h2>
+    <p>Enhanced security to prevent XML External Entity attacks by disabling external entity processing in all XML parsers.</p>
+    
+    <h3>Changes Made:</h3>
+    <ul>
+        <li><strong>SAXParserFactory</strong> - Added XXE protection in SchemaValidator.java (3 instances)</li>
+        <li><strong>DocumentBuilderFactory</strong> - Added XXE protection in Utilities.java and MiringValidator.java</li>
+    </ul>
+    
+    <h3>Security Features Added:</h3>
+    <ul>
+        <li><code>disallow-doctype-decl: true</code> - Prevents DTD processing</li>
+        <li><code>external-general-entities: false</code> - Blocks external entity references</li>
+        <li><code>external-parameter-entities: false</code> - Blocks parameter entity references</li>
+    </ul>
+    
+    <h2><span class="compatibility">COMPATIBILITY</span> Java 11+ Support</h2>
+    <p>Added JAXB dependencies to support Java versions 11 and higher.</p>
+    
+    <h3>Dependencies Added:</h3>
+    <ul>
+        <li><code>javax.xml.bind:jaxb-api:2.3.1</code></li>
+        <li><code>org.glassfish.jaxb:jaxb-runtime:2.3.1</code></li>
+    </ul>
+    
+    <h2>Impact Assessment</h2>
+    <ul>
+        <li><strong>Functionality:</strong> All existing validation features work unchanged</li>
+        <li><strong>Performance:</strong> No performance impact</li>
+        <li><strong>Security:</strong> Significantly improved - XXE attacks now blocked</li>
+        <li><strong>Compatibility:</strong> Now supports Java 8 through Java 17+</li>
+    </ul>
+    
+    <h2>What Gets Blocked</h2>
+    <ul>
+        <li>DOCTYPE declarations in uploaded XML</li>
+        <li>External entity references (&amp;externalEntity;)</li>
+        <li>Parameter entity references</li>
+        <li>File system access attempts via XML</li>
+    </ul>
+    
+    <h2>What Still Works</h2>
+    <ul>
+        <li>XSD schema validation</li>
+        <li>Schematron rule validation</li>
+        <li>All MIRING compliance checking</li>
+        <li>HML file processing</li>
+        <li>Report generation</li>
+    </ul>
+    
+    <div class="back-link">
+        <a href="./">← Back to MiringValidator</a>
+    </div>
+</body>
+</html>

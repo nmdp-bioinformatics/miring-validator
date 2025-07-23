@@ -172,6 +172,9 @@ public class MiringValidator
         DocumentBuilder builder;
         Document xmlDOM=null;
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             builder = factory.newDocumentBuilder();
              xmlDOM = builder.parse(new InputSource(new StringReader(xml)));
             
