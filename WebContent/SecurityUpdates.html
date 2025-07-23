@@ -23,14 +23,34 @@
     <h3>Changes Made:</h3>
     <ul>
         <li><strong>SAXParserFactory</strong> - Added XXE protection in SchemaValidator.java (3 instances)</li>
-        <li><strong>DocumentBuilderFactory</strong> - Added XXE protection in Utilities.java and MiringValidator.java</li>
+        <li><strong>TransformerFactory</strong> - Added XSLT XXE protection in Utilities.java</li>
     </ul>
     
     <h3>Security Features Added:</h3>
     <ul>
-        <li><code>disallow-doctype-decl: true</code> - Prevents DTD processing</li>
-        <li><code>external-general-entities: false</code> - Blocks external entity references</li>
-        <li><code>external-parameter-entities: false</code> - Blocks parameter entity references</li>
+        <li><code>external-general-entities: false</code> - Blocks external entity references in SAX parsers</li>
+        <li><code>external-parameter-entities: false</code> - Blocks parameter entity references in SAX parsers</li>
+        <li><code>secure-processing: true</code> - Enables secure XSLT processing</li>
+        <li><code>accessExternalDTD: ""</code> - Blocks external DTD access in transformers</li>
+        <li><code>accessExternalStylesheet: ""</code> - Blocks external stylesheet access</li>
+    </ul>
+    
+    <h2><span class="security">SECURITY</span> Vulnerable Dependencies Updated</h2>
+    <p>Updated vulnerable third-party libraries to secure versions.</p>
+    
+    <h3>Dependencies Updated:</h3>
+    <ul>
+        <li><strong>org.json</strong> - Updated from 20140107 to 20231013</li>
+        <li>Fixes: CVE-2022-45688 (CVSS 7.5), CVE-2023-5072 (CVSS 7.5)</li>
+    </ul>
+    
+    <h2><span class="security">SECURITY</span> Path Traversal Protection</h2>
+    <p>Added validation to prevent potential path traversal attacks in test code.</p>
+    
+    <h3>Changes Made:</h3>
+    <ul>
+        <li><strong>UtilsTest.java</strong> - Added path validation for classpath resources</li>
+        <li>Validates URI contains expected resource path before file access</li>
     </ul>
     
     <h2><span class="compatibility">COMPATIBILITY</span> Java 11+ Support</h2>
@@ -56,6 +76,9 @@
         <li>External entity references (&amp;externalEntity;)</li>
         <li>Parameter entity references</li>
         <li>File system access attempts via XML</li>
+        <li>XSLT external entity attacks</li>
+        <li>External DTD and stylesheet access in transformers</li>
+        <li>Path traversal attempts in file operations</li>
     </ul>
     
     <h2>What Still Works</h2>
