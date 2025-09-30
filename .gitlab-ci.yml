@@ -5,6 +5,7 @@ stages:
   - deploy
   - helm_uninstall
   - helm_cleanup
+  - app-versions-dashboard
 
 default:
   interruptible: true
@@ -28,23 +29,19 @@ include:
       - helm-uninstall.yaml
       - helm-cleanup.yaml
       - job-helm-deploy.yaml
+  - project: bethematch/library/gitlab-templates/metrics/app-versions
+    file: "AppVersions.gitlab-ci.yml"
+    ref: ${SHARED_APP_VERSION_DASHBOARD_TAG}
 
 variables:
   K8S_NS: bioinfo-${CI_ENVIRONMENT_NAME}
   VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
   HELM_CHART_NAME: nmdp-common
   HELM_RELEASE: miring-${CI_ENVIRONMENT_NAME}
+  # S3 App Version Dashboard
+  APP_ENV_VERSION: "${DOCKER_TAG}"
 
 .maven-build:
-  extends:
-    - .maven
-  rules:
-    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
-  before_script:
-    - ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
-    - mkdir -p /cache/${CI_PROJECT_PATH}/maven/repository
-    - echo "BUILD_JOB_ID=${CI_JOB_ID}" >> maven.env
-    - echo "${MAVEN_SETTINGS_XML}" > /usr/share/maven/conf/settings.xml
   artifacts:
     untracked: true
     paths:
@@ -66,13 +63,6 @@ variables:
           "**/target/surefire-reports/TEST-*.xml",
           "**/target/failsafe-reports/TEST-*.xml",
         ]
-
-maven:build:
-  extends:
-    - .maven-build
-    - .env-prod
-  rules:
-    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH == "master")'
 
 .helm_settings:
   secrets:
@@ -157,6 +147,62 @@ prod1:
   environment:
     name: prod1
     url: https://miring.b12x.org
+
+##############################
+# App Versions Dashboard
+##############################
+
+dev1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE || $CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE)'
+  environment:
+    name: dev1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "dev1"
+      optional: true
+
+qa1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: qa1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "qa1"
+      optional: true
+
+preprod1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: preprod1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "preprod1"
+      optional: true
+
+prod1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: prod1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "prod1"
+      optional: true
 
 # Uninstall or Cleanup
 helm_uninstall_dev1:
