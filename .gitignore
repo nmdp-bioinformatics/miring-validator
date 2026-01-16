@@ -1,8 +1,14 @@
 /target/
 /log/
 /bin/
+*apache-tomcat*
+**/*.DS_Store
+*.DS_Store
+*.vscode
+*.code-workspace
+*MiringValidator01_07_26.pdf
+*miringvalidator.txt*
 
-**/.DS_Store
 *.log
 *.class
 .classpath
@@ -12,3 +18,4 @@
 
 .idea/
 miringvalidator.iml
+*.venv/*

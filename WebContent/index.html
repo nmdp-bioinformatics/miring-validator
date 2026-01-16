@@ -101,7 +101,9 @@
       <p align="center">A <a href="http://schemas.nmdp.org/spec/miringreport/1.0/miringreport.xsd">MIRING Results Report</a> will appear below.</p>
         <br/>
       <h3 align="center">HML Input</h3>
-      <textarea id="inputText" class="form-control" rows="15"></textarea>
+      <div style="width: 100%; display: flex; justify-content: center;">
+        <textarea id="inputText" class="form-control" rows="15" style="width:60%;max-width:600px;min-width:300px;"></textarea>
+      </div>
       <br/>
 
       <!-- 
@@ -145,7 +147,9 @@
       <h4 align="center"><i id="redX" class="fa fa-times-circle"> NOT MIRING Compliant</i></h4>
 
 
-      <textarea id="resultsText" class="form-control" rows="15"></textarea>
+      <div style="width: 100%; display: flex; justify-content: center;">
+        <textarea id="resultsText" class="form-control" rows="15" style="width:60%;max-width:600px;min-width:300px;"></textarea>
+      </div>
       <br/>
       <p align="center">
       <button class='btn btn-primary' onclick="javascript:downloadResults();">DOWNLOAD RESULTS</button>
