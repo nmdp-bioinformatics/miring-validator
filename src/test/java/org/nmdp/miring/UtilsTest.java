@@ -80,6 +80,10 @@ public class UtilsTest
             URL jarURL = SchematronValidator.class.getResource("/org/nmdp/miring/jar/probatron.jar");
             assertNotNull(jarURL);
             URI jarURI = jarURL.toURI();
+            // Validate that this is a safe classpath resource
+            if (!jarURI.toString().contains("/org/nmdp/miring/jar/probatron.jar")) {
+                fail("Invalid jar path detected");
+            }
             URLClassLoader loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
             assertNotNull(loadedProbatronClasses);
             
@@ -115,6 +119,10 @@ public class UtilsTest
         {
             URL jarURL = SchematronValidator.class.getResource("/org/nmdp/miring/jar/probatron.jar");
             URI jarURI = jarURL.toURI();
+            // Validate that this is a safe classpath resource
+            if (!jarURI.toString().contains("/org/nmdp/miring/jar/probatron.jar")) {
+                fail("Invalid jar path detected");
+            }
             ClassLoader loadedProbatronClasses = Utilities.loadJarElements(new File(jarURI));
             
             Class sessionClass= loadedProbatronClasses.loadClass("org.probatron.Session");

@@ -1,0 +1,286 @@
+stages:
+  - maven
+  - sonar
+  - docker
+  - deploy
+  - helm_uninstall
+  - helm_cleanup
+  - app-versions-dashboard
+
+default:
+  interruptible: true
+
+include:
+  - project: bethematch/library/gitlab-templates/common
+    file: "Environments.gitlab-ci.yml"
+    ref: ${SHARED_ENV_TAG}
+  - project: bethematch/library/gitlab-templates/maven
+    file: "Maven.gitlab-ci.yml"
+    ref: ${SHARED_MVN_TAG}
+  - project: bethematch/library/gitlab-templates/security/cli-templates
+    file: "Sonar.gitlab-ci.yml"
+    ref: ${SHARED_SECURITY_CLI_TAG}
+  - project: bethematch/library/gitlab-templates/docker
+    file: "Docker.gitlab-ci.yml"
+    ref: ${SHARED_DOCKER_TAG}
+  - project: bethematch/library/gitlab-templates/helm
+    ref: ${SHARED_HELM_TAG}
+    file:
+      - helm-uninstall.yaml
+      - helm-cleanup.yaml
+      - job-helm-deploy.yaml
+  - project: bethematch/library/gitlab-templates/metrics/app-versions
+    file: "AppVersions.gitlab-ci.yml"
+    ref: ${SHARED_APP_VERSION_DASHBOARD_TAG}
+
+variables:
+  K8S_NS: bioinfo-${CI_ENVIRONMENT_NAME}
+  VAULT_AUTH_ROLE: gitlab.${CI_PROJECT_ID}.${CI_ENVIRONMENT_NAME}
+  HELM_CHART_NAME: nmdp-common
+  HELM_RELEASE: miring-${CI_ENVIRONMENT_NAME}
+  # S3 App Version Dashboard
+  APP_ENV_VERSION: "${DOCKER_TAG}"
+
+.maven-build:
+  artifacts:
+    untracked: true
+    paths:
+      # artifacts for downstream sonar pipeline
+      # source code to be analyzed
+      - "**/src/*"
+      - "**/pom.xml"
+      - "pom.xml"
+      - "**/target/classes/org/nmdp/miring/*"
+      # coverage report and unit test count for sonarqube
+      - "**/target/site/jacoco/*"
+      - "**/target/surefire-reports/*"
+    expire_in: 60 mins
+    public: true
+    reports:
+      dotenv: maven.env
+      junit:
+        [
+          "**/target/surefire-reports/TEST-*.xml",
+          "**/target/failsafe-reports/TEST-*.xml",
+        ]
+
+.helm_settings:
+  secrets:
+    KUBE_YAML:
+      vault: ${KUBE_YAML_PATH}/kube_config/kube_config@rancher
+  variables:
+    HELM_CHART_NAME: miring
+  tags:
+    - nmdp-prod-k8s
+
+.helm_deploy:ext:
+  before_script:
+    - git clone --branch ${CI_ENVIRONMENT_NAME} --depth 1 --no-tags https://${DEPLOY_USER}:${DEPLOY_TOKEN}@gitlab.com/$(echo ${CI_PROJECT_PATH} | rev | cut -d'/' -f2- | rev)/devops/${CI_PROJECT_NAME}.git devops
+    - !reference [.helm_deploy, before_script]
+  stage: deploy
+  extends: [ .helm_deploy, .helm_settings ]
+  variables:
+    MANUAL_DEPLOY: "true"
+    HELM_CHART_NAME: nmdp-common
+    HELM_VALUES_FILE: "./devops/${CI_JOB_NAME}.yml"
+
+# DEV1
+dev1:
+  stage: deploy
+  extends: [ .helm_deploy:ext ]
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+      allow_failure: true
+  environment:
+    name: dev1
+    url: https://dev1.miring.nmdp.org
+# QA1
+qa1:
+  stage: deploy
+  extends: [ .helm_deploy:ext ]
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+  environment:
+    name: qa1
+    url: https://qa1.miring.nmdp.org
+# PREPROD1
+preprod1:
+  stage: deploy
+  extends: [ .helm_deploy:ext ]
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+  environment:
+    name: preprod1
+    url: https://preprod1.miring.nmdp.org
+# PROD1
+prod1:
+  stage: deploy
+  extends: [ .helm_deploy:ext ]
+  needs:
+    - job: maven:build:prod
+      optional: true
+    - job: "docker:build:prod"
+      optional: true
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+  environment:
+    name: prod1
+    url: https://miring.b12x.org
+
+##############################
+# App Versions Dashboard
+##############################
+
+dev1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE || $CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE)'
+  environment:
+    name: dev1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "dev1"
+      optional: true
+
+qa1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: qa1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "qa1"
+      optional: true
+
+preprod1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: preprod1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "preprod1"
+      optional: true
+
+prod1:publish:version:
+  stage: app-versions-dashboard
+  extends: [ .app-version:prod ]
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+  environment:
+    name: prod1
+  needs:
+    - job: "docker:build:prod"
+      optional: true
+    - job: "prod1"
+      optional: true
+
+# Uninstall or Cleanup
+helm_uninstall_dev1:
+  stage: helm_uninstall
+  extends: [.helm_uninstall, .helm_settings]
+  environment:
+    name: dev1
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+      when: manual
+      allow_failure: true
+
+helm_cleanup_dev1:
+  stage: helm_cleanup
+  extends: [.helm_cleanup, .helm_settings]
+  environment:
+    name: dev1
+  rules:
+    - if: '$BUILD_STACK == "prod" && ($CI_COMMIT_BRANCH =~ $GIT_BRANCH_FEATURE || $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE)'
+      when: manual
+      allow_failure: true
+
+helm_uninstall_qa1:
+  stage: helm_uninstall
+  extends: [.helm_uninstall, .helm_settings]
+  environment:
+    name: qa1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+
+helm_cleanup_qa1:
+  stage: helm_cleanup
+  extends: [.helm_cleanup, .helm_settings]
+  environment:
+    name: qa1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+
+helm_uninstall_preprod1:
+  stage: helm_uninstall
+  extends: [.helm_uninstall, .helm_settings]
+  environment:
+    name: preprod1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+
+helm_cleanup_preprod1:
+  stage: helm_cleanup
+  extends: [.helm_cleanup, .helm_settings]
+  environment:
+    name: preprod1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+
+helm_uninstall_prod1:
+  stage: helm_uninstall
+  extends: [.helm_uninstall, .helm_settings]
+  environment:
+    name: prod1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
+
+helm_cleanup_prod1:
+  stage: helm_cleanup
+  extends: [.helm_cleanup, .helm_settings]
+  environment:
+    name: prod1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
+      when: manual
+      allow_failure: true
