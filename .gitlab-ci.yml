@@ -99,6 +99,8 @@ dev1:
   environment:
     name: dev1
     url: https://dev1.miring.nmdp.org
+  variables:
+    HELM_CHART_VERSION: "4.2.2190134163"
 # QA1
 qa1:
   stage: deploy
@@ -115,6 +117,8 @@ qa1:
   environment:
     name: qa1
     url: https://qa1.miring.nmdp.org
+  variables:
+    HELM_CHART_VERSION: "4.2.2190134163"
 # PREPROD1
 preprod1:
   stage: deploy
@@ -131,6 +135,8 @@ preprod1:
   environment:
     name: preprod1
     url: https://preprod1.miring.nmdp.org
+  variables:
+    HELM_CHART_VERSION: "4.2.2190134163"
 # PROD1
 prod1:
   stage: deploy
@@ -147,6 +153,8 @@ prod1:
   environment:
     name: prod1
     url: https://miring.b12x.org
+  variables:
+    HELM_CHART_VERSION: "4.2.2190134163"
 
 ##############################
 # App Versions Dashboard
