@@ -1,8 +1,8 @@
 stages:
   - maven
-  - sonar
   - docker
   - deploy
+  - sonar
   - helm_uninstall
   - helm_cleanup
   - app-versions-dashboard
