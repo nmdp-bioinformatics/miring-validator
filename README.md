@@ -1,6 +1,25 @@
 # MiringValidator  
 ##### Semantic Validator for MIRING-compliant HML  
 ##### National Marrow Donor Program (NMDP)  
+
+## Version
+
+Current: **1.3.0**
+
+## What's New in 1.3.0
+
+Security hardening based on DAST scan findings:
+- Added HSTS, Permissions-Policy, expanded CSP, X-Frame-Options on all responses
+- Session cookie hardening (HttpOnly, Secure, COOKIE tracking)
+- Removed information leakage (dead PHP block, server headers)
+- Added Subresource Integrity (SRI) for CDN scripts
+- Fixed JavaScript memory leaks (global variables, unclosed iframe document)
+- Tightened CORS (removed Allow-Credentials with wildcard origin)
+- CI/CD: all branch types now build and deploy to dev1, auto-versioning enabled
+
+See [CHANGELOG](WebContent/CHANGELOG.html) for full history.
+
+## Build
   
 This is a REST service that validates an HML file according to a MIRING checklist, and returns a XML report specifying any encountered MIRING or HML infractions.  
   
@@ -13,7 +32,23 @@ Deploy /target/MiringValidator.war to your Tomcat 8.0 server, or run within MAVE
 $ mvn clean install tomcat7:run-war  
   
 Once your tomcat server is running, you should find the web interface at:  
-http://localhost:8080/MiringValidator  
+http://localhost:8080/MiringValidator
+
+## Environments
+
+| Environment | URL |
+|---|---|
+| Dev | https://dev1.miring.nmdp.org |
+| QA | https://qa1.miring.nmdp.org |
+| PreProd | https://preprod1.miring.nmdp.org |
+| Prod | https://miring.b12x.org |
+
+## Versioning
+
+This project uses Maven auto-versioning via GitLab CI/CD:
+- Feature/bugfix branches: patch increment + `-SNAPSHOT` suffix (e.g., `1.3.1-SNAPSHOT`)
+- Merge to master (release): strips `-SNAPSHOT`, publishes release, creates git tag
+- Next development cycle: minor increment (e.g., `1.3.0` → `1.4.0-SNAPSHOT`)  
   
 ### MIRING:  
   

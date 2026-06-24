@@ -1,4 +1,5 @@
 stages:
+  - version
   - maven
   - docker
   - deploy
@@ -14,6 +15,9 @@ include:
   - project: bethematch/library/gitlab-templates/common
     file: "Environments.gitlab-ci.yml"
     ref: ${SHARED_ENV_TAG}
+  - project: bethematch/library/gitlab-templates/maven
+    file: "AutoVersion.gitlab-ci.yml"
+    ref: ${SHARED_MVN_VERSIONING_TAG}
   - project: bethematch/library/gitlab-templates/maven
     file: "Maven.gitlab-ci.yml"
     ref: ${SHARED_MVN_TAG}
