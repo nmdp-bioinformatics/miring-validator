@@ -121,6 +121,9 @@ qa1:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH == $GIT_BRANCH_RELEASE'
       when: manual
       allow_failure: true
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH != $GIT_BRANCH_RELEASE && $CI_COMMIT_BRANCH != ""'
+      when: manual
+      allow_failure: true
   environment:
     name: qa1
     url: https://qa1.miring.nmdp.org
