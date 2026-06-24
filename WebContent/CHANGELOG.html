@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MiringValidator - Changelog</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; max-width: 800px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-top: 30px; }
+        .version-tag { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; font-size: 14px; }
+        .date { color: #7f8c8d; font-size: 14px; }
+        .category { font-weight: bold; color: #2c3e50; }
+        ul { line-height: 1.8; }
+        li { margin-bottom: 4px; }
+        .back-link { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>MiringValidator Changelog</h1>
+    <p>All notable changes to the Miring Validator are documented here.</p>
+
+    <h2><span class="version-tag">v1.3.0</span> <span class="date">2026-06-24</span></h2>
+    <p class="category">Security Hardening (DAST Scan Remediation)</p>
+    <ul>
+        <li>Added <code>Strict-Transport-Security</code> (HSTS) header — enforces HTTPS for 1 year</li>
+        <li>Added <code>Permissions-Policy</code> header — disables unused browser APIs (camera, microphone, geolocation, payment)</li>
+        <li>Expanded <code>Content-Security-Policy</code> — added frame-ancestors, form-action, base-uri directives</li>
+        <li>Added <code>X-Frame-Options: DENY</code> on all responses including Jersey endpoints</li>
+        <li>Suppressed <code>Server</code> and <code>X-Powered-By</code> response headers to reduce information leakage</li>
+        <li>Added <code>Cache-Control: no-store</code> on validator API responses</li>
+        <li>Session cookie hardening: <code>HttpOnly</code>, <code>Secure</code> flags, COOKIE-only tracking mode</li>
+        <li>Removed <code>Access-Control-Allow-Credentials: true</code> from CORS (unsafe with wildcard origin)</li>
+        <li>Removed dead PHP block from index.html (information leakage)</li>
+        <li>Added Subresource Integrity (SRI) attributes to CDN-loaded scripts</li>
+        <li>Fixed JavaScript global variable leaks (memory leak findings)</li>
+        <li>Fixed unclosed iframe document.write in rule table rendering</li>
+    </ul>
+
+    <p class="category">CI/CD Improvements</p>
+    <ul>
+        <li>Enabled pipeline execution and dev1 deployment for all branch types (feature/, debug/, breakfix/, security/, etc.)</li>
+        <li>Added Maven auto-versioning — patch increment on feature branches, minor increment on release</li>
+    </ul>
+
+    <h2><span class="version-tag">v1.2.0</span> <span class="date">2025-03</span></h2>
+    <p class="category">Security</p>
+    <ul>
+        <li>XML External Entity (XXE) protection — disabled external entity processing in all XML parsers</li>
+        <li>Updated org.json from 20140107 to 20231013 (CVE-2022-45688, CVE-2023-5072)</li>
+        <li>Path traversal protection in test utilities</li>
+        <li>Added JAXB dependencies for Java 11+ compatibility</li>
+    </ul>
+
+    <h2><span class="version-tag">v1.1.0</span> <span class="date">2017</span></h2>
+    <p class="category">Features</p>
+    <ul>
+        <li>Added HML 1.0.2 and 1.0.3 schema support</li>
+        <li>MIRING compliance warnings (partial compliance reporting)</li>
+        <li>File upload via BROWSE button</li>
+        <li>Sample HML loading</li>
+        <li>Downloadable results report</li>
+    </ul>
+
+    <h2><span class="version-tag">v1.0.0</span> <span class="date">2015</span></h2>
+    <p class="category">Initial Release</p>
+    <ul>
+        <li>REST service for MIRING validation of HML 1.0.1 documents</li>
+        <li>XSD schema validation</li>
+        <li>Schematron rule validation for all 8 MIRING elements</li>
+        <li>XML report generation</li>
+        <li>Web interface</li>
+    </ul>
+
+    <div class="back-link">
+        <a href="./">← Back to MiringValidator</a>
+    </div>
+</body>
+</html>
