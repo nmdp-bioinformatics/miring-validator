@@ -3,6 +3,7 @@ stages:
   - maven
   - docker
   - deploy
+  - smoke_test
   - sonar
   - helm_uninstall
   - helm_cleanup
@@ -125,6 +126,19 @@ qa1:
   environment:
     name: qa1
     url: https://qa1.miring.nmdp.org
+
+# Smoke tests - run after QA deploy to verify site functionality
+smoke_test:qa1:
+  stage: smoke_test
+  image: curlimages/curl:latest
+  needs:
+    - job: qa1
+  rules:
+    - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH != ""'
+      allow_failure: true
+  script:
+    - apk add --no-cache bash grep
+    - bash smoke-tests/test_miring.sh https://qa1.miring.nmdp.org
 
 
 # PREPROD1
