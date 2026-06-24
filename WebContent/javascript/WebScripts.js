@@ -27,7 +27,7 @@
 
 function printRuleTable()
 {
-    htmlText = "";
+    var htmlText = "";
     
     getFileFromServer("rules/Rules.csv", function(text) 
     {
@@ -43,14 +43,14 @@ function printRuleTable()
             var lines = text.split(/\r|\r?\n/g);
 
             htmlText+="<table border=\"1\">";
-            for(lineIndex = 0; lineIndex < lines.length; lineIndex++)
+            for(var lineIndex = 0; lineIndex < lines.length; lineIndex++)
             {
                 htmlText+="<tr>";
                 
-                line = lines[lineIndex];
+                var line = lines[lineIndex];
                 var tokens = line.split(",");
                 
-                for (tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
+                for (var tokenInd = 0; tokenInd < tokens.length; tokenInd++) 
                 {
                     //If it's a table header
                     if(lineIndex==0)
@@ -66,7 +66,10 @@ function printRuleTable()
             }
             htmlText+="</table>";
 
-            document.getElementById('ruleTable').contentWindow.document.write(htmlText);
+            var doc = document.getElementById('ruleTable').contentWindow.document;
+            doc.open();
+            doc.write(htmlText);
+            doc.close();
         }
     });
 }
@@ -94,7 +97,7 @@ function getFileFromServer(url, doneCallback)
 
 function downloadResults()
 {
-    xml = document.getElementById("resultsText").value;
+    var xml = document.getElementById("resultsText").value;
     download("MiringResultsReport.xml",xml);
 }
 
@@ -151,9 +154,7 @@ function loadSample()
         }
         else 
         {
-            sampleXML = text;
-            
-            document.getElementById("inputText").value = sampleXML;
+            document.getElementById("inputText").value = text;
             callValidatorService();
         }
     });
@@ -258,9 +259,9 @@ function clearText()
 function isHMLCompliant(xml)
 {
     //Simple string operations to find true, false, or warn user if hml was rejected due to critical hml formatting error
-    compliantBooleanBeginLocation = xml.indexOf("<hml-compliant>") + 15;
-    compliantBooleanEndLocation = xml.indexOf("</hml-compliant>");
-    compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
+    var compliantBooleanBeginLocation = xml.indexOf("<hml-compliant>") + 15;
+    var compliantBooleanEndLocation = xml.indexOf("</hml-compliant>");
+    var compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
     
     if(compliantBoolean == "true")
     {
@@ -286,9 +287,9 @@ function isHMLCompliant(xml)
 function isMiringCompliant(xml)
 {
     //Using simple string operations to pull a "true" or "false" from the report
-    compliantBooleanBeginLocation = xml.indexOf("<miring-compliant>") + 18;
-    compliantBooleanEndLocation = xml.indexOf("</miring-compliant>");
-    compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
+    var compliantBooleanBeginLocation = xml.indexOf("<miring-compliant>") + 18;
+    var compliantBooleanEndLocation = xml.indexOf("</miring-compliant>");
+    var compliantBoolean = xml.substring(compliantBooleanBeginLocation, compliantBooleanEndLocation);
     
     if(compliantBoolean == "true" )
     {
