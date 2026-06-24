@@ -130,14 +130,15 @@ qa1:
 # Smoke tests - run after QA deploy to verify site functionality
 smoke_test:qa1:
   stage: smoke_test
-  image: curlimages/curl:latest
+  image: ${ECR_REGISTRY}/nmdp/nmdp-adoptopenjdk-openjdk11:3.6.3-adoptopenjdk-11-xmllint
   needs:
     - job: qa1
+  tags:
+    - nmdp-prod-k8s
   rules:
     - if: '$BUILD_STACK == "prod" && $CI_COMMIT_BRANCH != ""'
       allow_failure: true
   script:
-    - apk add --no-cache bash grep
     - bash smoke-tests/test_miring.sh https://qa1.miring.nmdp.org
 
 
