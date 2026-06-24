@@ -39,6 +39,7 @@ variables:
   HELM_CHART_NAME: nmdp-common
   HELM_RELEASE: miring-${CI_ENVIRONMENT_NAME}
   HELM_OPTS: --set statefulSets[0].containers[0].image.tag=${DOCKER_TAG}
+  MAVEN_BUILD_GOAL: install
   # S3 App Version Dashboard
   APP_ENV_VERSION: "${DOCKER_TAG}"
 
