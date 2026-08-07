@@ -271,6 +271,18 @@ assert_header "$BASE_URL/" "Set-Cookie" "HttpOnly"
 assert_header "$BASE_URL/" "Set-Cookie" "Secure"
 
 echo ""
+echo "── 10. Charset in Content-Type (DAST Fix) ──"
+assert_header "$BASE_URL/index.html" "Content-Type" "charset" "GET" ""
+assert_header "$BASE_URL/validator/ValidateMiring/" "Content-Type" "charset" "POST" "xml=test"
+assert_header "$BASE_URL/rules/Rules.csv" "Content-Type" "charset" "GET" ""
+assert_header "$BASE_URL/javascript/WebScripts.js" "Content-Type" "charset" "GET" ""
+
+echo ""
+echo "── 11. X-Powered-By Removal (DAST Fix) ──"
+assert_header_missing "$BASE_URL/validator/ValidateMiring/" "X-Powered-By" "POST" "xml=test"
+assert_header_missing "$BASE_URL/" "X-Powered-By" "GET" ""
+
+echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo " Results: $PASS passed, $FAIL failed"
 echo "═══════════════════════════════════════════════════════════"

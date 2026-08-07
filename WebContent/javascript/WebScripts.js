@@ -20,6 +20,7 @@
     > http://www.gnu.org/licenses/lgpl.html
 
 */
+'use strict';
 
 /*
     These are the scripts used by index.html and MoreInfo.html to present a simple validation interface.
