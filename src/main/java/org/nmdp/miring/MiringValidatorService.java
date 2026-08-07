@@ -57,24 +57,27 @@ public class MiringValidatorService
         logger.debug( "Received Miring Validation web service call.");
         //logger.debug("The exact text of the variable 'xml' is between the curly braces: \n{" + xml + "}\n");
         
-        if(xml == null)
-        {
-            logger.error("XML is Null.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL),new ValidationResult("XML is null.",Severity.HMLFATAL)}, null, null,null,null,0);
-        }
-        else if(xml.length() == 0)
-        {
-            logger.error("XML is Empty.");
-            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL),new ValidationResult("XML is length 0.",Severity.HMLFATAL)}, null, null,null,null,0);
-        }
-        else
-        {
-            logger.debug("XML Length = " + xml.length());
-
-            MiringValidator myValidator = new MiringValidator(xml);
-            myValidator.validate();
-
-            return myValidator.getReport();
+        try {
+            if(xml == null) {
+                logger.error("XML is Null.");
+                return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is null.",Severity.FATAL),new ValidationResult("XML is null.",Severity.HMLFATAL)}, null, null,null,null,0);
+            } else if(xml.length() == 0) {
+                logger.error("XML is Empty.");
+                return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("XML is length 0.",Severity.FATAL),new ValidationResult("XML is length 0.",Severity.HMLFATAL)}, null, null,null,null,0);
+            } else {
+                logger.debug("XML Length = " + xml.length());
+                MiringValidator myValidator = new MiringValidator(xml);
+                String report = myValidator.validate();
+                if (report == null || report.trim().isEmpty()) {
+                    // Always return a valid XML report, even if something went wrong
+                    return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("Unknown error during validation.",Severity.FATAL)}, null, null,null,null,0);
+                }
+                return report;
+            }
+        } catch (Exception e) {
+            logger.error("Exception in validateMiring", e);
+            // Always return a valid XML report, even if an exception occurs
+            return ReportGenerator.generateReport(new ValidationResult[]{new ValidationResult("Exception: " + e.getMessage(),Severity.FATAL)}, null, null,null,null,0);
         }
     }
 }

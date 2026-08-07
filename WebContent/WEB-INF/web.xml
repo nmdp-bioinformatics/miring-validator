@@ -9,22 +9,42 @@
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
   
-  <servlet>
-        <servlet-name>Miring Validator</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <servlet>
+          <servlet-name>Miring Validator</servlet-name>
+          <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+          <init-param>
+  		   <param-name>com.sun.jersey.config.property.packages</param-name>
+  		   <param-value>org.nmdp.miring</param-value>
+  		</init-param>
         <init-param>
-		   <param-name>com.sun.jersey.config.property.packages</param-name>
-		   <param-value>org.nmdp.miring</param-value>
-		</init-param>
-      <init-param>
-          <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-          <param-value>org.nmdp.miring.CORSFilter</param-value>
-      </init-param>
-        <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Miring Validator</servlet-name>
-    <url-pattern>/validator/*</url-pattern>
-  </servlet-mapping>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>org.nmdp.miring.CORSFilter</param-value>
+        </init-param>
+          <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Miring Validator</servlet-name>
+      <url-pattern>/validator/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Security Headers Filter: Only logs/report header activity for monitoring -->
+    <filter>
+      <filter-name>SecurityHeadersFilter</filter-name>
+      <filter-class>org.nmdp.miring.SecurityHeadersFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>SecurityHeadersFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Session cookie hardening -->
+    <session-config>
+      <session-timeout>30</session-timeout>
+      <cookie-config>
+        <http-only>true</http-only>
+        <secure>true</secure>
+      </cookie-config>
+      <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
 
 </web-app>
