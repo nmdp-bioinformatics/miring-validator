@@ -19,6 +19,21 @@
     <h1>MiringValidator Changelog</h1>
     <p>All notable changes to the Miring Validator are documented here.</p>
 
+    <h2><span class="version-tag">v1.7.0</span> <span class="date">2026-08-07</span></h2>
+    <p class="category">Security Hardening (DAST Scan Remediation — August 2026)</p>
+    <ul>
+        <li>Added <code>charset=UTF-8</code> to all Content-Type response headers via response wrapper (7 HTTPHeaders findings)</li>
+        <li>Removed <code>X-Powered-By</code> header entirely — suppressed via HttpServletResponseWrapper (1 XPoweredByHeader finding)</li>
+        <li>Added <code>'use strict';</code> to WebScripts.js (2 JavaScriptLeaks findings)</li>
+        <li>Added Subresource Integrity (SRI) to MoreInfo.html CDN scripts — jQuery and Bootstrap (1 SubresourceIntegrity finding)</li>
+        <li>Fixed backslash path separator in MoreInfo.html script src (<code>javascript\WebScripts.js</code> → <code>javascript/WebScripts.js</code>)</li>
+    </ul>
+
+    <p class="category">Testing</p>
+    <ul>
+        <li>Added smoke test sections for charset validation and X-Powered-By absence (52 total tests)</li>
+    </ul>
+
     <h2><span class="version-tag">v1.3.0</span> <span class="date">2026-06-24</span></h2>
     <p class="category">Security Hardening (DAST Scan Remediation)</p>
     <ul>
